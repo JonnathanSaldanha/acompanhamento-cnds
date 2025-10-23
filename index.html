@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Acompanhamento de CNDs — Eletrobras v3 (112 cadastros)</title>
+<title>Acompanhamento de CNDs — Eletrobras v3.1</title>
 <style>
 :root{--bg:#F7F9FB;--card:#FFFFFF;--line:#E5E7EB;--muted:#64748B;--text:#0F172A;--ok:#16A34A;--warn:#F59E0B;--bad:#DC2626;--na:#64748B;--acc1:#0FA3E4;--acc2:#19B66A;--shadow:0 6px 20px rgba(15,23,42,.08)}
 *{box-sizing:border-box}
@@ -22,7 +22,8 @@ main{padding:18px 20px;max-width:1200px;margin:auto}
 .card.kpi{cursor:pointer;position:relative;overflow:hidden}
 .card.kpi:active{transform:translateY(0)}
 .card.kpi.active{outline:2px solid var(--acc1)}
-.controls{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 16px}
+.controls{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 16px;align-items:center}
+.controls .sep{height:32px;border-left:1px solid var(--line)}
 input[type="search"],select,button{background:#fff;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 12px;box-shadow:var(--shadow)}
 button{cursor:pointer;transition:transform .15s ease, box-shadow .2s ease}
 button:hover{transform:translateY(-1px)}
@@ -35,11 +36,12 @@ button:hover{transform:translateY(-1px)}
 .badge.nao-verificada{background:#eef2f7;color:#334155;border-color:#e2e8f0}
 .table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
 .table thead{background:#F3F6FA}
-.table th,.table td{padding:12px;border-bottom:1px solid var(--line);text-align:left}
+.table th,.table td{padding:12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
 .table tbody tr{animation:fadeInUp .35s ease both}
 .row-actions{display:flex;gap:6px}
+.sub{color:var(--muted);font-size:12px;margin-top:2px}
 .modal{position:fixed;inset:0;background:rgba(2,6,23,.45);display:none;align-items:center;justify-content:center;padding:20px}
-.modal .box{width:min(820px,100%);background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);animation:scaleIn .18s ease}
+.modal .box{width:min(840px,100%);background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);animation:scaleIn .18s ease}
 .modal h3{margin:0 0 12px}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
@@ -49,14 +51,13 @@ hr.sep{border:none;border-top:1px solid var(--line);margin:12px 0}
 .footer{margin-top:20px;color:var(--muted);font-size:12px}
 .toast{position:fixed;right:20px;bottom:20px;background:#111827;color:#fff;padding:10px 14px;border-radius:10px;box-shadow:var(--shadow);opacity:0;transform:translateY(10px);transition:all .25s ease}
 .toast.show{opacity:1;transform:translateY(0)}
-.count{display:inline-block;min-width:2ch}
 .kpi-dot{display:inline-block;width:10px;height:10px;border-radius:999px}
 .dot-regular{background:#16A34A}
 .dot-atencao{background:#F59E0B}
 .dot-irregular{background:#DC2626}
 @keyframes fadeInUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @keyframes scaleIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
-@media(max-width:920px){.kpis{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:1024px){.kpis{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:640px){.grid-3{grid-template-columns:1fr}.grid-2{grid-template-columns:1fr}}
 </style>
 </head>
@@ -66,6 +67,8 @@ hr.sep{border:none;border-top:1px solid var(--line);margin:12px 0}
     <div class="title">Acompanhamento de CNDs — Manual</div>
     <div style="margin-left:auto" class="row-actions">
       <button id="btnNovo" class="btn-primary">+ Novo cadastro</button>
+      <button id="btnExportXLS" class="btn-ghost">Exportar Excel (.xls)</button>
+      <button id="btnExportCSV" class="btn-ghost">Exportar CSV</button>
       <button id="btnExport" class="btn-ghost">Salvar backup (JSON)</button>
       <button id="btnImport" class="btn-ghost">Carregar backup</button>
       <input id="importFile" type="file" accept="application/json" hidden />
@@ -78,27 +81,18 @@ hr.sep{border:none;border-top:1px solid var(--line);margin:12px 0}
       <input type="search" id="q" placeholder="Buscar por empresa, CNPJ, município, UF ou IE…"/>
       <select id="ufFilter"><option value="">UF (todas)</option></select>
       <select id="statusFilter"><option value="">Status (todos)</option><option value="REGULAR">REGULAR</option><option value="IRREGULAR">IRREGULAR</option><option value="ATENCAO">ATENÇÃO (OBS ou NÃO VERIFICADA)</option><option value="NAO_VERIFICADA">NÃO VERIFICADA</option><option value="OBS">OBS (antigo)</option></select>
+      <span class="sep"></span>
+      <label style="color:var(--muted);font-weight:600">Modo:</label>
+      <select id="mode"><option value="CADASTRO">Cadastros (linha)</option><option value="CNPJ">CNPJ (agrupado)</option></select>
       <button id="btnLimpar" class="btn-ghost">Limpar filtros</button>
     </div>
 
     <table class="table" id="tbl">
-      <thead>
-        <tr>
-          <th>Empresa</th>
-          <th>CNPJ</th>
-          <th>Município</th>
-          <th>UF</th>
-          <th>IE</th>
-          <th>Federal</th>
-          <th>Estadual</th>
-          <th>Municipal</th>
-          <th style="width:220px">Ações</th>
-        </tr>
-      </thead>
+      <thead id="thead"></thead>
       <tbody></tbody>
     </table>
 
-    <div class="footer">Agora **cada linha do Excel** é um cadastro (sem agrupar por CNPJ). Contadores e filtros refletem **112** cadastros. Dados salvos localmente.</div>
+    <div class="footer">Modo <b>Cadastros</b>: cada linha do Excel equivale a um item. Modo <b>CNPJ</b>: linha única por CNPJ com agregação de status. Dados locais + backup em JSON. Exportação para Excel (XLS) e CSV.</div>
   </main>
 
   <div class="toast" id="toast">Alterações salvas</div>
@@ -110,7 +104,7 @@ window.EMPRESAS_DATA = [{"empresa": "ELETRONORTE", "cnpj": "00357038003484", "mu
 (function(){
   const STATUSES = ['REGULAR','IRREGULAR','OBS','NÃO VERIFICADA'];
   const GROUPS = ['federal','estadual','municipal'];
-  const STORAGE_KEY = 'cnds_data_v3';
+  const STORAGE_KEY = 'cnds_data_v3_1';
 
   const $ = (sel,root=document)=>root.querySelector(sel); const $$=(sel,root=document)=>Array.from(root.querySelectorAll(sel));
   const fmtCNPJ = c => c && c.length===14 ? c.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,'$1.$2.$3/$4-$5') : c;
@@ -120,26 +114,20 @@ window.EMPRESAS_DATA = [{"empresa": "ELETRONORTE", "cnpj": "00357038003484", "mu
   const isAtencao = s => s==='OBS' || s==='NÃO VERIFICADA';
   const showToast = (msg)=>{ const t=$('#toast'); t.textContent=msg||'Alterações salvas'; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 1600); };
 
-  // Chave única por cadastro (linha)
   const keyOf = (e)=> [e.cnpj, norm(e.uf), norm(e.municipio), norm(e.inscricao_estadual)].join('|');
 
   function loadState(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}'); }catch(e){ return {}; } }
   function saveState(state){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
-  // Seed: agora sem dedup — cada linha é um cadastro
   function seedFromEmbed(){
     const empresas = (window.EMPRESAS_DATA||[]).filter(e=>/^\d{14}$/.test(onlyDigits(e.cnpj))).map(e=>({
-      empresa: e.empresa||'',
-      cnpj: onlyDigits(e.cnpj),
-      municipio: e.municipio||'',
-      uf: e.uf||'',
-      inscricao_estadual: e.inscricao_estadual||''
+      empresa: e.empresa||'', cnpj: onlyDigits(e.cnpj), municipio: e.municipio||'', uf: e.uf||'', inscricao_estadual: e.inscricao_estadual||''
     }));
     const cnds = {}; empresas.forEach(e=> cnds[keyOf(e)] = {federal:{status:'NÃO VERIFICADA'},estadual:{status:'NÃO VERIFICADA'},municipal:{status:'NÃO VERIFICADA'}});
     return {empresas, cnds};
   }
 
-  // Migração de backups antigos (v1/v2) que salvavam por CNPJ apenas
+  // Migração de formatos antigos (por CNPJ)
   function migrateIfNeeded(state){
     const keys = Object.keys(state.cnds||{});
     if(keys.length>0 && keys.every(k=>/^\d{14}$/.test(k))){
@@ -156,14 +144,13 @@ window.EMPRESAS_DATA = [{"empresa": "ELETRONORTE", "cnpj": "00357038003484", "mu
   if(!state.empresas || !state.cnds){ state = seedFromEmbed(); saveState(state); }
   else { state = migrateIfNeeded(state); saveState(state); }
 
+  const tblHead = $('#thead');
   const tblBody = $('#tbl tbody');
-  const q = $('#q');
-  const ufFilter = $('#ufFilter');
-  const statusFilter = $('#statusFilter');
+  const q = $('#q'); const ufFilter = $('#ufFilter'); const statusFilter = $('#statusFilter'); const modeSel = $('#mode');
   const ALL_UF = ['AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MG','MS','MT','PA','PB','PE','PI','PR','RJ','RN','RO','RR','RS','SC','SE','SP','TO'];
   ufFilter.innerHTML += ALL_UF.map(u=>`<option value="${u}">${u}</option>`).join('');
 
-  // Modais — Cadastro (novo/editar)
+  // ===== Modais =====
   const modalEmpresa = document.createElement('div');
   modalEmpresa.className='modal';
   modalEmpresa.innerHTML = `
@@ -188,20 +175,47 @@ window.EMPRESAS_DATA = [{"empresa": "ELETRONORTE", "cnpj": "00357038003484", "mu
   document.body.appendChild(modalEmpresa);
 
   let editingKey = null;
-  function openModalEmpresa(key){ editingKey = key||null; $('#mETitle').textContent = editingKey ? 'Editar cadastro' : 'Novo cadastro'; const e = editingKey ? state.empresas.find(x=> keyOf(x)===editingKey) : {empresa:'',cnpj:'',municipio:'',uf:'',inscricao_estadual:''}; $('#me_empresa').value = e.empresa||''; $('#me_cnpj').value = e.cnpj||''; $('#me_municipio').value = e.municipio||''; $('#me_uf').value = e.uf||''; $('#me_ie').value = e.inscricao_estadual||''; $('#me_extra').textContent = editingKey ? `Chave: ${editingKey}` : ''; modalEmpresa.style.display='flex'; }
+  function openModalEmpresa(key){
+    editingKey = key||null; $('#mETitle').textContent = editingKey ? 'Editar cadastro' : 'Novo cadastro';
+    const e = editingKey ? state.empresas.find(x=> keyOf(x)===editingKey) : {empresa:'',cnpj:'',municipio:'',uf:'',inscricao_estadual:''};
+    $('#me_empresa').value = e.empresa||''; $('#me_cnpj').value = e.cnpj||''; $('#me_municipio').value = e.municipio||''; $('#me_uf').value = e.uf||''; $('#me_ie').value = e.inscricao_estadual||'';
+    $('#me_extra').textContent = editingKey ? `Chave: ${editingKey}` : '';
+    modalEmpresa.style.display='flex';
+  }
   function closeModalEmpresa(){ modalEmpresa.style.display='none'; }
   modalEmpresa.addEventListener('click', (ev)=>{ if(ev.target===modalEmpresa) closeModalEmpresa(); });
   modalEmpresa.querySelector('#me_cancel').addEventListener('click', closeModalEmpresa);
-  modalEmpresa.querySelector('#me_save').addEventListener('click', ()=>{ const empresa = String($('#me_empresa').value||'').trim(); const cnpj = onlyDigits($('#me_cnpj').value); const municipio = String($('#me_municipio').value||'').trim(); const uf = $('#me_uf').value; const ie = String($('#me_ie').value||'').trim(); if(!empresa){ alert('Informe a razão social.'); return; } if(!/^\d{14}$/.test(cnpj)){ alert('CNPJ inválido (14 dígitos).'); return; } if(!uf){ alert('Selecione a UF.'); return; } const novo = {empresa, cnpj, municipio, uf, inscricao_estadual: ie}; const newKey = keyOf(novo); if(!editingKey){ state.empresas.push(novo); state.cnds[newKey] = {federal:{status:'NÃO VERIFICADA'},estadual:{status:'NÃO VERIFICADA'},municipal:{status:'NÃO VERIFICADA'}}; } else { if(newKey!==editingKey){ state.cnds[newKey] = state.cnds[editingKey]||{federal:{status:'NÃO VERIFICADA'},estadual:{status:'NÃO VERIFICADA'},municipal:{status:'NÃO VERIFICADA'}}; delete state.cnds[editingKey]; } const idx = state.empresas.findIndex(x=> keyOf(x)===editingKey); if(idx>=0) state.empresas[idx] = novo; } saveState(state); render(); closeModalEmpresa(); showToast('Cadastro salvo'); });
+  modalEmpresa.querySelector('#me_save').addEventListener('click', ()=>{
+    const empresa = String($('#me_empresa').value||'').trim(); const cnpj = onlyDigits($('#me_cnpj').value); const municipio = String($('#me_municipio').value||'').trim(); const uf = $('#me_uf').value; const ie = String($('#me_ie').value||'').trim();
+    if(!empresa){ alert('Informe a razão social.'); return; }
+    if(!/^\d{14}$/.test(cnpj)){ alert('CNPJ inválido (14 dígitos).'); return; }
+    if(!uf){ alert('Selecione a UF.'); return; }
+    const novo = {empresa, cnpj, municipio, uf, inscricao_estadual: ie};
+    const newKey = keyOf(novo);
+    if(!editingKey){ state.empresas.push(novo); state.cnds[newKey] = {federal:{status:'NÃO VERIFICADA'},estadual:{status:'NÃO VERIFICADA'},municipal:{status:'NÃO VERIFICADA'}}; }
+    else {
+      if(newKey!==editingKey){ state.cnds[newKey] = state.cnds[editingKey]||{federal:{status:'NÃO VERIFICADA'},estadual:{status:'NÃO VERIFICADA'},municipal:{status:'NÃO VERIFICADA'}}; delete state.cnds[editingKey]; }
+      const idx = state.empresas.findIndex(x=> keyOf(x)===editingKey); if(idx>=0) state.empresas[idx] = novo;
+    }
+    saveState(state); render(); closeModalEmpresa(); showToast('Cadastro salvo');
+  });
 
-  // Modal CND
-  const modalCND = document.createElement('div'); modalCND.className='modal'; modalCND.innerHTML = `
+  const modalCND = document.createElement('div');
+  modalCND.className='modal';
+  modalCND.innerHTML = `
     <div class="box">
       <h3>Atualizar CND — <span id="mEmpresa"></span> (<span id="mChave"></span>)</h3>
       <div class="grid-3">
         ${GROUPS.map(g=>`
-        <div class=\"field\">
-          <label>${'STATUS'}</label>
+        <div class="field">
+          <label>${g.charAt(0).toUpperCase()+g.slice(1)} — Status</label>
+          <select id="${g}_status">${STATUSES.map(s=>`<option value="${s}">${uiStatus(s)}</option>`).join('')}</select>
+          <label>Validade</label>
+          <input id="${g}_validade" type="date"/>
+          <label>Link da certidão (opcional)</label>
+          <input id="${g}_link" type="url" placeholder="https://…"/>
+          <label>Observações</label>
+          <input id="${g}_obs" placeholder="Observações"/>
         </div>`).join('')}
       </div>
       <hr class="sep"/>
@@ -217,49 +231,211 @@ window.EMPRESAS_DATA = [{"empresa": "ELETRONORTE", "cnpj": "00357038003484", "mu
       </div>
     </div>`;
   document.body.appendChild(modalCND);
-  const grid3 = modalCND.querySelector('.grid-3'); grid3.innerHTML = GROUPS.map(g=>`<div class="field"><label>${g.charAt(0).toUpperCase()+g.slice(1)} — Status</label><select id="${g}_status">${STATUSES.map(s=>`<option value=\"${s}\">${(s==='OBS'?'ATENÇÃO':s)}</option>`).join('')}</select><label>Validade</label><input id="${g}_validade" type="date"/><label>Link da certidão (opcional)</label><input id="${g}_link" type="url" placeholder="https://…"/><label>Observações</label><input id="${g}_obs" placeholder="Observações"/></div>`).join('');
 
   const fields = {}; GROUPS.forEach(g=>{ fields[g] = { status: ()=>document.getElementById(`${g}_status`), validade: ()=>document.getElementById(`${g}_validade`), link: ()=>document.getElementById(`${g}_link`), obs: ()=>document.getElementById(`${g}_obs`) }; });
-
-  let currentKey = null; function openModalCND(key){ currentKey = key; const e = state.empresas.find(x=> keyOf(x)===key); const rec = (state.cnds[key] ||= {federal:{status:'NÃO VERIFICADA'},estadual:{status:'NÃO VERIFICADA'},municipal:{status:'NÃO VERIFICADA'}}); document.getElementById('mEmpresa').textContent = `${e.empresa} — ${fmtCNPJ(e.cnpj)} / ${e.uf} • ${e.municipio} • IE ${e.inscricao_estadual||'—'}`; document.getElementById('mChave').textContent = key; GROUPS.forEach(g=>{ const v = rec[g]||{}; fields[g].status().value = v.status||'NÃO VERIFICADA'; fields[g].validade().value = v.validade||''; fields[g].link().value = v.link||''; fields[g].obs().value = v.obs||''; }); modalCND.style.display='flex'; }
+  let currentKey = null;
+  function openModalCND(key){ currentKey = key; const e = state.empresas.find(x=> keyOf(x)===key); const rec = (state.cnds[key] ||= {federal:{status:'NÃO VERIFICADA'},estadual:{status:'NÃO VERIFICADA'},municipal:{status:'NÃO VERIFICADA'}}); $('#mEmpresa').textContent = `${e.empresa} — ${fmtCNPJ(e.cnpj)} / ${e.uf} • ${e.municipio} • IE ${e.inscricao_estadual||'—'}`; $('#mChave').textContent = key; GROUPS.forEach(g=>{ const v = rec[g]||{}; fields[g].status().value = v.status||'NÃO VERIFICADA'; fields[g].validade().value = v.validade||''; fields[g].link().value = v.link||''; fields[g].obs().value = v.obs||''; }); modalCND.style.display='flex'; }
   function closeModalCND(){ modalCND.style.display='none'; }
-  modalCND.addEventListener('click', (ev)=>{ if(ev.target===modalCND) closeModalCND(); }); modalCND.querySelector('#btnFechar').addEventListener('click', closeModalCND); modalCND.querySelector('#btnSalvar').addEventListener('click', ()=>{ if(!currentKey) return; GROUPS.forEach(g=>{ state.cnds[currentKey][g] = { status: fields[g].status().value, validade: fields[g].validade().value, link: fields[g].link().value, obs: fields[g].obs().value, atualizadoEm: new Date().toISOString() }; }); saveState(state); render(); closeModalCND(); showToast('Situações atualizadas'); }); modalCND.querySelector('#btnEditarEmpresa').addEventListener('click', ()=>{ closeModalCND(); openModalEmpresa(currentKey); }); modalCND.querySelector('#btnExcluirEmpresa').addEventListener('click', ()=>{ if(!currentKey) return; if(!confirm('Excluir este cadastro? Essa ação não pode ser desfeita.')) return; const idx=state.empresas.findIndex(x=> keyOf(x)===currentKey); if(idx>=0) state.empresas.splice(idx,1); delete state.cnds[currentKey]; saveState(state); render(); closeModalCND(); showToast('Cadastro excluído'); });
+  modalCND.addEventListener('click', (ev)=>{ if(ev.target===modalCND) closeModalCND(); }); modalCND.querySelector('#btnFechar').addEventListener('click', closeModalCND);
+  modalCND.querySelector('#btnSalvar').addEventListener('click', ()=>{ if(!currentKey) return; GROUPS.forEach(g=>{ state.cnds[currentKey][g] = { status: fields[g].status().value, validade: fields[g].validade().value, link: fields[g].link().value, obs: fields[g].obs().value, atualizadoEm: new Date().toISOString() }; }); saveState(state); render(); closeModalCND(); showToast('Situações atualizadas'); });
+  modalCND.querySelector('#btnEditarEmpresa').addEventListener('click', ()=>{ closeModalCND(); openModalEmpresa(currentKey); });
+  modalCND.querySelector('#btnExcluirEmpresa').addEventListener('click', ()=>{ if(!currentKey) return; if(!confirm('Excluir este cadastro? Essa ação não pode ser desfeita.')) return; const idx=state.empresas.findIndex(x=> keyOf(x)===currentKey); if(idx>=0) state.empresas.splice(idx,1); delete state.cnds[currentKey]; saveState(state); render(); closeModalCND(); showToast('Cadastro excluído'); });
 
-  // Filtros e KPIs
-  let quick = null;
+  // ===== Util =====
+  let quick = null; // filtro pelos KPIs
   function rowStatus(key, g){ return (state.cnds[key] && state.cnds[key][g] && state.cnds[key][g].status) || 'NÃO VERIFICADA'; }
   function cadastroTem(e, pred){ const k=keyOf(e); return GROUPS.some(g => pred(rowStatus(k,g))); }
-  function matchQuick(e){ if(quick==='REGULAR') return cadastroTem(e, s=>s==='REGULAR'); if(quick==='IRREGULAR') return cadastroTem(e, s=>s==='IRREGULAR'); if(quick==='ATENCAO') return cadastroTem(e, s=> (s==='OBS'||s==='NÃO VERIFICADA')); return true; }
-  function matchStatusFilter(e){ const v=statusFilter.value; if(!v) return true; if(v==='ATENCAO') return cadastroTem(e, s=> (s==='OBS'||s==='NÃO VERIFICADA')); if(v==='NAO_VERIFICADA') return cadastroTem(e, s=> s==='NÃO VERIFICADA'); if(v==='OBS') return cadastroTem(e, s=> s==='OBS'); return cadastroTem(e, s=> s===v); }
-  function matchAll(e){ const term = q.value.trim().toLowerCase(); const okTerm = !term || [e.empresa,e.cnpj,e.municipio,e.uf,e.inscricao_estadual].some(v=>String(v||'').toLowerCase().includes(term)); const okUF = !ufFilter.value || e.uf===ufFilter.value; return okTerm && okUF && matchStatusFilter(e) && matchQuick(e); }
-  function badgeClass(s){ return (s==='REGULAR')?'regular':(s==='IRREGULAR')?'irregular':((s==='OBS'||s==='NÃO VERIFICADA')?'atencao':'nao-verificada'); }
-  function statusBadge(s){ return `<span class="badge ${badgeClass(s)}">${(s==='OBS'?'ATENÇÃO':s)}</span>`; }
-  function computeOverview(){ const totals={ cadastros: state.empresas.length, regular:0, irregular:0, atencao:0 }; state.empresas.forEach(e=>{ if(cadastroTem(e, s=> s==='REGULAR')) totals.regular++; if(cadastroTem(e, s=> s==='IRREGULAR')) totals.irregular++; if(cadastroTem(e, s=> (s==='OBS'||s==='NÃO VERIFICADA'))) totals.atencao++; }); return totals; }
-  function renderKPIs(){ const t=computeOverview(); const k=document.getElementById('kpis'); k.innerHTML = `
-      <div class="card"><h4>Total de cadastros</h4><div class="v">${t.cadastros}</div></div>
+
+  function aggregateByCNPJ(){
+    const map = new Map();
+    state.empresas.forEach(e=>{
+      const arr = map.get(e.cnpj) || []; arr.push(e); map.set(e.cnpj, arr);
+    });
+    return map; // Map<CNPJ, Array<cadastros>>
+  }
+
+  function aggStatusForCNPJ(cnpj){
+    const list = (aggregateByCNPJ().get(cnpj) || []);
+    // Para cada grupo, escolhe o pior: IRREGULAR > ATENÇÃO (OBS/NÃO VERIFICADA) > REGULAR > NÃO VERIFICADA
+    const prio = s => (s==='IRREGULAR')?3 : (isAtencao(s)?2 : (s==='REGULAR'?1:0));
+    const out = {};
+    GROUPS.forEach(g=>{
+      let best='NÃO VERIFICADA', bp=-1;
+      list.forEach(e=>{ const st=rowStatus(keyOf(e), g); const p=prio(st); if(p>bp){ bp=p; best=st; } });
+      out[g]=best;
+    });
+    return out;
+  }
+
+  function matchAllCadastro(e){
+    const term = q.value.trim().toLowerCase();
+    const okTerm = !term || [e.empresa,e.cnpj,e.municipio,e.uf,e.inscricao_estadual].some(v=>String(v||'').toLowerCase().includes(term));
+    const okUF = !ufFilter.value || e.uf===ufFilter.value;
+    const okStatus = (function(){
+      const v=statusFilter.value; if(!v) return true;
+      if(v==='ATENCAO') return cadastroTem(e, s=> isAtencao(s));
+      if(v==='NAO_VERIFICADA') return cadastroTem(e, s=> s==='NÃO VERIFICADA');
+      if(v==='OBS') return cadastroTem(e, s=> s==='OBS');
+      return cadastroTem(e, s=> s===v);
+    })();
+    const okQuick = (function(){ if(!quick) return true; if(quick==='REGULAR') return cadastroTem(e,s=>s==='REGULAR'); if(quick==='IRREGULAR') return cadastroTem(e,s=>s==='IRREGULAR'); if(quick==='ATENCAO') return cadastroTem(e,s=>isAtencao(s)); return true; })();
+    return okTerm && okUF && okStatus && okQuick;
+  }
+
+  function matchAllCNPJ(cnpj, empresas){
+    // empresas = array de cadastros desse CNPJ
+    const term = q.value.trim().toLowerCase();
+    const anyEmpresa = empresas[0] || {empresa:'',municipio:'',uf:'',inscricao_estadual:''};
+    const okTerm = !term || [anyEmpresa.empresa, cnpj].concat(empresas.flatMap(e=>[e.municipio,e.uf,e.inscricao_estadual])).some(v=>String(v||'').toLowerCase().includes(term));
+    const okUF = !ufFilter.value || empresas.some(e=> e.uf===ufFilter.value);
+    const agg = aggStatusForCNPJ(cnpj);
+    function cnpjTem(pred){ return GROUPS.some(g=> pred(agg[g])); }
+    const okStatus = (function(){ const v=statusFilter.value; if(!v) return true; if(v==='ATENCAO') return cnpjTem(s=> isAtencao(s)); if(v==='NAO_VERIFICADA') return cnpjTem(s=> s==='NÃO VERIFICADA'); if(v==='OBS') return cnpjTem(s=> s==='OBS'); return cnpjTem(s=> s===v); })();
+    const okQuick = (function(){ if(!quick) return true; if(quick==='REGULAR') return cnpjTem(s=>s==='REGULAR'); if(quick==='IRREGULAR') return cnpjTem(s=>s==='IRREGULAR'); if(quick==='ATENCAO') return cnpjTem(s=>isAtencao(s)); return true; })();
+    return okTerm && okUF && okStatus && okQuick;
+  }
+
+  function badgeClass(s){ return (s==='REGULAR')?'regular':(s==='IRREGULAR')?'irregular':(isAtencao(s)?'atencao':'nao-verificada'); }
+  function statusBadge(s){ return `<span class="badge ${badgeClass(s)}">${uiStatus(s)}</span>`; }
+
+  function computeOverview(){
+    const mode = modeSel.value;
+    if(mode==='CADASTRO'){
+      const totals={ total: state.empresas.length, regular:0, irregular:0, atencao:0 };
+      state.empresas.forEach(e=>{ if(cadastroTem(e,s=>s==='REGULAR')) totals.regular++; if(cadastroTem(e,s=>s==='IRREGULAR')) totals.irregular++; if(cadastroTem(e,s=>isAtencao(s))) totals.atencao++; });
+      return totals;
+    } else {
+      const by = aggregateByCNPJ();
+      let totals={ total: by.size, regular:0, irregular:0, atencao:0 };
+      by.forEach((arr, cnpj)=>{
+        function has(pred){ return arr.some(e=> GROUPS.some(g=> pred(rowStatus(keyOf(e), g)))); }
+        if(has(s=>s==='REGULAR')) totals.regular++;
+        if(has(s=>s==='IRREGULAR')) totals.irregular++;
+        if(has(s=>isAtencao(s))) totals.atencao++;
+      });
+      return totals;
+    }
+  }
+
+  function renderKPIs(){
+    const t = computeOverview();
+    const k = document.getElementById('kpis');
+    const labelTotal = (modeSel.value==='CADASTRO')? 'Total de cadastros' : 'Total por CNPJ';
+    k.innerHTML = `
+      <div class="card"><h4>${labelTotal}</h4><div class="v">${t.total}</div></div>
       <div class="card kpi ${quick==='REGULAR'?'active':''}" id="kpi-regular"><h4><span class="kpi-dot dot-regular"></span> CNDs REGULAR</h4><div class="v">${t.regular}</div></div>
       <div class="card kpi ${quick==='ATENCAO'?'active':''}" id="kpi-atencao"><h4><span class="kpi-dot dot-atencao"></span> CNDs ATENÇÃO</h4><div class="v">${t.atencao}</div></div>
-      <div class="card kpi ${quick==='IRREGULAR'?'active':''}" id="kpi-irregular"><h4><span class="kpi-dot dot-irregular"></span> CNDs IRREGULAR</h4><div class="v">${t.irregular}</div></div>`; $('#kpi-regular').addEventListener('click', ()=>{ quick = (quick==='REGULAR')?null:'REGULAR'; statusFilter.value=''; renderTable(); renderKPIs(); }); $('#kpi-atencao').addEventListener('click', ()=>{ quick = (quick==='ATENCAO')?null:'ATENCAO'; statusFilter.value=''; renderTable(); renderKPIs(); }); $('#kpi-irregular').addEventListener('click', ()=>{ quick = (quick==='IRREGULAR')?null:'IRREGULAR'; statusFilter.value=''; renderTable(); renderKPIs(); }); }
-  function renderTable(){ const rows = state.empresas.filter(matchAll).map(e=>{ const key = keyOf(e); const f=rowStatus(key,'federal'); const est=rowStatus(key,'estadual'); const mun=rowStatus(key,'municipal'); return `<tr>
-        <td>${e.empresa}</td>
-        <td>${fmtCNPJ(e.cnpj)}</td>
-        <td>${e.municipio}</td>
-        <td>${e.uf}</td>
-        <td>${e.inscricao_estadual||'—'}</td>
-        <td>${statusBadge(f)}</td>
-        <td>${statusBadge(est)}</td>
-        <td>${statusBadge(mun)}</td>
-        <td class=\"row-actions\">
-          <button data-key=\"${key}\" class=\"btnEditar btn-ghost\">Editar CND</button>
-          <button data-key=\"${key}\" class=\"btnEditEmp btn-ghost\">Editar</button>
-        </td>
-      </tr>`; }).join(''); tblBody.innerHTML = rows || '<tr><td colspan="9">Nenhum registro encontrado.</td></tr>'; $$('.btnEditar').forEach(b=> b.addEventListener('click', ()=> openModalCND(b.dataset.key)) ); $$('.btnEditEmp').forEach(b=> b.addEventListener('click', ()=> openModalEmpresa(b.dataset.key)) ); }
+      <div class="card kpi ${quick==='IRREGULAR'?'active':''}" id="kpi-irregular"><h4><span class="kpi-dot dot-irregular"></span> CNDs IRREGULAR</h4><div class="v">${t.irregular}</div></div>`;
+    $('#kpi-regular').addEventListener('click', ()=>{ quick = (quick==='REGULAR')?null:'REGULAR'; statusFilter.value=''; renderTable(); renderKPIs(); });
+    $('#kpi-atencao').addEventListener('click', ()=>{ quick = (quick==='ATENCAO')?null:'ATENCAO'; statusFilter.value=''; renderTable(); renderKPIs(); });
+    $('#kpi-irregular').addEventListener('click', ()=>{ quick = (quick==='IRREGULAR')?null:'IRREGULAR'; statusFilter.value=''; renderTable(); renderKPIs(); });
+  }
+
+  function renderTable(){
+    const mode = modeSel.value;
+    if(mode==='CADASTRO'){
+      tblHead.innerHTML = `<tr><th>Empresa</th><th>CNPJ</th><th>Município</th><th>UF</th><th>IE</th><th>Federal</th><th>Estadual</th><th>Municipal</th><th style="width:220px">Ações</th></tr>`;
+      const rows = state.empresas.filter(matchAllCadastro).map(e=>{
+        const key = keyOf(e); const f=rowStatus(key,'federal'); const est=rowStatus(key,'estadual'); const mun=rowStatus(key,'municipal');
+        return `<tr>
+          <td>${e.empresa}<div class="sub">Estab.: ${e.municipio}/${e.uf} • IE ${e.inscricao_estadual||'—'}</div></td>
+          <td>${fmtCNPJ(e.cnpj)}</td>
+          <td>${e.municipio}</td>
+          <td>${e.uf}</td>
+          <td>${e.inscricao_estadual||'—'}</td>
+          <td>${statusBadge(f)}</td>
+          <td>${statusBadge(est)}</td>
+          <td>${statusBadge(mun)}</td>
+          <td class="row-actions">
+            <button data-key="${key}" class="btnEditar btn-ghost">Editar CND</button>
+            <button data-key="${key}" class="btnEditEmp btn-ghost">Editar</button>
+          </td>
+        </tr>`;
+      }).join('');
+      tblBody.innerHTML = rows || '<tr><td colspan="9">Nenhum registro encontrado.</td></tr>';
+      $$('.btnEditar').forEach(b=> b.addEventListener('click', ()=> openModalCND(b.dataset.key)) );
+      $$('.btnEditEmp').forEach(b=> b.addEventListener('click', ()=> openModalEmpresa(b.dataset.key)) );
+    } else {
+      // Modo CNPJ (agrupado)
+      tblHead.innerHTML = `<tr><th>Empresa</th><th>CNPJ</th><th>Estabs</th><th>UFs</th><th>Federal</th><th>Estadual</th><th>Municipal</th><th style="width:220px">Ações</th></tr>`;
+      const by = aggregateByCNPJ();
+      const lines = [];
+      by.forEach((arr, cnpj)=>{
+        if(!matchAllCNPJ(cnpj, arr)) return;
+        const empresaPadrao = arr[0]?.empresa || '';
+        const ufs = Array.from(new Set(arr.map(x=>x.uf).filter(Boolean))).sort().join(', ');
+        const agg = aggStatusForCNPJ(cnpj);
+        lines.push(`<tr>
+          <td>${empresaPadrao}</td>
+          <td>${fmtCNPJ(cnpj)}</td>
+          <td>${arr.length}</td>
+          <td>${ufs}</td>
+          <td>${statusBadge(agg.federal)}</td>
+          <td>${statusBadge(agg.estadual)}</td>
+          <td>${statusBadge(agg.municipal)}</td>
+          <td class="row-actions">
+            <button data-cnpj="${cnpj}" class="btnVerCad btn-ghost">Ver cadastros</button>
+          </td>
+        </tr>`);
+      });
+      tblBody.innerHTML = lines.join('') || '<tr><td colspan="8">Nenhum registro encontrado.</td></tr>';
+      $$('.btnVerCad').forEach(b=> b.addEventListener('click', ()=>{ q.value = b.dataset.cnpj; modeSel.value='CADASTRO'; render(); }) );
+    }
+  }
+
   function render(){ renderKPIs(); renderTable(); }
-  q.addEventListener('input', render); ufFilter.addEventListener('change', render); statusFilter.addEventListener('change', ()=>{ quick=null; render(); }); document.getElementById('btnLimpar').addEventListener('click', ()=>{ q.value=''; ufFilter.value=''; statusFilter.value=''; quick=null; render(); });
-  document.getElementById('btnExport').addEventListener('click', ()=>{ const data = JSON.stringify(state, null, 2); const blob = new Blob([data], {type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'cnds_backup_v3.json'; a.click(); URL.revokeObjectURL(url); });
+
+  // ===== Exportação =====
+  function exportCSV(){
+    const mode = modeSel.value; let rows=[]; let header=[];
+    if(mode==='CADASTRO'){
+      header=['Empresa','CNPJ','Município','UF','IE','Federal','Estadual','Municipal'];
+      state.empresas.filter(matchAllCadastro).forEach(e=>{
+        const key=keyOf(e); rows.push([
+          e.empresa, fmtCNPJ(e.cnpj), e.municipio, e.uf, e.inscricao_estadual||'',
+          rowStatus(key,'federal'), rowStatus(key,'estadual'), rowStatus(key,'municipal')
+        ]);
+      });
+    } else {
+      header=['Empresa','CNPJ','Estabelecimentos','UFs','Federal','Estadual','Municipal'];
+      const by=aggregateByCNPJ();
+      by.forEach((arr, cnpj)=>{
+        if(!matchAllCNPJ(cnpj, arr)) return; const ufs=Array.from(new Set(arr.map(x=>x.uf).filter(Boolean))).sort().join(' '); const agg=aggStatusForCNPJ(cnpj);
+        rows.push([arr[0]?.empresa||'', fmtCNPJ(cnpj), String(arr.length), ufs, agg.federal, agg.estadual, agg.municipal]);
+      });
+    }
+    const csv = [header.join(';')].concat(rows.map(r=> r.map(v=> '"'+String(v).replace('"','""')+'"').join(';'))).join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download = mode==='CADASTRO' ? 'cnds_cadastros.csv' : 'cnds_cnpj.csv'; a.click(); URL.revokeObjectURL(url);
+  }
+
+  function exportXLS(){
+    const mode = modeSel.value; let html='';
+    if(mode==='CADASTRO'){
+      html += '<table><tr><th>Empresa</th><th>CNPJ</th><th>Município</th><th>UF</th><th>IE</th><th>Federal</th><th>Estadual</th><th>Municipal</th></tr>';
+      state.empresas.filter(matchAllCadastro).forEach(e=>{ const key=keyOf(e); html += `<tr><td>${e.empresa}</td><td>${fmtCNPJ(e.cnpj)}</td><td>${e.municipio}</td><td>${e.uf}</td><td>${e.inscricao_estadual||''}</td><td>${rowStatus(key,'federal')}</td><td>${rowStatus(key,'estadual')}</td><td>${rowStatus(key,'municipal')}</td></tr>`; });
+      html += '</table>';
+    } else {
+      html += '<table><tr><th>Empresa</th><th>CNPJ</th><th>Estabelecimentos</th><th>UFs</th><th>Federal</th><th>Estadual</th><th>Municipal</th></tr>';
+      const by=aggregateByCNPJ(); by.forEach((arr, cnpj)=>{ if(!matchAllCNPJ(cnpj, arr)) return; const ufs=Array.from(new Set(arr.map(x=>x.uf).filter(Boolean))).sort().join(' '); const agg=aggStatusForCNPJ(cnpj); html += `<tr><td>${arr[0]?.empresa||''}</td><td>${fmtCNPJ(cnpj)}</td><td>${arr.length}</td><td>${ufs}</td><td>${agg.federal}</td><td>${agg.estadual}</td><td>${agg.municipal}</td></tr>`; });
+      html += '</table>';
+    }
+    const blob = new Blob([`\uFEFF<html><head><meta charset="utf-8"/></head><body>${html}</body></html>`], {type: 'application/vnd.ms-excel'});
+    const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download = mode==='CADASTRO' ? 'cnds_cadastros.xls' : 'cnds_cnpj.xls'; a.click(); URL.revokeObjectURL(url);
+  }
+
+  // ===== Eventos =====
+  q.addEventListener('input', render); ufFilter.addEventListener('change', render); statusFilter.addEventListener('change', ()=>{ quick=null; render(); }); modeSel.addEventListener('change', ()=>{ quick=null; render(); });
+  document.getElementById('btnLimpar').addEventListener('click', ()=>{ q.value=''; ufFilter.value=''; statusFilter.value=''; quick=null; render(); });
+
+  document.getElementById('btnExport').addEventListener('click', ()=>{ const data = JSON.stringify(state, null, 2); const blob = new Blob([data], {type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'cnds_backup_v3_1.json'; a.click(); URL.revokeObjectURL(url); });
   document.getElementById('btnImport').addEventListener('click', ()=> document.getElementById('importFile').click());
   document.getElementById('importFile').addEventListener('change', (ev)=>{ const file=ev.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload = ()=>{ try{ const obj=JSON.parse(reader.result); if(!obj.empresas||!obj.cnds) throw new Error('Estrutura inválida'); state=obj; saveState(state); render(); showToast('Backup carregado'); }catch(e){ alert('Arquivo inválido'); } }; reader.readAsText(file); });
   document.getElementById('btnNovo').addEventListener('click', ()=> openModalEmpresa(null));
+  document.getElementById('btnExportXLS').addEventListener('click', exportXLS);
+  document.getElementById('btnExportCSV').addEventListener('click', exportCSV);
+
+  // Inicial
   render();
 })();
   </script>
