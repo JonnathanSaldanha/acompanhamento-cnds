@@ -1,0 +1,267 @@
+
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Acompanhamento de CNDs — Eletrobras v3 (112 cadastros)</title>
+<style>
+:root{--bg:#F7F9FB;--card:#FFFFFF;--line:#E5E7EB;--muted:#64748B;--text:#0F172A;--ok:#16A34A;--warn:#F59E0B;--bad:#DC2626;--na:#64748B;--acc1:#0FA3E4;--acc2:#19B66A;--shadow:0 6px 20px rgba(15,23,42,.08)}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",sans-serif}
+header{position:sticky;top:0;background:linear-gradient(90deg,var(--acc1),var(--acc2));color:#fff;padding:14px 20px;display:flex;align-items:center;gap:12px;z-index:10;box-shadow:var(--shadow)}
+.logo{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#fff,rgba(255,255,255,.5));opacity:.9}
+.title{font-size:16px;font-weight:700;letter-spacing:.2px}
+main{padding:18px 20px;max-width:1200px;margin:auto}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:var(--shadow);transition:transform .2s ease, box-shadow .2s ease}
+.card:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(15,23,42,.12)}
+.card h4{margin:0 4px 8px;color:var(--muted);font-weight:700;letter-spacing:.2px;display:flex;align-items:center;gap:6px}
+.card .v{font-size:26px;font-weight:900}
+.card.kpi{cursor:pointer;position:relative;overflow:hidden}
+.card.kpi:active{transform:translateY(0)}
+.card.kpi.active{outline:2px solid var(--acc1)}
+.controls{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 16px}
+input[type="search"],select,button{background:#fff;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 12px;box-shadow:var(--shadow)}
+button{cursor:pointer;transition:transform .15s ease, box-shadow .2s ease}
+button:hover{transform:translateY(-1px)}
+.btn-primary{background:linear-gradient(90deg,var(--acc1),var(--acc2));color:#fff;border:none}
+.btn-ghost{background:#fff}
+.badge{padding:3px 8px;border-radius:999px;font-size:12px;border:1px solid var(--line);display:inline-flex;gap:6px;align-items:center}
+.badge.regular{background:rgba(22,163,74,.1);color:#166534;border-color:#86efac}
+.badge.irregular{background:rgba(220,38,38,.08);color:#7f1d1d;border-color:#fecaca}
+.badge.atencao{background:rgba(245,158,11,.1);color:#78350f;border-color:#fde68a}
+.badge.nao-verificada{background:#eef2f7;color:#334155;border-color:#e2e8f0}
+.table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
+.table thead{background:#F3F6FA}
+.table th,.table td{padding:12px;border-bottom:1px solid var(--line);text-align:left}
+.table tbody tr{animation:fadeInUp .35s ease both}
+.row-actions{display:flex;gap:6px}
+.modal{position:fixed;inset:0;background:rgba(2,6,23,.45);display:none;align-items:center;justify-content:center;padding:20px}
+.modal .box{width:min(820px,100%);background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);animation:scaleIn .18s ease}
+.modal h3{margin:0 0 12px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.field{display:flex;flex-direction:column;gap:6px}
+label{color:var(--muted);font-weight:600}
+hr.sep{border:none;border-top:1px solid var(--line);margin:12px 0}
+.footer{margin-top:20px;color:var(--muted);font-size:12px}
+.toast{position:fixed;right:20px;bottom:20px;background:#111827;color:#fff;padding:10px 14px;border-radius:10px;box-shadow:var(--shadow);opacity:0;transform:translateY(10px);transition:all .25s ease}
+.toast.show{opacity:1;transform:translateY(0)}
+.count{display:inline-block;min-width:2ch}
+.kpi-dot{display:inline-block;width:10px;height:10px;border-radius:999px}
+.dot-regular{background:#16A34A}
+.dot-atencao{background:#F59E0B}
+.dot-irregular{background:#DC2626}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+@media(max-width:920px){.kpis{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.grid-3{grid-template-columns:1fr}.grid-2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+  <header>
+    <div class="logo" aria-hidden="true"></div>
+    <div class="title">Acompanhamento de CNDs — Manual</div>
+    <div style="margin-left:auto" class="row-actions">
+      <button id="btnNovo" class="btn-primary">+ Novo cadastro</button>
+      <button id="btnExport" class="btn-ghost">Salvar backup (JSON)</button>
+      <button id="btnImport" class="btn-ghost">Carregar backup</button>
+      <input id="importFile" type="file" accept="application/json" hidden />
+    </div>
+  </header>
+  <main>
+    <section class="kpis" id="kpis"></section>
+
+    <div class="controls">
+      <input type="search" id="q" placeholder="Buscar por empresa, CNPJ, município, UF ou IE…"/>
+      <select id="ufFilter"><option value="">UF (todas)</option></select>
+      <select id="statusFilter"><option value="">Status (todos)</option><option value="REGULAR">REGULAR</option><option value="IRREGULAR">IRREGULAR</option><option value="ATENCAO">ATENÇÃO (OBS ou NÃO VERIFICADA)</option><option value="NAO_VERIFICADA">NÃO VERIFICADA</option><option value="OBS">OBS (antigo)</option></select>
+      <button id="btnLimpar" class="btn-ghost">Limpar filtros</button>
+    </div>
+
+    <table class="table" id="tbl">
+      <thead>
+        <tr>
+          <th>Empresa</th>
+          <th>CNPJ</th>
+          <th>Município</th>
+          <th>UF</th>
+          <th>IE</th>
+          <th>Federal</th>
+          <th>Estadual</th>
+          <th>Municipal</th>
+          <th style="width:220px">Ações</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="footer">Agora **cada linha do Excel** é um cadastro (sem agrupar por CNPJ). Contadores e filtros refletem **112** cadastros. Dados salvos localmente.</div>
+  </main>
+
+  <div class="toast" id="toast">Alterações salvas</div>
+
+  <script>
+window.EMPRESAS_DATA = [{"empresa": "ELETRONORTE", "cnpj": "00357038003484", "municipio": "RIO BRANCO", "uf": "AC", "inscricao_estadual": "100094400195"}, {"empresa": "CHESF", "cnpj": "33541368027588", "municipio": "RIO LARGO", "uf": "AL", "inscricao_estadual": "240031776"}, {"empresa": "ELETRONORTE", "cnpj": "00357038016209", "municipio": "ANAMA", "uf": "AM", "inscricao_estadual": "54385881"}, {"empresa": "ELETRONORTE", "cnpj": "00357038016381", "municipio": "ANORI", "uf": "AM", "inscricao_estadual": "54385890"}, {"empresa": "ELETRONORTE", "cnpj": "00357038016110", "municipio": "CAAPIRANGA", "uf": "AM", "inscricao_estadual": "54385865"}, {"empresa": "ELETRONORTE", "cnpj": "00357038016462", "municipio": "CODAJAS", "uf": "AM", "inscricao_estadual": "54385911"}, {"empresa": "ELETRONORTE", "cnpj": "00357038013447", "municipio": "MANAUS", "uf": "AM", "inscricao_estadual": "42938155"}, {"empresa": "ELETRONORTE", "cnpj": "00357038015490", "municipio": "MANAUS", "uf": "AM", "inscricao_estadual": "54333016"}, {"empresa": "ELETRONORTE", "cnpj": "00357038015652", "municipio": "MANAUS", "uf": "AM", "inscricao_estadual": "54333040"}, {"empresa": "ELETRONORTE", "cnpj": "00357038015733", "municipio": "MANAUS", "uf": "AM", "inscricao_estadual": "54333059"}, {"empresa": "ELETRONORTE", "cnpj": "00357038015814", "municipio": "MANAUS", "uf": "AM", "inscricao_estadual": "54333083"}, {"empresa": "ELETRONORTE", "cnpj": "00357038016039", "municipio": "MANAUS", "uf": "AM", "inscricao_estadual": "54334470"}, {"empresa": "ELETRONORTE", "cnpj": "00357038015571", "municipio": "PRESIDENTE FIGUEIREDO", "uf": "AM", "inscricao_estadual": "54333032"}, {"empresa": "ELETRONORTE", "cnpj": "00357038000540", "municipio": "SANTANA", "uf": "AP", "inscricao_estadual": "30061399"}, {"empresa": "ELETRONORTE", "cnpj": "00357038007200", "municipio": "MACAPA", "uf": "AP", "inscricao_estadual": "30045237"}, {"empresa": "CHESF", "cnpj": "33541368000469", "municipio": "SALVADOR", "uf": "BA", "inscricao_estadual": "623513"}, {"empresa": "CHESF", "cnpj": "33541368027740", "municipio": "FORTALEZA", "uf": "CE", "inscricao_estadual": "61049964"}, {"empresa": "ELETROBRAS", "cnpj": "00001180002927", "municipio": "BRASILIA", "uf": "DF", "inscricao_estadual": "735762800256"}, {"empresa": "ELETRONORTE", "cnpj": "00357038000116", "municipio": "BRASILIA", "uf": "DF", "inscricao_estadual": "732619900183"}, {"empresa": "ELETROBRAS", "cnpj": "00001180005942", "municipio": "SERRA", "uf": "ES", "inscricao_estadual": "84176512"}, {"empresa": "ELETROBRAS", "cnpj": "00001180002099", "municipio": "ANAPOLIS", "uf": "GO", "inscricao_estadual": "200839462"}, {"empresa": "ELETROBRAS", "cnpj": "00001180002331", "municipio": "BARRO ALTO", "uf": "GO", "inscricao_estadual": "200839446"}, {"empresa": "ELETROBRAS", "cnpj": "00001180003141", "municipio": "CACHOEIRA DOURADA", "uf": "GO", "inscricao_estadual": "200839438"}, {"empresa": "ELETROBRAS", "cnpj": "00001180003303", "municipio": "CALDAS NOVAS", "uf": "GO", "inscricao_estadual": "200843710"}, {"empresa": "ELETROBRAS", "cnpj": "00001180004709", "municipio": "MINACU", "uf": "GO", "inscricao_estadual": "200839454"}, {"empresa": "ELETROBRAS", "cnpj": "00001180004890", "municipio": "NIQUELANDIA", "uf": "GO", "inscricao_estadual": "200843702"}, {"empresa": "ELETROBRAS", "cnpj": "00001180005276", "municipio": "RIO VERDE", "uf": "GO", "inscricao_estadual": "200843680"}, {"empresa": "ELETROBRAS", "cnpj": "00001180005780", "municipio": "APARECIDA DE GOIANIA", "uf": "GO", "inscricao_estadual": "200843648"}, {"empresa": "ELETROBRAS", "cnpj": "00001180006086", "municipio": "APARECIDA DE GOIANIA", "uf": "GO", "inscricao_estadual": "200919784"}, {"empresa": "ELETRONORTE", "cnpj": "00357038004960", "municipio": "SAO LUIS", "uf": "MA", "inscricao_estadual": "120852284"}, {"empresa": "CHESF", "cnpj": "33541368006823", "municipio": "SAO JOAO DOS PATOS", "uf": "MA", "inscricao_estadual": "126462003"}, {"empresa": "ELETROBRAS", "cnpj": "00001180002765", "municipio": "BELO HORIZONTE", "uf": "MG", "inscricao_estadual": "47329590169"}, {"empresa": "ELETROBRAS", "cnpj": "00001180004385", "municipio": "ITURAMA", "uf": "MG", "inscricao_estadual": "47329590088"}, {"empresa": "ELETROBRAS", "cnpj": "00001180005438", "municipio": "SAO JOSE DA BARRA", "uf": "MG", "inscricao_estadual": "47329590320"}, {"empresa": "TMT", "cnpj": "17261505000374", "municipio": "FRONTEIRA", "uf": "MG", "inscricao_estadual": "24645400029"}, {"empresa": "ELETROSUL", "cnpj": "02016507003850", "municipio": "CAMPO GRANDE", "uf": "MS", "inscricao_estadual": "284459771"}, {"empresa": "ELETROBRAS", "cnpj": "00001180003494", "municipio": "CHAPADA DOS GUIMARAES", "uf": "MT", "inscricao_estadual": "140225706"}, {"empresa": "ELETROBRAS", "cnpj": "00001180007481", "municipio": "NOVA CANAA DO NORTE", "uf": "MT", "inscricao_estadual": "141113570"}, {"empresa": "ELETRONORTE", "cnpj": "00357038001198", "municipio": "NOBRES", "uf": "MT", "inscricao_estadual": "133018032"}, {"empresa": "ELETRONORTE", "cnpj": "00357038002240", "municipio": "CUIABA", "uf": "MT", "inscricao_estadual": "131141317"}, {"empresa": "ELETRONORTE", "cnpj": "00357038002321", "municipio": "RONDONOPOLIS", "uf": "MT", "inscricao_estadual": "131142712"}, {"empresa": "ELETRONORTE", "cnpj": "00357038002593", "municipio": "ALTO ARAGUAIA", "uf": "MT", "inscricao_estadual": "131123017"}, {"empresa": "ELETRONORTE", "cnpj": "00357038003301", "municipio": "CUIABA", "uf": "MT", "inscricao_estadual": "131163647"}, {"empresa": "ELETRONORTE", "cnpj": "00357038006580", "municipio": "JAURU", "uf": "MT", "inscricao_estadual": "133018105"}, {"empresa": "ELETRONORTE", "cnpj": "00357038009334", "municipio": "RIBEIRAOZINHO", "uf": "MT", "inscricao_estadual": "131459732"}, {"empresa": "ELETRONORTE", "cnpj": "00357038011150", "municipio": "NOVA MUTUM", "uf": "MT", "inscricao_estadual": "131764209"}, {"empresa": "ELETRONORTE", "cnpj": "00357038011231", "municipio": "SORRISO", "uf": "MT", "inscricao_estadual": "131764110"}, {"empresa": "ELETRONORTE", "cnpj": "00357038011312", "municipio": "SINOP", "uf": "MT", "inscricao_estadual": "131764101"}, {"empresa": "ELETRONORTE", "cnpj": "00357038014257", "municipio": "LUCAS DO RIO VERDE", "uf": "MT", "inscricao_estadual": "134640020"}, {"empresa": "ELETRONORTE", "cnpj": "00357038015067", "municipio": "SINOP", "uf": "MT", "inscricao_estadual": "135931100"}, {"empresa": "ELETRONORTE", "cnpj": "00357038015229", "municipio": "VARZEA GRANDE", "uf": "MT", "inscricao_estadual": "136293743"}, {"empresa": "ELETRONORTE", "cnpj": "00357038016896", "municipio": "PEDRA PRETA", "uf": "MT", "inscricao_estadual": "139616420"}, {"empresa": "ELETRONORTE", "cnpj": "00357038003646", "municipio": "TUCURUI", "uf": "PA", "inscricao_estadual": "151278598"}, {"empresa": "CHESF", "cnpj": "33541368003646", "municipio": "CAMPINA GRANDE", "uf": "PB", "inscricao_estadual": "160263638"}, {"empresa": "CHESF", "cnpj": "33541368000116", "municipio": "RECIFE", "uf": "PE", "inscricao_estadual": "558400"}, {"empresa": "CHESF", "cnpj": "33541368022276", "municipio": "RECIFE", "uf": "PE", "inscricao_estadual": "56708530"}, {"empresa": "CHESF", "cnpj": "33541368018759", "municipio": "TERESINA", "uf": "PI", "inscricao_estadual": "193004100"}, {"empresa": "ELETROBRAS", "cnpj": "00001180003575", "municipio": "FOZ DO IGUACU", "uf": "PR", "inscricao_estadual": "9103163207"}, {"empresa": "ELETROBRAS", "cnpj": "00001180004628", "municipio": "MANOEL RIBAS", "uf": "PR", "inscricao_estadual": "9103199147"}, {"empresa": "ELETROSUL", "cnpj": "02016507004822", "municipio": "CURITIBA", "uf": "PR", "inscricao_estadual": "9083696700"}, {"empresa": "ELETROSUL", "cnpj": "02016507006361", "municipio": "LONDRINA", "uf": "PR", "inscricao_estadual": "9087480000"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000126", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "13944520"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000126", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "0109147500192"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000126", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "049022890"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000126", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "71768173"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000126", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "128289899"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000126", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "47329590240"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000126", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "169048896"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000126", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "113583354"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000126", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "203059255"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000126", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "6835996"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000126", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "9000082442"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000207", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "77410805"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000983", "municipio": "RESENDE", "uf": "RJ", "inscricao_estadual": "13964912"}, {"empresa": "ELETROBRAS", "cnpj": "00001180001017", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "13964920"}, {"empresa": "ELETROBRAS", "cnpj": "00001180001106", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "13964939"}, {"empresa": "ELETROBRAS", "cnpj": "00001180001289", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "13964947"}, {"empresa": "ELETROBRAS", "cnpj": "00001180001440", "municipio": "NOVA IGUACU", "uf": "RJ", "inscricao_estadual": "13964963"}, {"empresa": "ELETROBRAS", "cnpj": "00001180001602", "municipio": "ANGRA DOS REIS", "uf": "RJ", "inscricao_estadual": "13965722"}, {"empresa": "ELETROBRAS", "cnpj": "00001180001793", "municipio": "ITATIAIA", "uf": "RJ", "inscricao_estadual": "13965730"}, {"empresa": "ELETROBRAS", "cnpj": "00001180001874", "municipio": "SAPUCAIA", "uf": "RJ", "inscricao_estadual": "13965749"}, {"empresa": "ELETROBRAS", "cnpj": "00001180006400", "municipio": "CAMPOS DOS GOYTACAZES", "uf": "RJ", "inscricao_estadual": "14109129"}, {"empresa": "TMT", "cnpj": "17261505000102", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "79854255"}, {"empresa": "CHESF", "cnpj": "33541368003484", "municipio": "NATAL", "uf": "RN", "inscricao_estadual": "200521071"}, {"empresa": "ELETRONORTE", "cnpj": "00357038003999", "municipio": "PORTO VELHO", "uf": "RO", "inscricao_estadual": "21466"}, {"empresa": "ELETRONORTE", "cnpj": "00357038016977", "municipio": "PORTO VELHO", "uf": "RO", "inscricao_estadual": "6740502"}, {"empresa": "ELETRONORTE", "cnpj": "00357038011908", "municipio": "BOA VISTA", "uf": "RR", "inscricao_estadual": "240015704"}, {"empresa": "ELETROSUL", "cnpj": "02016507000320", "municipio": "GRAVATAI", "uf": "RS", "inscricao_estadual": "570387140"}, {"empresa": "ELETROSUL", "cnpj": "02016507002455", "municipio": "ROQUE GONZALES", "uf": "RS", "inscricao_estadual": "2200012734"}, {"empresa": "ELETROSUL", "cnpj": "02016507002960", "municipio": "GRAVATAI", "uf": "RS", "inscricao_estadual": "570347238"}, {"empresa": "ELETROSUL", "cnpj": "02016507003265", "municipio": "SANTANA DO LIVRAMENTO", "uf": "RS", "inscricao_estadual": "1060160380"}, {"empresa": "ELETROSUL", "cnpj": "02016507000169", "municipio": "FLORIANOPOLIS", "uf": "SC", "inscricao_estadual": "260405744"}, {"empresa": "ELETROSUL", "cnpj": "02016507000169", "municipio": "FLORIANOPOLIS", "uf": "SC", "inscricao_estadual": "48092780013"}, {"empresa": "ELETROSUL", "cnpj": "02016507004407", "municipio": "RIO FORTUNA", "uf": "SC", "inscricao_estadual": "260377597"}, {"empresa": "ELETROSUL", "cnpj": "02016507005128", "municipio": "CAMPO BELO DO SUL", "uf": "SC", "inscricao_estadual": "260377813"}, {"empresa": "CHESF", "cnpj": "33541368031771", "municipio": "CANINDE DE SAO FRANCISCO", "uf": "SE", "inscricao_estadual": "270683259"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000800", "municipio": "SAO PAULO", "uf": "SP", "inscricao_estadual": "137774473115"}, {"empresa": "ELETROBRAS", "cnpj": "00001180002250", "municipio": "ARARAQUARA", "uf": "SP", "inscricao_estadual": "181604960112"}, {"empresa": "ELETROBRAS", "cnpj": "00001180003222", "municipio": "CACHOEIRA PAULISTA", "uf": "SP", "inscricao_estadual": "235061781110"}, {"empresa": "ELETROBRAS", "cnpj": "00001180003907", "municipio": "IBIUNA", "uf": "SP", "inscricao_estadual": "345176147112"}, {"empresa": "ELETROBRAS", "cnpj": "00001180004032", "municipio": "ITABERA", "uf": "SP", "inscricao_estadual": "365050548110"}, {"empresa": "ELETROBRAS", "cnpj": "00001180004202", "municipio": "ITAQUAQUECETUBA", "uf": "SP", "inscricao_estadual": "379607888110"}, {"empresa": "ELETROBRAS", "cnpj": "00001180005004", "municipio": "PEDREGULHO", "uf": "SP", "inscricao_estadual": "518040356113"}, {"empresa": "ELETROBRAS", "cnpj": "00001180005519", "municipio": "SAO PAULO", "uf": "SP", "inscricao_estadual": "125877069118"}, {"empresa": "ELETROBRAS", "cnpj": "00001180006752", "municipio": "MOGI DAS CRUZES", "uf": "SP", "inscricao_estadual": "454989946110"}, {"empresa": "ELETROBRAS", "cnpj": "00001180006914", "municipio": "CAMPINAS", "uf": "SP", "inscricao_estadual": "132534093111"}, {"empresa": "ELETROBRAS", "cnpj": "00001180007058", "municipio": "MOGI DAS CRUZES", "uf": "SP", "inscricao_estadual": "454991310118"}, {"empresa": "ELETROBRAS", "cnpj": "00001180007139", "municipio": "MOGI DAS CRUZES", "uf": "SP", "inscricao_estadual": "454993010114"}, {"empresa": "ELETRONORTE", "cnpj": "00357038014508", "municipio": "ARARAQUARA", "uf": "SP", "inscricao_estadual": "181183403110"}, {"empresa": "TMT", "cnpj": "17261505000293", "municipio": "ASSIS", "uf": "SP", "inscricao_estadual": "189208957119"}, {"empresa": "ELETROBRAS", "cnpj": "00001180003737", "municipio": "GURUPI", "uf": "TO", "inscricao_estadual": "295361190"}, {"empresa": "ELETRONORTE", "cnpj": "00357038012122", "municipio": "MIRACEMA DO TOCANTINS", "uf": "TO", "inscricao_estadual": "290599539"}];
+  </script>
+  <script>
+(function(){
+  const STATUSES = ['REGULAR','IRREGULAR','OBS','NÃO VERIFICADA'];
+  const GROUPS = ['federal','estadual','municipal'];
+  const STORAGE_KEY = 'cnds_data_v3';
+
+  const $ = (sel,root=document)=>root.querySelector(sel); const $$=(sel,root=document)=>Array.from(root.querySelectorAll(sel));
+  const fmtCNPJ = c => c && c.length===14 ? c.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,'$1.$2.$3/$4-$5') : c;
+  const onlyDigits = s => String(s||'').replace(/\D/g,'');
+  const norm = s => String(s||'').trim().toUpperCase();
+  const uiStatus = s => s==='OBS' ? 'ATENÇÃO' : s;
+  const isAtencao = s => s==='OBS' || s==='NÃO VERIFICADA';
+  const showToast = (msg)=>{ const t=$('#toast'); t.textContent=msg||'Alterações salvas'; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 1600); };
+
+  // Chave única por cadastro (linha)
+  const keyOf = (e)=> [e.cnpj, norm(e.uf), norm(e.municipio), norm(e.inscricao_estadual)].join('|');
+
+  function loadState(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}'); }catch(e){ return {}; } }
+  function saveState(state){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+  // Seed: agora sem dedup — cada linha é um cadastro
+  function seedFromEmbed(){
+    const empresas = (window.EMPRESAS_DATA||[]).filter(e=>/^\d{14}$/.test(onlyDigits(e.cnpj))).map(e=>({
+      empresa: e.empresa||'',
+      cnpj: onlyDigits(e.cnpj),
+      municipio: e.municipio||'',
+      uf: e.uf||'',
+      inscricao_estadual: e.inscricao_estadual||''
+    }));
+    const cnds = {}; empresas.forEach(e=> cnds[keyOf(e)] = {federal:{status:'NÃO VERIFICADA'},estadual:{status:'NÃO VERIFICADA'},municipal:{status:'NÃO VERIFICADA'}});
+    return {empresas, cnds};
+  }
+
+  // Migração de backups antigos (v1/v2) que salvavam por CNPJ apenas
+  function migrateIfNeeded(state){
+    const keys = Object.keys(state.cnds||{});
+    if(keys.length>0 && keys.every(k=>/^\d{14}$/.test(k))){
+      const byCNPJ = {};
+      (state.empresas||[]).forEach(e=>{ (byCNPJ[e.cnpj] ||= []).push(e); });
+      const newCnds={};
+      keys.forEach(cnpj=>{ const items = byCNPJ[cnpj]||[]; items.forEach(e=>{ newCnds[keyOf(e)] = state.cnds[cnpj]; }); });
+      state.cnds = newCnds;
+    }
+    return state;
+  }
+
+  let state = loadState();
+  if(!state.empresas || !state.cnds){ state = seedFromEmbed(); saveState(state); }
+  else { state = migrateIfNeeded(state); saveState(state); }
+
+  const tblBody = $('#tbl tbody');
+  const q = $('#q');
+  const ufFilter = $('#ufFilter');
+  const statusFilter = $('#statusFilter');
+  const ALL_UF = ['AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MG','MS','MT','PA','PB','PE','PI','PR','RJ','RN','RO','RR','RS','SC','SE','SP','TO'];
+  ufFilter.innerHTML += ALL_UF.map(u=>`<option value="${u}">${u}</option>`).join('');
+
+  // Modais — Cadastro (novo/editar)
+  const modalEmpresa = document.createElement('div');
+  modalEmpresa.className='modal';
+  modalEmpresa.innerHTML = `
+    <div class="box">
+      <h3 id="mETitle">Novo cadastro</h3>
+      <div class="grid-2">
+        <div class="field"><label>Empresa</label><input id="me_empresa" placeholder="Razão social"/></div>
+        <div class="field"><label>CNPJ</label><input id="me_cnpj" placeholder="Somente números"/></div>
+        <div class="field"><label>Município</label><input id="me_municipio" placeholder="Município"/></div>
+        <div class="field"><label>UF</label><select id="me_uf"><option value=""></option>${ALL_UF.map(u=>`<option>${u}</option>`).join('')}</select></div>
+        <div class="field"><label>Inscrição Estadual</label><input id="me_ie" placeholder="Inscrição Estadual"/></div>
+      </div>
+      <hr class="sep"/>
+      <div class="row-actions" style="justify-content:space-between">
+        <div id="me_extra" style="color:var(--muted)"></div>
+        <div class="row-actions">
+          <button id="me_cancel" class="btn-ghost">Cancelar</button>
+          <button id="me_save" class="btn-primary">Salvar</button>
+        </div>
+      </div>
+    </div>`;
+  document.body.appendChild(modalEmpresa);
+
+  let editingKey = null;
+  function openModalEmpresa(key){ editingKey = key||null; $('#mETitle').textContent = editingKey ? 'Editar cadastro' : 'Novo cadastro'; const e = editingKey ? state.empresas.find(x=> keyOf(x)===editingKey) : {empresa:'',cnpj:'',municipio:'',uf:'',inscricao_estadual:''}; $('#me_empresa').value = e.empresa||''; $('#me_cnpj').value = e.cnpj||''; $('#me_municipio').value = e.municipio||''; $('#me_uf').value = e.uf||''; $('#me_ie').value = e.inscricao_estadual||''; $('#me_extra').textContent = editingKey ? `Chave: ${editingKey}` : ''; modalEmpresa.style.display='flex'; }
+  function closeModalEmpresa(){ modalEmpresa.style.display='none'; }
+  modalEmpresa.addEventListener('click', (ev)=>{ if(ev.target===modalEmpresa) closeModalEmpresa(); });
+  modalEmpresa.querySelector('#me_cancel').addEventListener('click', closeModalEmpresa);
+  modalEmpresa.querySelector('#me_save').addEventListener('click', ()=>{ const empresa = String($('#me_empresa').value||'').trim(); const cnpj = onlyDigits($('#me_cnpj').value); const municipio = String($('#me_municipio').value||'').trim(); const uf = $('#me_uf').value; const ie = String($('#me_ie').value||'').trim(); if(!empresa){ alert('Informe a razão social.'); return; } if(!/^\d{14}$/.test(cnpj)){ alert('CNPJ inválido (14 dígitos).'); return; } if(!uf){ alert('Selecione a UF.'); return; } const novo = {empresa, cnpj, municipio, uf, inscricao_estadual: ie}; const newKey = keyOf(novo); if(!editingKey){ state.empresas.push(novo); state.cnds[newKey] = {federal:{status:'NÃO VERIFICADA'},estadual:{status:'NÃO VERIFICADA'},municipal:{status:'NÃO VERIFICADA'}}; } else { if(newKey!==editingKey){ state.cnds[newKey] = state.cnds[editingKey]||{federal:{status:'NÃO VERIFICADA'},estadual:{status:'NÃO VERIFICADA'},municipal:{status:'NÃO VERIFICADA'}}; delete state.cnds[editingKey]; } const idx = state.empresas.findIndex(x=> keyOf(x)===editingKey); if(idx>=0) state.empresas[idx] = novo; } saveState(state); render(); closeModalEmpresa(); showToast('Cadastro salvo'); });
+
+  // Modal CND
+  const modalCND = document.createElement('div'); modalCND.className='modal'; modalCND.innerHTML = `
+    <div class="box">
+      <h3>Atualizar CND — <span id="mEmpresa"></span> (<span id="mChave"></span>)</h3>
+      <div class="grid-3">
+        ${GROUPS.map(g=>`
+        <div class=\"field\">
+          <label>${'STATUS'}</label>
+        </div>`).join('')}
+      </div>
+      <hr class="sep"/>
+      <div class="row-actions" style="justify-content:space-between">
+        <div class="row-actions">
+          <button id="btnEditarEmpresa" class="btn-ghost">Editar cadastro</button>
+          <button id="btnExcluirEmpresa" class="btn-ghost" style="color:#B91C1C">Excluir</button>
+        </div>
+        <div class="row-actions">
+          <button id="btnFechar" class="btn-ghost">Cancelar</button>
+          <button id="btnSalvar" class="btn-primary">Salvar</button>
+        </div>
+      </div>
+    </div>`;
+  document.body.appendChild(modalCND);
+  const grid3 = modalCND.querySelector('.grid-3'); grid3.innerHTML = GROUPS.map(g=>`<div class="field"><label>${g.charAt(0).toUpperCase()+g.slice(1)} — Status</label><select id="${g}_status">${STATUSES.map(s=>`<option value=\"${s}\">${(s==='OBS'?'ATENÇÃO':s)}</option>`).join('')}</select><label>Validade</label><input id="${g}_validade" type="date"/><label>Link da certidão (opcional)</label><input id="${g}_link" type="url" placeholder="https://…"/><label>Observações</label><input id="${g}_obs" placeholder="Observações"/></div>`).join('');
+
+  const fields = {}; GROUPS.forEach(g=>{ fields[g] = { status: ()=>document.getElementById(`${g}_status`), validade: ()=>document.getElementById(`${g}_validade`), link: ()=>document.getElementById(`${g}_link`), obs: ()=>document.getElementById(`${g}_obs`) }; });
+
+  let currentKey = null; function openModalCND(key){ currentKey = key; const e = state.empresas.find(x=> keyOf(x)===key); const rec = (state.cnds[key] ||= {federal:{status:'NÃO VERIFICADA'},estadual:{status:'NÃO VERIFICADA'},municipal:{status:'NÃO VERIFICADA'}}); document.getElementById('mEmpresa').textContent = `${e.empresa} — ${fmtCNPJ(e.cnpj)} / ${e.uf} • ${e.municipio} • IE ${e.inscricao_estadual||'—'}`; document.getElementById('mChave').textContent = key; GROUPS.forEach(g=>{ const v = rec[g]||{}; fields[g].status().value = v.status||'NÃO VERIFICADA'; fields[g].validade().value = v.validade||''; fields[g].link().value = v.link||''; fields[g].obs().value = v.obs||''; }); modalCND.style.display='flex'; }
+  function closeModalCND(){ modalCND.style.display='none'; }
+  modalCND.addEventListener('click', (ev)=>{ if(ev.target===modalCND) closeModalCND(); }); modalCND.querySelector('#btnFechar').addEventListener('click', closeModalCND); modalCND.querySelector('#btnSalvar').addEventListener('click', ()=>{ if(!currentKey) return; GROUPS.forEach(g=>{ state.cnds[currentKey][g] = { status: fields[g].status().value, validade: fields[g].validade().value, link: fields[g].link().value, obs: fields[g].obs().value, atualizadoEm: new Date().toISOString() }; }); saveState(state); render(); closeModalCND(); showToast('Situações atualizadas'); }); modalCND.querySelector('#btnEditarEmpresa').addEventListener('click', ()=>{ closeModalCND(); openModalEmpresa(currentKey); }); modalCND.querySelector('#btnExcluirEmpresa').addEventListener('click', ()=>{ if(!currentKey) return; if(!confirm('Excluir este cadastro? Essa ação não pode ser desfeita.')) return; const idx=state.empresas.findIndex(x=> keyOf(x)===currentKey); if(idx>=0) state.empresas.splice(idx,1); delete state.cnds[currentKey]; saveState(state); render(); closeModalCND(); showToast('Cadastro excluído'); });
+
+  // Filtros e KPIs
+  let quick = null;
+  function rowStatus(key, g){ return (state.cnds[key] && state.cnds[key][g] && state.cnds[key][g].status) || 'NÃO VERIFICADA'; }
+  function cadastroTem(e, pred){ const k=keyOf(e); return GROUPS.some(g => pred(rowStatus(k,g))); }
+  function matchQuick(e){ if(quick==='REGULAR') return cadastroTem(e, s=>s==='REGULAR'); if(quick==='IRREGULAR') return cadastroTem(e, s=>s==='IRREGULAR'); if(quick==='ATENCAO') return cadastroTem(e, s=> (s==='OBS'||s==='NÃO VERIFICADA')); return true; }
+  function matchStatusFilter(e){ const v=statusFilter.value; if(!v) return true; if(v==='ATENCAO') return cadastroTem(e, s=> (s==='OBS'||s==='NÃO VERIFICADA')); if(v==='NAO_VERIFICADA') return cadastroTem(e, s=> s==='NÃO VERIFICADA'); if(v==='OBS') return cadastroTem(e, s=> s==='OBS'); return cadastroTem(e, s=> s===v); }
+  function matchAll(e){ const term = q.value.trim().toLowerCase(); const okTerm = !term || [e.empresa,e.cnpj,e.municipio,e.uf,e.inscricao_estadual].some(v=>String(v||'').toLowerCase().includes(term)); const okUF = !ufFilter.value || e.uf===ufFilter.value; return okTerm && okUF && matchStatusFilter(e) && matchQuick(e); }
+  function badgeClass(s){ return (s==='REGULAR')?'regular':(s==='IRREGULAR')?'irregular':((s==='OBS'||s==='NÃO VERIFICADA')?'atencao':'nao-verificada'); }
+  function statusBadge(s){ return `<span class="badge ${badgeClass(s)}">${(s==='OBS'?'ATENÇÃO':s)}</span>`; }
+  function computeOverview(){ const totals={ cadastros: state.empresas.length, regular:0, irregular:0, atencao:0 }; state.empresas.forEach(e=>{ if(cadastroTem(e, s=> s==='REGULAR')) totals.regular++; if(cadastroTem(e, s=> s==='IRREGULAR')) totals.irregular++; if(cadastroTem(e, s=> (s==='OBS'||s==='NÃO VERIFICADA'))) totals.atencao++; }); return totals; }
+  function renderKPIs(){ const t=computeOverview(); const k=document.getElementById('kpis'); k.innerHTML = `
+      <div class="card"><h4>Total de cadastros</h4><div class="v">${t.cadastros}</div></div>
+      <div class="card kpi ${quick==='REGULAR'?'active':''}" id="kpi-regular"><h4><span class="kpi-dot dot-regular"></span> CNDs REGULAR</h4><div class="v">${t.regular}</div></div>
+      <div class="card kpi ${quick==='ATENCAO'?'active':''}" id="kpi-atencao"><h4><span class="kpi-dot dot-atencao"></span> CNDs ATENÇÃO</h4><div class="v">${t.atencao}</div></div>
+      <div class="card kpi ${quick==='IRREGULAR'?'active':''}" id="kpi-irregular"><h4><span class="kpi-dot dot-irregular"></span> CNDs IRREGULAR</h4><div class="v">${t.irregular}</div></div>`; $('#kpi-regular').addEventListener('click', ()=>{ quick = (quick==='REGULAR')?null:'REGULAR'; statusFilter.value=''; renderTable(); renderKPIs(); }); $('#kpi-atencao').addEventListener('click', ()=>{ quick = (quick==='ATENCAO')?null:'ATENCAO'; statusFilter.value=''; renderTable(); renderKPIs(); }); $('#kpi-irregular').addEventListener('click', ()=>{ quick = (quick==='IRREGULAR')?null:'IRREGULAR'; statusFilter.value=''; renderTable(); renderKPIs(); }); }
+  function renderTable(){ const rows = state.empresas.filter(matchAll).map(e=>{ const key = keyOf(e); const f=rowStatus(key,'federal'); const est=rowStatus(key,'estadual'); const mun=rowStatus(key,'municipal'); return `<tr>
+        <td>${e.empresa}</td>
+        <td>${fmtCNPJ(e.cnpj)}</td>
+        <td>${e.municipio}</td>
+        <td>${e.uf}</td>
+        <td>${e.inscricao_estadual||'—'}</td>
+        <td>${statusBadge(f)}</td>
+        <td>${statusBadge(est)}</td>
+        <td>${statusBadge(mun)}</td>
+        <td class=\"row-actions\">
+          <button data-key=\"${key}\" class=\"btnEditar btn-ghost\">Editar CND</button>
+          <button data-key=\"${key}\" class=\"btnEditEmp btn-ghost\">Editar</button>
+        </td>
+      </tr>`; }).join(''); tblBody.innerHTML = rows || '<tr><td colspan="9">Nenhum registro encontrado.</td></tr>'; $$('.btnEditar').forEach(b=> b.addEventListener('click', ()=> openModalCND(b.dataset.key)) ); $$('.btnEditEmp').forEach(b=> b.addEventListener('click', ()=> openModalEmpresa(b.dataset.key)) ); }
+  function render(){ renderKPIs(); renderTable(); }
+  q.addEventListener('input', render); ufFilter.addEventListener('change', render); statusFilter.addEventListener('change', ()=>{ quick=null; render(); }); document.getElementById('btnLimpar').addEventListener('click', ()=>{ q.value=''; ufFilter.value=''; statusFilter.value=''; quick=null; render(); });
+  document.getElementById('btnExport').addEventListener('click', ()=>{ const data = JSON.stringify(state, null, 2); const blob = new Blob([data], {type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'cnds_backup_v3.json'; a.click(); URL.revokeObjectURL(url); });
+  document.getElementById('btnImport').addEventListener('click', ()=> document.getElementById('importFile').click());
+  document.getElementById('importFile').addEventListener('change', (ev)=>{ const file=ev.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload = ()=>{ try{ const obj=JSON.parse(reader.result); if(!obj.empresas||!obj.cnds) throw new Error('Estrutura inválida'); state=obj; saveState(state); render(); showToast('Backup carregado'); }catch(e){ alert('Arquivo inválido'); } }; reader.readAsText(file); });
+  document.getElementById('btnNovo').addEventListener('click', ()=> openModalEmpresa(null));
+  render();
+})();
+  </script>
+</body>
+</html>
