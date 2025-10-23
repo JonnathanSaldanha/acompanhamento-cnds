@@ -4,27 +4,29 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Acompanhamento de CNDs — Eletrobras v3.1</title>
+<title>Acompanhamento de CNDs</title>
 <style>
 :root{--bg:#F7F9FB;--card:#FFFFFF;--line:#E5E7EB;--muted:#64748B;--text:#0F172A;--ok:#16A34A;--warn:#F59E0B;--bad:#DC2626;--na:#64748B;--acc1:#0FA3E4;--acc2:#19B66A;--shadow:0 6px 20px rgba(15,23,42,.08)}
 *{box-sizing:border-box}
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",sans-serif}
-header{position:sticky;top:0;background:linear-gradient(90deg,var(--acc1),var(--acc2));color:#fff;padding:14px 20px;display:flex;align-items:center;gap:12px;z-index:10;box-shadow:var(--shadow)}
+header{position:sticky;top:0;background:linear-gradient(90deg,var(--acc1),var(--acc2));color:#fff;padding:14px 20px;display:flex;align-items:center;gap:12px;z-index:20;box-shadow:var(--shadow)}
 .logo{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#fff,rgba(255,255,255,.5));opacity:.9}
-.title{font-size:16px;font-weight:700;letter-spacing:.2px}
+.title{font-size:16px;font-weight:800;letter-spacing:.2px}
+nav.tabs{position:sticky;top:58px;background:#fff;border-bottom:1px solid var(--line);z-index:19;display:flex;gap:6px;padding:8px 20px}
+.tabs button{background:#fff;border:1px solid var(--line);padding:8px 12px;border-radius:999px;cursor:pointer}
+.tabs button.active{background:linear-gradient(90deg,var(--acc1),var(--acc2));color:#fff;border:none}
 main{padding:18px 20px;max-width:1200px;margin:auto}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:12px 0}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:var(--shadow);transition:transform .2s ease, box-shadow .2s ease}
 .card:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(15,23,42,.12)}
 .card h4{margin:0 4px 8px;color:var(--muted);font-weight:700;letter-spacing:.2px;display:flex;align-items:center;gap:6px}
 .card .v{font-size:26px;font-weight:900}
 .card.kpi{cursor:pointer;position:relative;overflow:hidden}
-.card.kpi:active{transform:translateY(0)}
 .card.kpi.active{outline:2px solid var(--acc1)}
 .controls{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 16px;align-items:center}
 .controls .sep{height:32px;border-left:1px solid var(--line)}
-input[type="search"],select,button{background:#fff;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 12px;box-shadow:var(--shadow)}
+input[type="search"],select,button{background:#fff;color:#0F172A;border:1px solid var(--line);border-radius:10px;padding:9px 12px;box-shadow:var(--shadow)}
 button{cursor:pointer;transition:transform .15s ease, box-shadow .2s ease}
 button:hover{transform:translateY(-1px)}
 .btn-primary{background:linear-gradient(90deg,var(--acc1),var(--acc2));color:#fff;border:none}
@@ -40,8 +42,8 @@ button:hover{transform:translateY(-1px)}
 .table tbody tr{animation:fadeInUp .35s ease both}
 .row-actions{display:flex;gap:6px}
 .sub{color:var(--muted);font-size:12px;margin-top:2px}
-.modal{position:fixed;inset:0;background:rgba(2,6,23,.45);display:none;align-items:center;justify-content:center;padding:20px}
-.modal .box{width:min(840px,100%);background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);animation:scaleIn .18s ease}
+.modal{position:fixed;inset:0;background:rgba(2,6,23,.45);display:none;align-items:center;justify-content:center;padding:20px;z-index:30}
+.modal .box{width:min(860px,100%);background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);animation:scaleIn .18s ease}
 .modal h3{margin:0 0 12px}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
@@ -49,35 +51,50 @@ button:hover{transform:translateY(-1px)}
 label{color:var(--muted);font-weight:600}
 hr.sep{border:none;border-top:1px solid var(--line);margin:12px 0}
 .footer{margin-top:20px;color:var(--muted);font-size:12px}
-.toast{position:fixed;right:20px;bottom:20px;background:#111827;color:#fff;padding:10px 14px;border-radius:10px;box-shadow:var(--shadow);opacity:0;transform:translateY(10px);transition:all .25s ease}
+.toast{position:fixed;right:20px;bottom:20px;background:#111827;color:#fff;padding:10px 14px;border-radius:10px;box-shadow:var(--shadow);opacity:0;transform:translateY(10px);transition:all .25s ease;z-index:40}
 .toast.show{opacity:1;transform:translateY(0)}
 .kpi-dot{display:inline-block;width:10px;height:10px;border-radius:999px}
 .dot-regular{background:#16A34A}
 .dot-atencao{background:#F59E0B}
 .dot-irregular{background:#DC2626}
+.chart{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;box-shadow:var(--shadow)}
+.chart h5{margin:0 0 8px;color:var(--muted)}
+.canvas{width:100%;height:280px}
+.grid-2c{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.banner{background:#ecfeff;border:1px solid #a5f3fc;color:#064e3b;padding:10px 12px;border-radius:12px;margin:12px 0}
+.banner b{color:#065f46}
 @keyframes fadeInUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @keyframes scaleIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
-@media(max-width:1024px){.kpis{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:640px){.grid-3{grid-template-columns:1fr}.grid-2{grid-template-columns:1fr}}
+@media(max-width:1024px){.kpis{grid-template-columns:repeat(2,1fr)}.grid-2c{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
   <header>
     <div class="logo" aria-hidden="true"></div>
-    <div class="title">Acompanhamento de CNDs — Manual</div>
+    <div class="title">Acompanhamento de CNDs</div>
     <div style="margin-left:auto" class="row-actions">
       <button id="btnNovo" class="btn-primary">+ Novo cadastro</button>
       <button id="btnExportXLS" class="btn-ghost">Exportar Excel (.xls)</button>
       <button id="btnExportCSV" class="btn-ghost">Exportar CSV</button>
       <button id="btnExport" class="btn-ghost">Salvar backup (JSON)</button>
+      <button id="btnAutoBackup" class="btn-ghost">Ativar backup automático (arquivo)</button>
       <button id="btnImport" class="btn-ghost">Carregar backup</button>
+      <button id="btnRescue" class="btn-ghost">Recuperar dados anteriores</button>
       <input id="importFile" type="file" accept="application/json" hidden />
     </div>
   </header>
+  <nav class="tabs">
+    <button class="active" data-tab="lista">Lista</button>
+    <button data-tab="dashboard">Dashboard</button>
+  </nav>
   <main>
+    <div class="banner" id="warn">
+      <b>Proteção de dados:</b> esta versão usa a chave estável <code>cnds_data</code>. Se existir dado em versões antigas (<code>cnds_data_v2</code>, <code>_v3</code>, <code>_v3_1</code>, <code>_v3_2</code>), clique em <b>Recuperar dados anteriores</b> e consolide tudo aqui.
+    </div>
+
     <section class="kpis" id="kpis"></section>
 
-    <div class="controls">
+    <div class="controls" id="controls">
       <input type="search" id="q" placeholder="Buscar por empresa, CNPJ, município, UF ou IE…"/>
       <select id="ufFilter"><option value="">UF (todas)</option></select>
       <select id="statusFilter"><option value="">Status (todos)</option><option value="REGULAR">REGULAR</option><option value="IRREGULAR">IRREGULAR</option><option value="ATENCAO">ATENÇÃO (OBS ou NÃO VERIFICADA)</option><option value="NAO_VERIFICADA">NÃO VERIFICADA</option><option value="OBS">OBS (antigo)</option></select>
@@ -87,73 +104,76 @@ hr.sep{border:none;border-top:1px solid var(--line);margin:12px 0}
       <button id="btnLimpar" class="btn-ghost">Limpar filtros</button>
     </div>
 
-    <table class="table" id="tbl">
-      <thead id="thead"></thead>
-      <tbody></tbody>
-    </table>
+    <section id="view-lista">
+      <table class="table" id="tbl">
+        <thead id="thead"></thead>
+        <tbody></tbody>
+      </table>
+      <div class="footer">Aba <b>Lista</b>: CRUD completo, exportações (Excel/CSV), backup JSON e recuperação embutida. Dados ficam no <b>LocalStorage</b> (chave: <code>cnds_data</code>).</div>
+    </section>
 
-    <div class="footer">Modo <b>Cadastros</b>: cada linha do Excel equivale a um item. Modo <b>CNPJ</b>: linha única por CNPJ com agregação de status. Dados locais + backup em JSON. Exportação para Excel (XLS) e CSV.</div>
+    <section id="view-dashboard" style="display:none">
+      <div class="grid-2c">
+        <div class="chart">
+          <h5>Distribuição por Status (após filtros e modo)</h5>
+          <canvas id="chartStatus" class="canvas"></canvas>
+        </div>
+        <div class="chart">
+          <h5>Cadastros por UF (Top 12)</h5>
+          <canvas id="chartUF" class="canvas"></canvas>
+        </div>
+      </div>
+      <div class="footer">Aba <b>Dashboard</b>: gráficos locais (Canvas 2D) sem dependências externas, sincronizados com filtros e modo.</div>
+    </section>
   </main>
 
   <div class="toast" id="toast">Alterações salvas</div>
 
   <script>
-window.EMPRESAS_DATA = [{"empresa": "ELETRONORTE", "cnpj": "00357038003484", "municipio": "RIO BRANCO", "uf": "AC", "inscricao_estadual": "100094400195"}, {"empresa": "CHESF", "cnpj": "33541368027588", "municipio": "RIO LARGO", "uf": "AL", "inscricao_estadual": "240031776"}, {"empresa": "ELETRONORTE", "cnpj": "00357038016209", "municipio": "ANAMA", "uf": "AM", "inscricao_estadual": "54385881"}, {"empresa": "ELETRONORTE", "cnpj": "00357038016381", "municipio": "ANORI", "uf": "AM", "inscricao_estadual": "54385890"}, {"empresa": "ELETRONORTE", "cnpj": "00357038016110", "municipio": "CAAPIRANGA", "uf": "AM", "inscricao_estadual": "54385865"}, {"empresa": "ELETRONORTE", "cnpj": "00357038016462", "municipio": "CODAJAS", "uf": "AM", "inscricao_estadual": "54385911"}, {"empresa": "ELETRONORTE", "cnpj": "00357038013447", "municipio": "MANAUS", "uf": "AM", "inscricao_estadual": "42938155"}, {"empresa": "ELETRONORTE", "cnpj": "00357038015490", "municipio": "MANAUS", "uf": "AM", "inscricao_estadual": "54333016"}, {"empresa": "ELETRONORTE", "cnpj": "00357038015652", "municipio": "MANAUS", "uf": "AM", "inscricao_estadual": "54333040"}, {"empresa": "ELETRONORTE", "cnpj": "00357038015733", "municipio": "MANAUS", "uf": "AM", "inscricao_estadual": "54333059"}, {"empresa": "ELETRONORTE", "cnpj": "00357038015814", "municipio": "MANAUS", "uf": "AM", "inscricao_estadual": "54333083"}, {"empresa": "ELETRONORTE", "cnpj": "00357038016039", "municipio": "MANAUS", "uf": "AM", "inscricao_estadual": "54334470"}, {"empresa": "ELETRONORTE", "cnpj": "00357038015571", "municipio": "PRESIDENTE FIGUEIREDO", "uf": "AM", "inscricao_estadual": "54333032"}, {"empresa": "ELETRONORTE", "cnpj": "00357038000540", "municipio": "SANTANA", "uf": "AP", "inscricao_estadual": "30061399"}, {"empresa": "ELETRONORTE", "cnpj": "00357038007200", "municipio": "MACAPA", "uf": "AP", "inscricao_estadual": "30045237"}, {"empresa": "CHESF", "cnpj": "33541368000469", "municipio": "SALVADOR", "uf": "BA", "inscricao_estadual": "623513"}, {"empresa": "CHESF", "cnpj": "33541368027740", "municipio": "FORTALEZA", "uf": "CE", "inscricao_estadual": "61049964"}, {"empresa": "ELETROBRAS", "cnpj": "00001180002927", "municipio": "BRASILIA", "uf": "DF", "inscricao_estadual": "735762800256"}, {"empresa": "ELETRONORTE", "cnpj": "00357038000116", "municipio": "BRASILIA", "uf": "DF", "inscricao_estadual": "732619900183"}, {"empresa": "ELETROBRAS", "cnpj": "00001180005942", "municipio": "SERRA", "uf": "ES", "inscricao_estadual": "84176512"}, {"empresa": "ELETROBRAS", "cnpj": "00001180002099", "municipio": "ANAPOLIS", "uf": "GO", "inscricao_estadual": "200839462"}, {"empresa": "ELETROBRAS", "cnpj": "00001180002331", "municipio": "BARRO ALTO", "uf": "GO", "inscricao_estadual": "200839446"}, {"empresa": "ELETROBRAS", "cnpj": "00001180003141", "municipio": "CACHOEIRA DOURADA", "uf": "GO", "inscricao_estadual": "200839438"}, {"empresa": "ELETROBRAS", "cnpj": "00001180003303", "municipio": "CALDAS NOVAS", "uf": "GO", "inscricao_estadual": "200843710"}, {"empresa": "ELETROBRAS", "cnpj": "00001180004709", "municipio": "MINACU", "uf": "GO", "inscricao_estadual": "200839454"}, {"empresa": "ELETROBRAS", "cnpj": "00001180004890", "municipio": "NIQUELANDIA", "uf": "GO", "inscricao_estadual": "200843702"}, {"empresa": "ELETROBRAS", "cnpj": "00001180005276", "municipio": "RIO VERDE", "uf": "GO", "inscricao_estadual": "200843680"}, {"empresa": "ELETROBRAS", "cnpj": "00001180005780", "municipio": "APARECIDA DE GOIANIA", "uf": "GO", "inscricao_estadual": "200843648"}, {"empresa": "ELETROBRAS", "cnpj": "00001180006086", "municipio": "APARECIDA DE GOIANIA", "uf": "GO", "inscricao_estadual": "200919784"}, {"empresa": "ELETRONORTE", "cnpj": "00357038004960", "municipio": "SAO LUIS", "uf": "MA", "inscricao_estadual": "120852284"}, {"empresa": "CHESF", "cnpj": "33541368006823", "municipio": "SAO JOAO DOS PATOS", "uf": "MA", "inscricao_estadual": "126462003"}, {"empresa": "ELETROBRAS", "cnpj": "00001180002765", "municipio": "BELO HORIZONTE", "uf": "MG", "inscricao_estadual": "47329590169"}, {"empresa": "ELETROBRAS", "cnpj": "00001180004385", "municipio": "ITURAMA", "uf": "MG", "inscricao_estadual": "47329590088"}, {"empresa": "ELETROBRAS", "cnpj": "00001180005438", "municipio": "SAO JOSE DA BARRA", "uf": "MG", "inscricao_estadual": "47329590320"}, {"empresa": "TMT", "cnpj": "17261505000374", "municipio": "FRONTEIRA", "uf": "MG", "inscricao_estadual": "24645400029"}, {"empresa": "ELETROSUL", "cnpj": "02016507003850", "municipio": "CAMPO GRANDE", "uf": "MS", "inscricao_estadual": "284459771"}, {"empresa": "ELETROBRAS", "cnpj": "00001180003494", "municipio": "CHAPADA DOS GUIMARAES", "uf": "MT", "inscricao_estadual": "140225706"}, {"empresa": "ELETROBRAS", "cnpj": "00001180007481", "municipio": "NOVA CANAA DO NORTE", "uf": "MT", "inscricao_estadual": "141113570"}, {"empresa": "ELETRONORTE", "cnpj": "00357038001198", "municipio": "NOBRES", "uf": "MT", "inscricao_estadual": "133018032"}, {"empresa": "ELETRONORTE", "cnpj": "00357038002240", "municipio": "CUIABA", "uf": "MT", "inscricao_estadual": "131141317"}, {"empresa": "ELETRONORTE", "cnpj": "00357038002321", "municipio": "RONDONOPOLIS", "uf": "MT", "inscricao_estadual": "131142712"}, {"empresa": "ELETRONORTE", "cnpj": "00357038002593", "municipio": "ALTO ARAGUAIA", "uf": "MT", "inscricao_estadual": "131123017"}, {"empresa": "ELETRONORTE", "cnpj": "00357038003301", "municipio": "CUIABA", "uf": "MT", "inscricao_estadual": "131163647"}, {"empresa": "ELETRONORTE", "cnpj": "00357038006580", "municipio": "JAURU", "uf": "MT", "inscricao_estadual": "133018105"}, {"empresa": "ELETRONORTE", "cnpj": "00357038009334", "municipio": "RIBEIRAOZINHO", "uf": "MT", "inscricao_estadual": "131459732"}, {"empresa": "ELETRONORTE", "cnpj": "00357038011150", "municipio": "NOVA MUTUM", "uf": "MT", "inscricao_estadual": "131764209"}, {"empresa": "ELETRONORTE", "cnpj": "00357038011231", "municipio": "SORRISO", "uf": "MT", "inscricao_estadual": "131764110"}, {"empresa": "ELETRONORTE", "cnpj": "00357038011312", "municipio": "SINOP", "uf": "MT", "inscricao_estadual": "131764101"}, {"empresa": "ELETRONORTE", "cnpj": "00357038014257", "municipio": "LUCAS DO RIO VERDE", "uf": "MT", "inscricao_estadual": "134640020"}, {"empresa": "ELETRONORTE", "cnpj": "00357038015067", "municipio": "SINOP", "uf": "MT", "inscricao_estadual": "135931100"}, {"empresa": "ELETRONORTE", "cnpj": "00357038015229", "municipio": "VARZEA GRANDE", "uf": "MT", "inscricao_estadual": "136293743"}, {"empresa": "ELETRONORTE", "cnpj": "00357038016896", "municipio": "PEDRA PRETA", "uf": "MT", "inscricao_estadual": "139616420"}, {"empresa": "ELETRONORTE", "cnpj": "00357038003646", "municipio": "TUCURUI", "uf": "PA", "inscricao_estadual": "151278598"}, {"empresa": "CHESF", "cnpj": "33541368003646", "municipio": "CAMPINA GRANDE", "uf": "PB", "inscricao_estadual": "160263638"}, {"empresa": "CHESF", "cnpj": "33541368000116", "municipio": "RECIFE", "uf": "PE", "inscricao_estadual": "558400"}, {"empresa": "CHESF", "cnpj": "33541368022276", "municipio": "RECIFE", "uf": "PE", "inscricao_estadual": "56708530"}, {"empresa": "CHESF", "cnpj": "33541368018759", "municipio": "TERESINA", "uf": "PI", "inscricao_estadual": "193004100"}, {"empresa": "ELETROBRAS", "cnpj": "00001180003575", "municipio": "FOZ DO IGUACU", "uf": "PR", "inscricao_estadual": "9103163207"}, {"empresa": "ELETROBRAS", "cnpj": "00001180004628", "municipio": "MANOEL RIBAS", "uf": "PR", "inscricao_estadual": "9103199147"}, {"empresa": "ELETROSUL", "cnpj": "02016507004822", "municipio": "CURITIBA", "uf": "PR", "inscricao_estadual": "9083696700"}, {"empresa": "ELETROSUL", "cnpj": "02016507006361", "municipio": "LONDRINA", "uf": "PR", "inscricao_estadual": "9087480000"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000126", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "13944520"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000126", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "0109147500192"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000126", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "049022890"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000126", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "71768173"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000126", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "128289899"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000126", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "47329590240"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000126", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "169048896"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000126", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "113583354"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000126", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "203059255"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000126", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "6835996"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000126", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "9000082442"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000207", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "77410805"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000983", "municipio": "RESENDE", "uf": "RJ", "inscricao_estadual": "13964912"}, {"empresa": "ELETROBRAS", "cnpj": "00001180001017", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "13964920"}, {"empresa": "ELETROBRAS", "cnpj": "00001180001106", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "13964939"}, {"empresa": "ELETROBRAS", "cnpj": "00001180001289", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "13964947"}, {"empresa": "ELETROBRAS", "cnpj": "00001180001440", "municipio": "NOVA IGUACU", "uf": "RJ", "inscricao_estadual": "13964963"}, {"empresa": "ELETROBRAS", "cnpj": "00001180001602", "municipio": "ANGRA DOS REIS", "uf": "RJ", "inscricao_estadual": "13965722"}, {"empresa": "ELETROBRAS", "cnpj": "00001180001793", "municipio": "ITATIAIA", "uf": "RJ", "inscricao_estadual": "13965730"}, {"empresa": "ELETROBRAS", "cnpj": "00001180001874", "municipio": "SAPUCAIA", "uf": "RJ", "inscricao_estadual": "13965749"}, {"empresa": "ELETROBRAS", "cnpj": "00001180006400", "municipio": "CAMPOS DOS GOYTACAZES", "uf": "RJ", "inscricao_estadual": "14109129"}, {"empresa": "TMT", "cnpj": "17261505000102", "municipio": "RIO DE JANEIRO", "uf": "RJ", "inscricao_estadual": "79854255"}, {"empresa": "CHESF", "cnpj": "33541368003484", "municipio": "NATAL", "uf": "RN", "inscricao_estadual": "200521071"}, {"empresa": "ELETRONORTE", "cnpj": "00357038003999", "municipio": "PORTO VELHO", "uf": "RO", "inscricao_estadual": "21466"}, {"empresa": "ELETRONORTE", "cnpj": "00357038016977", "municipio": "PORTO VELHO", "uf": "RO", "inscricao_estadual": "6740502"}, {"empresa": "ELETRONORTE", "cnpj": "00357038011908", "municipio": "BOA VISTA", "uf": "RR", "inscricao_estadual": "240015704"}, {"empresa": "ELETROSUL", "cnpj": "02016507000320", "municipio": "GRAVATAI", "uf": "RS", "inscricao_estadual": "570387140"}, {"empresa": "ELETROSUL", "cnpj": "02016507002455", "municipio": "ROQUE GONZALES", "uf": "RS", "inscricao_estadual": "2200012734"}, {"empresa": "ELETROSUL", "cnpj": "02016507002960", "municipio": "GRAVATAI", "uf": "RS", "inscricao_estadual": "570347238"}, {"empresa": "ELETROSUL", "cnpj": "02016507003265", "municipio": "SANTANA DO LIVRAMENTO", "uf": "RS", "inscricao_estadual": "1060160380"}, {"empresa": "ELETROSUL", "cnpj": "02016507000169", "municipio": "FLORIANOPOLIS", "uf": "SC", "inscricao_estadual": "260405744"}, {"empresa": "ELETROSUL", "cnpj": "02016507000169", "municipio": "FLORIANOPOLIS", "uf": "SC", "inscricao_estadual": "48092780013"}, {"empresa": "ELETROSUL", "cnpj": "02016507004407", "municipio": "RIO FORTUNA", "uf": "SC", "inscricao_estadual": "260377597"}, {"empresa": "ELETROSUL", "cnpj": "02016507005128", "municipio": "CAMPO BELO DO SUL", "uf": "SC", "inscricao_estadual": "260377813"}, {"empresa": "CHESF", "cnpj": "33541368031771", "municipio": "CANINDE DE SAO FRANCISCO", "uf": "SE", "inscricao_estadual": "270683259"}, {"empresa": "ELETROBRAS", "cnpj": "00001180000800", "municipio": "SAO PAULO", "uf": "SP", "inscricao_estadual": "137774473115"}, {"empresa": "ELETROBRAS", "cnpj": "00001180002250", "municipio": "ARARAQUARA", "uf": "SP", "inscricao_estadual": "181604960112"}, {"empresa": "ELETROBRAS", "cnpj": "00001180003222", "municipio": "CACHOEIRA PAULISTA", "uf": "SP", "inscricao_estadual": "235061781110"}, {"empresa": "ELETROBRAS", "cnpj": "00001180003907", "municipio": "IBIUNA", "uf": "SP", "inscricao_estadual": "345176147112"}, {"empresa": "ELETROBRAS", "cnpj": "00001180004032", "municipio": "ITABERA", "uf": "SP", "inscricao_estadual": "365050548110"}, {"empresa": "ELETROBRAS", "cnpj": "00001180004202", "municipio": "ITAQUAQUECETUBA", "uf": "SP", "inscricao_estadual": "379607888110"}, {"empresa": "ELETROBRAS", "cnpj": "00001180005004", "municipio": "PEDREGULHO", "uf": "SP", "inscricao_estadual": "518040356113"}, {"empresa": "ELETROBRAS", "cnpj": "00001180005519", "municipio": "SAO PAULO", "uf": "SP", "inscricao_estadual": "125877069118"}, {"empresa": "ELETROBRAS", "cnpj": "00001180006752", "municipio": "MOGI DAS CRUZES", "uf": "SP", "inscricao_estadual": "454989946110"}, {"empresa": "ELETROBRAS", "cnpj": "00001180006914", "municipio": "CAMPINAS", "uf": "SP", "inscricao_estadual": "132534093111"}, {"empresa": "ELETROBRAS", "cnpj": "00001180007058", "municipio": "MOGI DAS CRUZES", "uf": "SP", "inscricao_estadual": "454991310118"}, {"empresa": "ELETROBRAS", "cnpj": "00001180007139", "municipio": "MOGI DAS CRUZES", "uf": "SP", "inscricao_estadual": "454993010114"}, {"empresa": "ELETRONORTE", "cnpj": "00357038014508", "municipio": "ARARAQUARA", "uf": "SP", "inscricao_estadual": "181183403110"}, {"empresa": "TMT", "cnpj": "17261505000293", "municipio": "ASSIS", "uf": "SP", "inscricao_estadual": "189208957119"}, {"empresa": "ELETROBRAS", "cnpj": "00001180003737", "municipio": "GURUPI", "uf": "TO", "inscricao_estadual": "295361190"}, {"empresa": "ELETRONORTE", "cnpj": "00357038012122", "municipio": "MIRACEMA DO TOCANTINS", "uf": "TO", "inscricao_estadual": "290599539"}];
+{js_data}
   </script>
   <script>
 (function(){
+  // ===== Constantes & helpers =====
   const STATUSES = ['REGULAR','IRREGULAR','OBS','NÃO VERIFICADA'];
   const GROUPS = ['federal','estadual','municipal'];
-  const STORAGE_KEY = 'cnds_data_v3_1';
+  const STORAGE_MASTER_KEY = 'cnds_data'; // chave estável definitiva
+  const LEGACY_KEYS = ['cnds_data_v3_2','cnds_data_v3_1','cnds_data_v3','cnds_data_v2'];
 
   const $ = (sel,root=document)=>root.querySelector(sel); const $$=(sel,root=document)=>Array.from(root.querySelectorAll(sel));
   const fmtCNPJ = c => c && c.length===14 ? c.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,'$1.$2.$3/$4-$5') : c;
   const onlyDigits = s => String(s||'').replace(/\D/g,'');
   const norm = s => String(s||'').trim().toUpperCase();
-  const uiStatus = s => s==='OBS' ? 'ATENÇÃO' : s;
-  const isAtencao = s => s==='OBS' || s==='NÃO VERIFICADA';
+  const uiStatus = s => s==='OBS' ? 'ATENÇÃO' : s; const isAtencao = s => s==='OBS' || s==='NÃO VERIFICADA';
   const showToast = (msg)=>{ const t=$('#toast'); t.textContent=msg||'Alterações salvas'; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 1600); };
-
   const keyOf = (e)=> [e.cnpj, norm(e.uf), norm(e.municipio), norm(e.inscricao_estadual)].join('|');
 
-  function loadState(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}'); }catch(e){ return {}; } }
-  function saveState(state){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  // ===== Estado & recuperação =====
+  function load(key){ try{ return JSON.parse(localStorage.getItem(key)||'null'); }catch(e){ return null; } }
+  function save(key, value){ localStorage.setItem(key, JSON.stringify(value)); }
 
-  function seedFromEmbed(){
-    const empresas = (window.EMPRESAS_DATA||[]).filter(e=>/^\d{14}$/.test(onlyDigits(e.cnpj))).map(e=>({
-      empresa: e.empresa||'', cnpj: onlyDigits(e.cnpj), municipio: e.municipio||'', uf: e.uf||'', inscricao_estadual: e.inscricao_estadual||''
-    }));
-    const cnds = {}; empresas.forEach(e=> cnds[keyOf(e)] = {federal:{status:'NÃO VERIFICADA'},estadual:{status:'NÃO VERIFICADA'},municipal:{status:'NÃO VERIFICADA'}});
-    return {empresas, cnds};
-  }
+  function seedFromEmbed(){ const empresas=(window.EMPRESAS_DATA||[]).filter(e=>/^\d{14}$/.test(onlyDigits(e.cnpj))).map(e=>({empresa:e.empresa||'',cnpj:onlyDigits(e.cnpj),municipio:e.municipio||'',uf:e.uf||'',inscricao_estadual:e.inscricao_estadual||''})); const cnds={}; empresas.forEach(e=> cnds[keyOf(e)]={federal:{status:'NÃO VERIFICADA'},estadual:{status:'NÃO VERIFICADA'},municipal:{status:'NÃO VERIFICADA'}}); return {empresas, cnds, schemaVersion:3}; }
 
-  // Migração de formatos antigos (por CNPJ)
-  function migrateIfNeeded(state){
-    const keys = Object.keys(state.cnds||{});
-    if(keys.length>0 && keys.every(k=>/^\d{14}$/.test(k))){
-      const byCNPJ = {};
-      (state.empresas||[]).forEach(e=>{ (byCNPJ[e.cnpj] ||= []).push(e); });
-      const newCnds={};
-      keys.forEach(cnpj=>{ const items = byCNPJ[cnpj]||[]; items.forEach(e=>{ newCnds[keyOf(e)] = state.cnds[cnpj]; }); });
-      state.cnds = newCnds;
-    }
-    return state;
-  }
+  function migrateIfNeeded(state){ if(!state||!state.cnds||!state.empresas) return state; const keys=Object.keys(state.cnds||{}); if(keys.length>0 && keys.every(k=>/^\d{14}$/.test(k))){ const by={}; (state.empresas||[]).forEach(e=>{ (by[e.cnpj] ||= []).push(e); }); const newCnds={}; keys.forEach(cnpj=>{ (by[cnpj]||[]).forEach(e=>{ newCnds[keyOf(e)] = state.cnds[cnpj]; }); }); state.cnds=newCnds; state.schemaVersion=3; } return state; }
 
-  let state = loadState();
-  if(!state.empresas || !state.cnds){ state = seedFromEmbed(); saveState(state); }
-  else { state = migrateIfNeeded(state); saveState(state); }
+  function scanCandidates(){ const found=[]; if(localStorage.getItem(STORAGE_MASTER_KEY)) found.push({key:STORAGE_MASTER_KEY, label:'Atual (cnds_data)'}); LEGACY_KEYS.forEach(k=>{ if(localStorage.getItem(k)) found.push({key:k,label:'Antigo: '+k}); }); return found; }
 
-  const tblHead = $('#thead');
-  const tblBody = $('#tbl tbody');
-  const q = $('#q'); const ufFilter = $('#ufFilter'); const statusFilter = $('#statusFilter'); const modeSel = $('#mode');
-  const ALL_UF = ['AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MG','MS','MT','PA','PB','PE','PI','PR','RJ','RN','RO','RR','RS','SC','SE','SP','TO'];
-  ufFilter.innerHTML += ALL_UF.map(u=>`<option value="${u}">${u}</option>`).join('');
+  let state = load(STORAGE_MASTER_KEY);
+  if(!state){ const cands=scanCandidates(); if(cands.length){ promptRescue(cands); } else { state = seedFromEmbed(); save(STORAGE_MASTER_KEY, state); } }
 
-  // ===== Modais =====
-  const modalEmpresa = document.createElement('div');
-  modalEmpresa.className='modal';
-  modalEmpresa.innerHTML = `
+  function adoptAndPersist(obj, fromKey){ const migrated = migrateIfNeeded(obj); save(STORAGE_MASTER_KEY, migrated); state=migrated; showToast('Dados recuperados de '+fromKey+' → salvos em '+STORAGE_MASTER_KEY); renderAll(); }
+
+  function promptRescue(list){ const m=document.createElement('div'); m.className='modal'; m.id='rescueModal'; const rows=list.map(it=>{ const raw=load(it.key); const ok=!!(raw&&raw.empresas&&raw.cnds); const q=(raw&&raw.empresas&&raw.empresas.length)||0; return `<tr><td>${it.label}</td><td>${ok?q:'—'}</td><td>${ok?'OK':'Estrutura inválida'}</td><td style="text-align:right"><button data-k="${it.key}" ${ok?'':'disabled'}>Usar</button></td></tr>`; }).join(''); m.innerHTML=`<div class="box"><h3>Recuperar dados anteriores</h3><p>Escolha a origem que contém seus registros. Nada será sobrescrito sem sua confirmação.</p><table class="table"><thead><tr><th>Origem</th><th>Registros</th><th>Status</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan=4>Nenhum dado encontrado.</td></tr>'}</tbody></table><hr class="sep"/><div class="row-actions" style="justify-content:flex-end"><button id="rescueClose" class="btn-ghost">Fechar</button></div></div>`; document.body.appendChild(m); m.style.display='flex'; m.querySelectorAll('button[data-k]').forEach(b=> b.addEventListener('click', ()=>{ const key=b.getAttribute('data-k'); const src=load(key); if(src) adoptAndPersist(src, key); close(); })); function close(){ m.style.display='none'; m.remove(); } m.querySelector('#rescueClose').addEventListener('click', close); }
+
+  // ===== Tabs =====
+  const tabs = $$('.tabs button'); const viewLista=$('#view-lista'); const viewDash=$('#view-dashboard');
+  tabs.forEach(b=> b.addEventListener('click', ()=>{ tabs.forEach(x=>x.classList.remove('active')); b.classList.add('active'); const tab=b.dataset.tab; if(tab==='lista'){ viewLista.style.display='block'; viewDash.style.display='none'; } else { viewLista.style.display='none'; viewDash.style.display='block'; renderCharts(); } window.scrollTo({top:0,behavior:'smooth'}); }));
+
+  // ===== UI refs =====
+  const tblHead=$('#thead'); const tblBody=$('#tbl tbody'); const q=$('#q'); const ufFilter=$('#ufFilter'); const statusFilter=$('#statusFilter'); const modeSel=$('#mode'); const ALL_UF=['AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MG','MS','MT','PA','PB','PE','PI','PR','RJ','RN','RO','RR','RS','SC','SE','SP','TO']; ufFilter.innerHTML += ALL_UF.map(u=>`<option value="${u}">${u}</option>`).join('');
+
+  // ===== Modais CRUD =====
+  const modalEmpresa = document.createElement('div'); modalEmpresa.className='modal'; modalEmpresa.innerHTML = `
     <div class="box">
       <h3 id="mETitle">Novo cadastro</h3>
       <div class="grid-2">
@@ -171,38 +191,14 @@ window.EMPRESAS_DATA = [{"empresa": "ELETRONORTE", "cnpj": "00357038003484", "mu
           <button id="me_save" class="btn-primary">Salvar</button>
         </div>
       </div>
-    </div>`;
-  document.body.appendChild(modalEmpresa);
+    </div>`; document.body.appendChild(modalEmpresa);
 
-  let editingKey = null;
-  function openModalEmpresa(key){
-    editingKey = key||null; $('#mETitle').textContent = editingKey ? 'Editar cadastro' : 'Novo cadastro';
-    const e = editingKey ? state.empresas.find(x=> keyOf(x)===editingKey) : {empresa:'',cnpj:'',municipio:'',uf:'',inscricao_estadual:''};
-    $('#me_empresa').value = e.empresa||''; $('#me_cnpj').value = e.cnpj||''; $('#me_municipio').value = e.municipio||''; $('#me_uf').value = e.uf||''; $('#me_ie').value = e.inscricao_estadual||'';
-    $('#me_extra').textContent = editingKey ? `Chave: ${editingKey}` : '';
-    modalEmpresa.style.display='flex';
-  }
+  let editingKey=null; function openModalEmpresa(key){ editingKey=key||null; $('#mETitle').textContent = editingKey ? 'Editar cadastro' : 'Novo cadastro'; const e = editingKey ? state.empresas.find(x=> keyOf(x)===editingKey) : {empresa:'',cnpj:'',municipio:'',uf:'',inscricao_estadual:''}; $('#me_empresa').value=e.empresa||''; $('#me_cnpj').value=e.cnpj||''; $('#me_municipio').value=e.municipio||''; $('#me_uf').value=e.uf||''; $('#me_ie').value=e.inscricao_estadual||''; $('#me_extra').textContent=editingKey?`Chave: ${editingKey}`:''; modalEmpresa.style.display='flex'; }
   function closeModalEmpresa(){ modalEmpresa.style.display='none'; }
-  modalEmpresa.addEventListener('click', (ev)=>{ if(ev.target===modalEmpresa) closeModalEmpresa(); });
-  modalEmpresa.querySelector('#me_cancel').addEventListener('click', closeModalEmpresa);
-  modalEmpresa.querySelector('#me_save').addEventListener('click', ()=>{
-    const empresa = String($('#me_empresa').value||'').trim(); const cnpj = onlyDigits($('#me_cnpj').value); const municipio = String($('#me_municipio').value||'').trim(); const uf = $('#me_uf').value; const ie = String($('#me_ie').value||'').trim();
-    if(!empresa){ alert('Informe a razão social.'); return; }
-    if(!/^\d{14}$/.test(cnpj)){ alert('CNPJ inválido (14 dígitos).'); return; }
-    if(!uf){ alert('Selecione a UF.'); return; }
-    const novo = {empresa, cnpj, municipio, uf, inscricao_estadual: ie};
-    const newKey = keyOf(novo);
-    if(!editingKey){ state.empresas.push(novo); state.cnds[newKey] = {federal:{status:'NÃO VERIFICADA'},estadual:{status:'NÃO VERIFICADA'},municipal:{status:'NÃO VERIFICADA'}}; }
-    else {
-      if(newKey!==editingKey){ state.cnds[newKey] = state.cnds[editingKey]||{federal:{status:'NÃO VERIFICADA'},estadual:{status:'NÃO VERIFICADA'},municipal:{status:'NÃO VERIFICADA'}}; delete state.cnds[editingKey]; }
-      const idx = state.empresas.findIndex(x=> keyOf(x)===editingKey); if(idx>=0) state.empresas[idx] = novo;
-    }
-    saveState(state); render(); closeModalEmpresa(); showToast('Cadastro salvo');
-  });
+  modalEmpresa.addEventListener('click',(ev)=>{ if(ev.target===modalEmpresa) closeModalEmpresa(); }); modalEmpresa.querySelector('#me_cancel').addEventListener('click', closeModalEmpresa);
+  modalEmpresa.querySelector('#me_save').addEventListener('click', ()=>{ const empresa=String($('#me_empresa').value||'').trim(); const cnpj=onlyDigits($('#me_cnpj').value); const municipio=String($('#me_municipio').value||'').trim(); const uf=$('#me_uf').value; const ie=String($('#me_ie').value||'').trim(); if(!empresa){ alert('Informe a razão social.'); return; } if(!/^\d{14}$/.test(cnpj)){ alert('CNPJ inválido (14 dígitos).'); return; } if(!uf){ alert('Selecione a UF.'); return; } const novo={empresa, cnpj, municipio, uf, inscricao_estadual: ie}; const newKey=keyOf(novo); if(!editingKey){ state.empresas.push(novo); state.cnds[newKey]={federal:{status:'NÃO VERIFICADA'},estadual:{status:'NÃO VERIFICADA'},municipal:{status:'NÃO VERIFICADA'}}; } else { if(newKey!==editingKey){ state.cnds[newKey]=state.cnds[editingKey]||{federal:{status:'NÃO VERIFICADA'},estadual:{status:'NÃO VERIFICADA'},municipal:{status:'NÃO VERIFICADA'}}; delete state.cnds[editingKey]; } const idx=state.empresas.findIndex(x=> keyOf(x)===editingKey); if(idx>=0) state.empresas[idx]=novo; } save(STORAGE_MASTER_KEY,state); renderAll(); closeModalEmpresa(); showToast('Cadastro salvo'); });
 
-  const modalCND = document.createElement('div');
-  modalCND.className='modal';
-  modalCND.innerHTML = `
+  const modalCND = document.createElement('div'); modalCND.className='modal'; modalCND.innerHTML = `
     <div class="box">
       <h3>Atualizar CND — <span id="mEmpresa"></span> (<span id="mChave"></span>)</h3>
       <div class="grid-3">
@@ -229,214 +225,80 @@ window.EMPRESAS_DATA = [{"empresa": "ELETRONORTE", "cnpj": "00357038003484", "mu
           <button id="btnSalvar" class="btn-primary">Salvar</button>
         </div>
       </div>
-    </div>`;
-  document.body.appendChild(modalCND);
+    </div>`; document.body.appendChild(modalCND);
 
-  const fields = {}; GROUPS.forEach(g=>{ fields[g] = { status: ()=>document.getElementById(`${g}_status`), validade: ()=>document.getElementById(`${g}_validade`), link: ()=>document.getElementById(`${g}_link`), obs: ()=>document.getElementById(`${g}_obs`) }; });
-  let currentKey = null;
-  function openModalCND(key){ currentKey = key; const e = state.empresas.find(x=> keyOf(x)===key); const rec = (state.cnds[key] ||= {federal:{status:'NÃO VERIFICADA'},estadual:{status:'NÃO VERIFICADA'},municipal:{status:'NÃO VERIFICADA'}}); $('#mEmpresa').textContent = `${e.empresa} — ${fmtCNPJ(e.cnpj)} / ${e.uf} • ${e.municipio} • IE ${e.inscricao_estadual||'—'}`; $('#mChave').textContent = key; GROUPS.forEach(g=>{ const v = rec[g]||{}; fields[g].status().value = v.status||'NÃO VERIFICADA'; fields[g].validade().value = v.validade||''; fields[g].link().value = v.link||''; fields[g].obs().value = v.obs||''; }); modalCND.style.display='flex'; }
+  const fields={}; GROUPS.forEach(g=>{ fields[g] = { status: ()=>document.getElementById(`${g}_status`), validade: ()=>document.getElementById(`${g}_validade`), link: ()=>document.getElementById(`${g}_link`), obs: ()=>document.getElementById(`${g}_obs`) }; });
+  let currentKey=null; function openModalCND(key){ currentKey=key; const e=state.empresas.find(x=> keyOf(x)===key); const rec=(state.cnds[key] ||= {federal:{status:'NÃO VERIFICADA'},estadual:{status:'NÃO VERIFICADA'},municipal:{status:'NÃO VERIFICADA'}}); $('#mEmpresa').textContent=`${e.empresa} — ${fmtCNPJ(e.cnpj)} / ${e.uf} • ${e.municipio} • IE ${e.inscricao_estadual||'—'}`; $('#mChave').textContent=key; GROUPS.forEach(g=>{ const v=rec[g]||{}; fields[g].status().value=v.status||'NÃO VERIFICADA'; fields[g].validade().value=v.validade||''; fields[g].link().value=v.link||''; fields[g].obs().value=v.obs||''; }); modalCND.style.display='flex'; }
   function closeModalCND(){ modalCND.style.display='none'; }
-  modalCND.addEventListener('click', (ev)=>{ if(ev.target===modalCND) closeModalCND(); }); modalCND.querySelector('#btnFechar').addEventListener('click', closeModalCND);
-  modalCND.querySelector('#btnSalvar').addEventListener('click', ()=>{ if(!currentKey) return; GROUPS.forEach(g=>{ state.cnds[currentKey][g] = { status: fields[g].status().value, validade: fields[g].validade().value, link: fields[g].link().value, obs: fields[g].obs().value, atualizadoEm: new Date().toISOString() }; }); saveState(state); render(); closeModalCND(); showToast('Situações atualizadas'); });
-  modalCND.querySelector('#btnEditarEmpresa').addEventListener('click', ()=>{ closeModalCND(); openModalEmpresa(currentKey); });
-  modalCND.querySelector('#btnExcluirEmpresa').addEventListener('click', ()=>{ if(!currentKey) return; if(!confirm('Excluir este cadastro? Essa ação não pode ser desfeita.')) return; const idx=state.empresas.findIndex(x=> keyOf(x)===currentKey); if(idx>=0) state.empresas.splice(idx,1); delete state.cnds[currentKey]; saveState(state); render(); closeModalCND(); showToast('Cadastro excluído'); });
+  modalCND.addEventListener('click',(ev)=>{ if(ev.target===modalCND) closeModalCND(); }); modalCND.querySelector('#btnFechar').addEventListener('click', closeModalCND); modalCND.querySelector('#btnSalvar').addEventListener('click', ()=>{ if(!currentKey) return; GROUPS.forEach(g=>{ state.cnds[currentKey][g] = { status: fields[g].status().value, validade: fields[g].validade().value, link: fields[g].link().value, obs: fields[g].obs().value, atualizadoEm: new Date().toISOString() }; }); save(STORAGE_MASTER_KEY,state); renderAll(); closeModalCND(); showToast('Situações atualizadas'); }); modalCND.querySelector('#btnEditarEmpresa').addEventListener('click', ()=>{ closeModalCND(); openModalEmpresa(currentKey); }); modalCND.querySelector('#btnExcluirEmpresa').addEventListener('click', ()=>{ if(!currentKey) return; if(!confirm('Excluir este cadastro? Essa ação não pode ser desfeita.')) return; const idx=state.empresas.findIndex(x=> keyOf(x)===currentKey); if(idx>=0) state.empresas.splice(idx,1); delete state.cnds[currentKey]; save(STORAGE_MASTER_KEY,state); renderAll(); closeModalCND(); showToast('Cadastro excluído'); });
 
-  // ===== Util =====
-  let quick = null; // filtro pelos KPIs
-  function rowStatus(key, g){ return (state.cnds[key] && state.cnds[key][g] && state.cnds[key][g].status) || 'NÃO VERIFICADA'; }
-  function cadastroTem(e, pred){ const k=keyOf(e); return GROUPS.some(g => pred(rowStatus(k,g))); }
+  // ===== Filtros/KPIs/Tabela =====
+  let quick=null;
+  function rowStatus(key,g){ return (state.cnds[key]&&state.cnds[key][g]&&state.cnds[key][g].status)||'NÃO VERIFICADA'; }
+  function cadastroTem(e,p){ const k=keyOf(e); return GROUPS.some(g=> p(rowStatus(k,g))); }
+  function aggregateByCNPJ(){ const map=new Map(); state.empresas.forEach(e=>{ const arr=map.get(e.cnpj)||[]; arr.push(e); map.set(e.cnpj,arr); }); return map; }
+  function aggStatusForCNPJ(cnpj){ const list=(aggregateByCNPJ().get(cnpj)||[]); const prio=s=> (s==='IRREGULAR')?3 : (isAtencao(s)?2 : (s==='REGULAR'?1:0)); const out={}; GROUPS.forEach(g=>{ let best='NÃO VERIFICADA',bp=-1; list.forEach(e=>{ const st=rowStatus(keyOf(e),g), p=prio(st); if(p>bp){bp=p; best=st;} }); out[g]=best; }); return out; }
 
-  function aggregateByCNPJ(){
-    const map = new Map();
-    state.empresas.forEach(e=>{
-      const arr = map.get(e.cnpj) || []; arr.push(e); map.set(e.cnpj, arr);
-    });
-    return map; // Map<CNPJ, Array<cadastros>>
+  function matchAllCadastro(e){ const term=q.value.trim().toLowerCase(); const okTerm=!term || [e.empresa,e.cnpj,e.municipio,e.uf,e.inscricao_estadual].some(v=>String(v||'').toLowerCase().includes(term)); const okUF=!ufFilter.value || e.uf===ufFilter.value; const okStatus=(function(){ const v=statusFilter.value; if(!v)return true; if(v==='ATENCAO') return cadastroTem(e,s=>isAtencao(s)); if(v==='NAO_VERIFICADA') return cadastroTem(e,s=> s==='NÃO VERIFICADA'); if(v==='OBS') return cadastroTem(e,s=> s==='OBS'); return cadastroTem(e,s=> s===v); })(); const okQuick=(function(){ if(!quick) return true; if(quick==='REGULAR') return cadastroTem(e,s=> s==='REGULAR'); if(quick==='IRREGULAR') return cadastroTem(e,s=> s==='IRREGULAR'); if(quick==='ATENCAO') return cadastroTem(e,s=> isAtencao(s)); return true; })(); return okTerm&&okUF&&okStatus&&okQuick; }
+  function matchAllCNPJ(cnpj, empresas){ const term=q.value.trim().toLowerCase(); const any=empresas[0]||{empresa:'',municipio:'',uf:'',inscricao_estadual:''}; const okTerm=!term || [any.empresa, cnpj].concat(empresas.flatMap(e=>[e.municipio,e.uf,e.inscricao_estadual])).some(v=>String(v||'').toLowerCase().includes(term)); const okUF=!ufFilter.value || empresas.some(e=> e.uf===ufFilter.value); const agg=aggStatusForCNPJ(cnpj); function cnpjTem(p){ return GROUPS.some(g=> p(agg[g])); } const okStatus=(function(){ const v=statusFilter.value; if(!v) return true; if(v==='ATENCAO') return cnpjTem(s=> isAtencao(s)); if(v==='NAO_VERIFICADA') return cnpjTem(s=> s==='NÃO VERIFICADA'); if(v==='OBS') return cnpjTem(s=> s==='OBS'); return cnpjTem(s=> s===v); })(); const okQuick=(function(){ if(!quick) return true; if(quick==='REGULAR') return cnpjTem(s=> s==='REGULAR'); if(quick==='IRREGULAR') return cnpjTem(s=> s==='IRREGULAR'); if(quick==='ATENCAO') return cnpjTem(s=> isAtencao(s)); return true; })(); return okTerm&&okUF&&okStatus&&okQuick; }
+
+  function computeOverview(){ const mode=modeSel.value; if(mode==='CADASTRO'){ const t={total:state.empresas.length,regular:0,irregular:0,atencao:0}; state.empresas.forEach(e=>{ if(cadastroTem(e,s=> s==='REGULAR')) t.regular++; if(cadastroTem(e,s=> s==='IRREGULAR')) t.irregular++; if(cadastroTem(e,s=> isAtencao(s))) t.atencao++; }); return t; } else { const by=aggregateByCNPJ(); const t={total:by.size,regular:0,irregular:0,atencao:0}; by.forEach((arr,cnpj)=>{ function has(p){ return arr.some(e=> GROUPS.some(g=> p(rowStatus(keyOf(e),g)))); } if(has(s=> s==='REGULAR')) t.regular++; if(has(s=> s==='IRREGULAR')) t.irregular++; if(has(s=> isAtencao(s))) t.atencao++; }); return t; } }
+
+  function statusBadge(s){ return `<span class="badge ${(s==='REGULAR')?'regular':(s==='IRREGULAR')?'irregular':(isAtencao(s)?'atencao':'nao-verificada')}">${uiStatus(s)}</span>`; }
+
+  function renderKPIs(){ const t=computeOverview(); const k=document.getElementById('kpis'); const label=(modeSel.value==='CADASTRO')?'Total de cadastros':'Total por CNPJ'; k.innerHTML = `
+    <div class="card"><h4>${label}</h4><div class="v">${t.total}</div></div>
+    <div class="card kpi ${quick==='REGULAR'?'active':''}" id="kpi-regular"><h4><span class="kpi-dot dot-regular"></span> CNDs REGULAR</h4><div class="v">${t.regular}</div></div>
+    <div class="card kpi ${quick==='IRREGULAR'?'active':''}" id="kpi-irregular"><h4><span class="kpi-dot dot-irregular"></span> CNDs IRREGULAR</h4><div class="v">${t.irregular}</div></div>
+    <div class="card kpi ${quick==='ATENCAO'?'active':''}" id="kpi-atencao"><h4><span class="kpi-dot dot-atencao"></span> CNDs ATENÇÃO</h4><div class="v">${t.atencao}</div></div>`;
+    $('#kpi-regular').addEventListener('click', ()=>{ quick=(quick==='REGULAR'?null:'REGULAR'); statusFilter.value=''; renderAll(); });
+    $('#kpi-irregular').addEventListener('click', ()=>{ quick=(quick==='IRREGULAR'?null:'IRREGULAR'); statusFilter.value=''; renderAll(); });
+    $('#kpi-atencao').addEventListener('click', ()=>{ quick=(quick==='ATENCAO'?null:'ATENCAO'); statusFilter.value=''; renderAll(); });
   }
 
-  function aggStatusForCNPJ(cnpj){
-    const list = (aggregateByCNPJ().get(cnpj) || []);
-    // Para cada grupo, escolhe o pior: IRREGULAR > ATENÇÃO (OBS/NÃO VERIFICADA) > REGULAR > NÃO VERIFICADA
-    const prio = s => (s==='IRREGULAR')?3 : (isAtencao(s)?2 : (s==='REGULAR'?1:0));
-    const out = {};
-    GROUPS.forEach(g=>{
-      let best='NÃO VERIFICADA', bp=-1;
-      list.forEach(e=>{ const st=rowStatus(keyOf(e), g); const p=prio(st); if(p>bp){ bp=p; best=st; } });
-      out[g]=best;
-    });
-    return out;
-  }
+  function renderTable(){ const mode=modeSel.value; if(mode==='CADASTRO'){ tblHead.innerHTML='<tr><th>Empresa</th><th>CNPJ</th><th>IE</th><th>Federal</th><th>Estadual</th><th>Municipal</th><th style="width:220px">Ações</th></tr>'; const rows=state.empresas.filter(matchAllCadastro).map(e=>{ const key=keyOf(e), f=rowStatus(key,'federal'), est=rowStatus(key,'estadual'), mun=rowStatus(key,'municipal'); return `<tr>\n  <td>${e.empresa}<div class=\"sub\">Estab.: ${e.municipio}/${e.uf} • IE ${e.inscricao_estadual||'—'}</div></td>\n  <td>${fmtCNPJ(e.cnpj)}</td>\n  <td>${e.inscricao_estadual||'—'}</td>\n  <td>${statusBadge(f)}</td>\n  <td>${statusBadge(est)}</td>\n  <td>${statusBadge(mun)}</td>\n  <td class=\"row-actions\"><button data-key=\"${key}\" class=\"btnEditar btn-ghost\">Editar CND</button><button data-key=\"${key}\" class=\"btnEditEmp btn-ghost\">Editar</button></td>\n</tr>`; }).join(''); tblBody.innerHTML=rows||'<tr><td colspan="7">Nenhum registro encontrado.</td></tr>'; $$('.btnEditar').forEach(b=> b.addEventListener('click', ()=> openModalCND(b.dataset.key)) ); $$('.btnEditEmp').forEach(b=> b.addEventListener('click', ()=> openModalEmpresa(b.dataset.key)) ); } else { tblHead.innerHTML='<tr><th>Empresa</th><th>CNPJ</th><th>Estabs</th><th>UFs</th><th>Federal</th><th>Estadual</th><th>Municipal</th><th style="width:220px">Ações</th></tr>'; const by=aggregateByCNPJ(); const lines=[]; by.forEach((arr,cnpj)=>{ if(!matchAllCNPJ(cnpj,arr)) return; const emp=arr[0]?.empresa||''; const ufs=Array.from(new Set(arr.map(x=>x.uf).filter(Boolean))).sort().join(', '); const agg=aggStatusForCNPJ(cnpj); lines.push(`<tr>\n  <td>${emp}</td>\n  <td>${fmtCNPJ(cnpj)}</td>\n  <td>${arr.length}</td>\n  <td>${ufs}</td>\n  <td>${statusBadge(agg.federal)}</td>\n  <td>${statusBadge(agg.estadual)}</td>\n  <td>${statusBadge(agg.municipal)}</td>\n  <td class=\"row-actions\"><button data-cnpj=\"${cnpj}\" class=\"btnVerCad btn-ghost\">Ver cadastros</button></td>\n</tr>`); }); tblBody.innerHTML=lines.join('')||'<tr><td colspan="8">Nenhum registro encontrado.</td></tr>'; $$('.btnVerCad').forEach(b=> b.addEventListener('click', ()=>{ q.value=b.dataset.cnpj; modeSel.value='CADASTRO'; renderAll(); }) ); } }
 
-  function matchAllCadastro(e){
-    const term = q.value.trim().toLowerCase();
-    const okTerm = !term || [e.empresa,e.cnpj,e.municipio,e.uf,e.inscricao_estadual].some(v=>String(v||'').toLowerCase().includes(term));
-    const okUF = !ufFilter.value || e.uf===ufFilter.value;
-    const okStatus = (function(){
-      const v=statusFilter.value; if(!v) return true;
-      if(v==='ATENCAO') return cadastroTem(e, s=> isAtencao(s));
-      if(v==='NAO_VERIFICADA') return cadastroTem(e, s=> s==='NÃO VERIFICADA');
-      if(v==='OBS') return cadastroTem(e, s=> s==='OBS');
-      return cadastroTem(e, s=> s===v);
-    })();
-    const okQuick = (function(){ if(!quick) return true; if(quick==='REGULAR') return cadastroTem(e,s=>s==='REGULAR'); if(quick==='IRREGULAR') return cadastroTem(e,s=>s==='IRREGULAR'); if(quick==='ATENCAO') return cadastroTem(e,s=>isAtencao(s)); return true; })();
-    return okTerm && okUF && okStatus && okQuick;
-  }
-
-  function matchAllCNPJ(cnpj, empresas){
-    // empresas = array de cadastros desse CNPJ
-    const term = q.value.trim().toLowerCase();
-    const anyEmpresa = empresas[0] || {empresa:'',municipio:'',uf:'',inscricao_estadual:''};
-    const okTerm = !term || [anyEmpresa.empresa, cnpj].concat(empresas.flatMap(e=>[e.municipio,e.uf,e.inscricao_estadual])).some(v=>String(v||'').toLowerCase().includes(term));
-    const okUF = !ufFilter.value || empresas.some(e=> e.uf===ufFilter.value);
-    const agg = aggStatusForCNPJ(cnpj);
-    function cnpjTem(pred){ return GROUPS.some(g=> pred(agg[g])); }
-    const okStatus = (function(){ const v=statusFilter.value; if(!v) return true; if(v==='ATENCAO') return cnpjTem(s=> isAtencao(s)); if(v==='NAO_VERIFICADA') return cnpjTem(s=> s==='NÃO VERIFICADA'); if(v==='OBS') return cnpjTem(s=> s==='OBS'); return cnpjTem(s=> s===v); })();
-    const okQuick = (function(){ if(!quick) return true; if(quick==='REGULAR') return cnpjTem(s=>s==='REGULAR'); if(quick==='IRREGULAR') return cnpjTem(s=>s==='IRREGULAR'); if(quick==='ATENCAO') return cnpjTem(s=>isAtencao(s)); return true; })();
-    return okTerm && okUF && okStatus && okQuick;
-  }
-
-  function badgeClass(s){ return (s==='REGULAR')?'regular':(s==='IRREGULAR')?'irregular':(isAtencao(s)?'atencao':'nao-verificada'); }
-  function statusBadge(s){ return `<span class="badge ${badgeClass(s)}">${uiStatus(s)}</span>`; }
-
-  function computeOverview(){
-    const mode = modeSel.value;
-    if(mode==='CADASTRO'){
-      const totals={ total: state.empresas.length, regular:0, irregular:0, atencao:0 };
-      state.empresas.forEach(e=>{ if(cadastroTem(e,s=>s==='REGULAR')) totals.regular++; if(cadastroTem(e,s=>s==='IRREGULAR')) totals.irregular++; if(cadastroTem(e,s=>isAtencao(s))) totals.atencao++; });
-      return totals;
-    } else {
-      const by = aggregateByCNPJ();
-      let totals={ total: by.size, regular:0, irregular:0, atencao:0 };
-      by.forEach((arr, cnpj)=>{
-        function has(pred){ return arr.some(e=> GROUPS.some(g=> pred(rowStatus(keyOf(e), g)))); }
-        if(has(s=>s==='REGULAR')) totals.regular++;
-        if(has(s=>s==='IRREGULAR')) totals.irregular++;
-        if(has(s=>isAtencao(s))) totals.atencao++;
-      });
-      return totals;
-    }
-  }
-
-  function renderKPIs(){
-    const t = computeOverview();
-    const k = document.getElementById('kpis');
-    const labelTotal = (modeSel.value==='CADASTRO')? 'Total de cadastros' : 'Total por CNPJ';
-    k.innerHTML = `
-      <div class="card"><h4>${labelTotal}</h4><div class="v">${t.total}</div></div>
-      <div class="card kpi ${quick==='REGULAR'?'active':''}" id="kpi-regular"><h4><span class="kpi-dot dot-regular"></span> CNDs REGULAR</h4><div class="v">${t.regular}</div></div>
-      <div class="card kpi ${quick==='ATENCAO'?'active':''}" id="kpi-atencao"><h4><span class="kpi-dot dot-atencao"></span> CNDs ATENÇÃO</h4><div class="v">${t.atencao}</div></div>
-      <div class="card kpi ${quick==='IRREGULAR'?'active':''}" id="kpi-irregular"><h4><span class="kpi-dot dot-irregular"></span> CNDs IRREGULAR</h4><div class="v">${t.irregular}</div></div>`;
-    $('#kpi-regular').addEventListener('click', ()=>{ quick = (quick==='REGULAR')?null:'REGULAR'; statusFilter.value=''; renderTable(); renderKPIs(); });
-    $('#kpi-atencao').addEventListener('click', ()=>{ quick = (quick==='ATENCAO')?null:'ATENCAO'; statusFilter.value=''; renderTable(); renderKPIs(); });
-    $('#kpi-irregular').addEventListener('click', ()=>{ quick = (quick==='IRREGULAR')?null:'IRREGULAR'; statusFilter.value=''; renderTable(); renderKPIs(); });
-  }
-
-  function renderTable(){
-    const mode = modeSel.value;
-    if(mode==='CADASTRO'){
-      tblHead.innerHTML = `<tr><th>Empresa</th><th>CNPJ</th><th>Município</th><th>UF</th><th>IE</th><th>Federal</th><th>Estadual</th><th>Municipal</th><th style="width:220px">Ações</th></tr>`;
-      const rows = state.empresas.filter(matchAllCadastro).map(e=>{
-        const key = keyOf(e); const f=rowStatus(key,'federal'); const est=rowStatus(key,'estadual'); const mun=rowStatus(key,'municipal');
-        return `<tr>
-          <td>${e.empresa}<div class="sub">Estab.: ${e.municipio}/${e.uf} • IE ${e.inscricao_estadual||'—'}</div></td>
-          <td>${fmtCNPJ(e.cnpj)}</td>
-          <td>${e.municipio}</td>
-          <td>${e.uf}</td>
-          <td>${e.inscricao_estadual||'—'}</td>
-          <td>${statusBadge(f)}</td>
-          <td>${statusBadge(est)}</td>
-          <td>${statusBadge(mun)}</td>
-          <td class="row-actions">
-            <button data-key="${key}" class="btnEditar btn-ghost">Editar CND</button>
-            <button data-key="${key}" class="btnEditEmp btn-ghost">Editar</button>
-          </td>
-        </tr>`;
-      }).join('');
-      tblBody.innerHTML = rows || '<tr><td colspan="9">Nenhum registro encontrado.</td></tr>';
-      $$('.btnEditar').forEach(b=> b.addEventListener('click', ()=> openModalCND(b.dataset.key)) );
-      $$('.btnEditEmp').forEach(b=> b.addEventListener('click', ()=> openModalEmpresa(b.dataset.key)) );
-    } else {
-      // Modo CNPJ (agrupado)
-      tblHead.innerHTML = `<tr><th>Empresa</th><th>CNPJ</th><th>Estabs</th><th>UFs</th><th>Federal</th><th>Estadual</th><th>Municipal</th><th style="width:220px">Ações</th></tr>`;
-      const by = aggregateByCNPJ();
-      const lines = [];
-      by.forEach((arr, cnpj)=>{
-        if(!matchAllCNPJ(cnpj, arr)) return;
-        const empresaPadrao = arr[0]?.empresa || '';
-        const ufs = Array.from(new Set(arr.map(x=>x.uf).filter(Boolean))).sort().join(', ');
-        const agg = aggStatusForCNPJ(cnpj);
-        lines.push(`<tr>
-          <td>${empresaPadrao}</td>
-          <td>${fmtCNPJ(cnpj)}</td>
-          <td>${arr.length}</td>
-          <td>${ufs}</td>
-          <td>${statusBadge(agg.federal)}</td>
-          <td>${statusBadge(agg.estadual)}</td>
-          <td>${statusBadge(agg.municipal)}</td>
-          <td class="row-actions">
-            <button data-cnpj="${cnpj}" class="btnVerCad btn-ghost">Ver cadastros</button>
-          </td>
-        </tr>`);
-      });
-      tblBody.innerHTML = lines.join('') || '<tr><td colspan="8">Nenhum registro encontrado.</td></tr>';
-      $$('.btnVerCad').forEach(b=> b.addEventListener('click', ()=>{ q.value = b.dataset.cnpj; modeSel.value='CADASTRO'; render(); }) );
-    }
-  }
-
-  function render(){ renderKPIs(); renderTable(); }
+  function renderAll(){ renderKPIs(); renderTable(); if($('#view-dashboard').style.display==='block') renderCharts(); }
 
   // ===== Exportação =====
-  function exportCSV(){
-    const mode = modeSel.value; let rows=[]; let header=[];
-    if(mode==='CADASTRO'){
-      header=['Empresa','CNPJ','Município','UF','IE','Federal','Estadual','Municipal'];
-      state.empresas.filter(matchAllCadastro).forEach(e=>{
-        const key=keyOf(e); rows.push([
-          e.empresa, fmtCNPJ(e.cnpj), e.municipio, e.uf, e.inscricao_estadual||'',
-          rowStatus(key,'federal'), rowStatus(key,'estadual'), rowStatus(key,'municipal')
-        ]);
-      });
-    } else {
-      header=['Empresa','CNPJ','Estabelecimentos','UFs','Federal','Estadual','Municipal'];
-      const by=aggregateByCNPJ();
-      by.forEach((arr, cnpj)=>{
-        if(!matchAllCNPJ(cnpj, arr)) return; const ufs=Array.from(new Set(arr.map(x=>x.uf).filter(Boolean))).sort().join(' '); const agg=aggStatusForCNPJ(cnpj);
-        rows.push([arr[0]?.empresa||'', fmtCNPJ(cnpj), String(arr.length), ufs, agg.federal, agg.estadual, agg.municipal]);
-      });
-    }
-    const csv = [header.join(';')].concat(rows.map(r=> r.map(v=> '"'+String(v).replace('"','""')+'"').join(';'))).join('\n');
-    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-    const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download = mode==='CADASTRO' ? 'cnds_cadastros.csv' : 'cnds_cnpj.csv'; a.click(); URL.revokeObjectURL(url);
-  }
+  function exportCSV(){ const mode = modeSel.value; let rows=[]; let header=[]; if(mode==='CADASTRO'){ header=['Empresa','CNPJ','Município','UF','IE','Federal','Estadual','Municipal']; state.empresas.filter(matchAllCadastro).forEach(e=>{ const key=keyOf(e); rows.push([ e.empresa, fmtCNPJ(e.cnpj), e.municipio, e.uf, e.inscricao_estadual||'', rowStatus(key,'federal'), rowStatus(key,'estadual'), rowStatus(key,'municipal') ]); }); } else { header=['Empresa','CNPJ','Estabelecimentos','UFs','Federal','Estadual','Municipal']; const by=aggregateByCNPJ(); by.forEach((arr, cnpj)=>{ if(!matchAllCNPJ(cnpj, arr)) return; const ufs=Array.from(new Set(arr.map(x=>x.uf).filter(Boolean))).sort().join(' '); const agg=aggStatusForCNPJ(cnpj); rows.push([arr[0]?.empresa||'', fmtCNPJ(cnpj), String(arr.length), ufs, agg.federal, agg.estadual, agg.municipal]); }); } const csv = [header.join(';')].concat(rows.map(r=> r.map(v=> '"'+String(v).replace('"','""')+'"').join(';'))).join('\n'); const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download = mode==='CADASTRO' ? 'cnds_cadastros.csv' : 'cnds_cnpj.csv'; a.click(); URL.revokeObjectURL(url); }
 
-  function exportXLS(){
-    const mode = modeSel.value; let html='';
-    if(mode==='CADASTRO'){
-      html += '<table><tr><th>Empresa</th><th>CNPJ</th><th>Município</th><th>UF</th><th>IE</th><th>Federal</th><th>Estadual</th><th>Municipal</th></tr>';
-      state.empresas.filter(matchAllCadastro).forEach(e=>{ const key=keyOf(e); html += `<tr><td>${e.empresa}</td><td>${fmtCNPJ(e.cnpj)}</td><td>${e.municipio}</td><td>${e.uf}</td><td>${e.inscricao_estadual||''}</td><td>${rowStatus(key,'federal')}</td><td>${rowStatus(key,'estadual')}</td><td>${rowStatus(key,'municipal')}</td></tr>`; });
-      html += '</table>';
-    } else {
-      html += '<table><tr><th>Empresa</th><th>CNPJ</th><th>Estabelecimentos</th><th>UFs</th><th>Federal</th><th>Estadual</th><th>Municipal</th></tr>';
-      const by=aggregateByCNPJ(); by.forEach((arr, cnpj)=>{ if(!matchAllCNPJ(cnpj, arr)) return; const ufs=Array.from(new Set(arr.map(x=>x.uf).filter(Boolean))).sort().join(' '); const agg=aggStatusForCNPJ(cnpj); html += `<tr><td>${arr[0]?.empresa||''}</td><td>${fmtCNPJ(cnpj)}</td><td>${arr.length}</td><td>${ufs}</td><td>${agg.federal}</td><td>${agg.estadual}</td><td>${agg.municipal}</td></tr>`; });
-      html += '</table>';
-    }
-    const blob = new Blob([`\uFEFF<html><head><meta charset="utf-8"/></head><body>${html}</body></html>`], {type: 'application/vnd.ms-excel'});
-    const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download = mode==='CADASTRO' ? 'cnds_cadastros.xls' : 'cnds_cnpj.xls'; a.click(); URL.revokeObjectURL(url);
-  }
+  function exportXLS(){ const mode = modeSel.value; let html=''; if(mode==='CADASTRO'){ html += '<table><tr><th>Empresa</th><th>CNPJ</th><th>Município</th><th>UF</th><th>IE</th><th>Federal</th><th>Estadual</th><th>Municipal</th></tr>'; state.empresas.filter(matchAllCadastro).forEach(e=>{ const key=keyOf(e); html += `<tr><td>${e.empresa}</td><td>${fmtCNPJ(e.cnpj)}</td><td>${e.municipio}</td><td>${e.uf}</td><td>${e.inscricao_estadual||''}</td><td>${rowStatus(key,'federal')}</td><td>${rowStatus(key,'estadual')}</td><td>${rowStatus(key,'municipal')}</td></tr>`; }); html += '</table>'; } else { html += '<table><tr><th>Empresa</th><th>CNPJ</th><th>Estabelecimentos</th><th>UFs</th><th>Federal</th><th>Estadual</th><th>Municipal</th></tr>'; const by=aggregateByCNPJ(); by.forEach((arr, cnpj)=>{ if(!matchAllCNPJ(cnpj, arr)) return; const ufs=Array.from(new Set(arr.map(x=>x.uf).filter(Boolean))).sort().join(' '); const agg=aggStatusForCNPJ(cnpj); html += `<tr><td>${arr[0]?.empresa||''}</td><td>${fmtCNPJ(cnpj)}</td><td>${arr.length}</td><td>${ufs}</td><td>${agg.federal}</td><td>${agg.estadual}</td><td>${agg.municipal}</td></tr>`; }); html += '</table>'; } const blob = new Blob([`\uFEFF<html><head><meta charset="utf-8"/></head><body>${html}</body></html>`], {type: 'application/vnd.ms-excel'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download = mode==='CADASTRO' ? 'cnds_cadastros.xls' : 'cnds_cnpj.xls'; a.click(); URL.revokeObjectURL(url); }
 
-  // ===== Eventos =====
-  q.addEventListener('input', render); ufFilter.addEventListener('change', render); statusFilter.addEventListener('change', ()=>{ quick=null; render(); }); modeSel.addEventListener('change', ()=>{ quick=null; render(); });
-  document.getElementById('btnLimpar').addEventListener('click', ()=>{ q.value=''; ufFilter.value=''; statusFilter.value=''; quick=null; render(); });
-
-  document.getElementById('btnExport').addEventListener('click', ()=>{ const data = JSON.stringify(state, null, 2); const blob = new Blob([data], {type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'cnds_backup_v3_1.json'; a.click(); URL.revokeObjectURL(url); });
-  document.getElementById('btnImport').addEventListener('click', ()=> document.getElementById('importFile').click());
-  document.getElementById('importFile').addEventListener('change', (ev)=>{ const file=ev.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload = ()=>{ try{ const obj=JSON.parse(reader.result); if(!obj.empresas||!obj.cnds) throw new Error('Estrutura inválida'); state=obj; saveState(state); render(); showToast('Backup carregado'); }catch(e){ alert('Arquivo inválido'); } }; reader.readAsText(file); });
-  document.getElementById('btnNovo').addEventListener('click', ()=> openModalEmpresa(null));
-  document.getElementById('btnExportXLS').addEventListener('click', exportXLS);
   document.getElementById('btnExportCSV').addEventListener('click', exportCSV);
+  document.getElementById('btnExportXLS').addEventListener('click', exportXLS);
+
+  // ===== Backup automático (Chrome/Chromium) — File System Access API =====
+  let backupHandle = null;
+  async function pickBackupFile(){ try{ if(!window.showSaveFilePicker){ alert('Seu navegador não oferece File System Access API. Use o botão de backup JSON tradicional.'); return; } const opts={ suggestedName:'cnds_auto_backup.json', types:[{description:'JSON', accept:{'application/json':['.json']}}] }; backupHandle = await window.showSaveFilePicker(opts); const writable = await backupHandle.createWritable(); await writable.write(new Blob([JSON.stringify(state,null,2)],{type:'application/json'})); await writable.close(); localStorage.setItem('cnds_backup_auto','1'); showToast('Backup automático ativado nesta sessão'); }catch(e){ console.warn(e); }}
+  async function autoSave(){ try{ if(!backupHandle) return; const writable = await backupHandle.createWritable(); await writable.write(new Blob([JSON.stringify(state,null,2)],{type:'application/json'})); await writable.close(); }catch(e){ console.warn('Falha ao salvar no arquivo automático:', e.message); }}
+
+  document.getElementById('btnAutoBackup').addEventListener('click', pickBackupFile);
+
+  // Gatilhos para autoSave (após operações que alteram o state)
+  const _save = save; save = function(key, value){ _save(key, value); if(key===STORAGE_MASTER_KEY){ autoSave(); } };
+
+  // ===== Import/Export simples =====
+  document.getElementById('btnExport').addEventListener('click', ()=>{ const data = JSON.stringify(state, null, 2); const blob = new Blob([data], {type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'cnds_backup.json'; a.click(); URL.revokeObjectURL(url); });
+  document.getElementById('btnImport').addEventListener('click', ()=> document.getElementById('importFile').click());
+  document.getElementById('importFile').addEventListener('change', (ev)=>{ const file=ev.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload = ()=>{ try{ const obj=JSON.parse(reader.result); if(!obj.empresas||!obj.cnds) throw new Error('Estrutura inválida'); state=obj; save(STORAGE_MASTER_KEY, state); renderAll(); showToast('Backup carregado'); }catch(e){ alert('Arquivo inválido'); } }; reader.readAsText(file); });
+  document.getElementById('btnRescue').addEventListener('click', ()=>{ const cands=scanCandidates(); if(cands.length) promptRescue(cands); else alert('Nenhum dado antigo encontrado.'); });
+
+  // ===== Dashboard =====
+  function drawBar(ctx, labels, values, colors){ const dpr=window.devicePixelRatio||1; const W=ctx.canvas.clientWidth*dpr; const H=ctx.canvas.clientHeight*dpr; ctx.canvas.width=W; ctx.canvas.height=H; const padL=60, padR=20, padT=20, padB=40; const innerW=W-padL-padR, innerH=H-padT-padB; const maxV=Math.max(1, Math.max(...values)); const barW=Math.max(10, Math.floor(innerW/(labels.length*1.6))); const gap=(innerW-labels.length*barW)/(labels.length+1); ctx.clearRect(0,0,W,H); ctx.font=`${12*dpr}px system-ui`; ctx.textAlign='center'; ctx.textBaseline='top'; ctx.strokeStyle='#cbd5e1'; ctx.beginPath(); ctx.moveTo(padL, H-padB); ctx.lineTo(W-padR, H-padB); ctx.stroke(); labels.forEach((lab,i)=>{ const x=padL+gap*(i+1)+barW*i+barW/2; const h= Math.round(values[i]/maxV*innerH); const y=H-padB-h; ctx.fillStyle=colors[i%colors.length]; ctx.fillRect(x-barW/2, y, barW, h); ctx.fillStyle='#334155'; ctx.fillText(String(lab), x, H-padB+6*dpr); }); ctx.fillStyle='#0f172a'; ctx.textBaseline='bottom'; labels.forEach((lab,i)=>{ const x=padL+gap*(i+1)+barW*i+barW/2; const h= Math.round(values[i]/maxV*innerH); const y=H-padB-h-4*dpr; ctx.fillText(String(values[i]), x, y); }); }
+
+  function computeFilteredCadastros(){ const mode=modeSel.value; if(mode==='CADASTRO'){ return state.empresas.filter(matchAllCadastro); } else { const by=aggregateByCNPJ(); const rows=[]; by.forEach((arr, cnpj)=>{ if(matchAllCNPJ(cnpj, arr)) rows.push(arr[0]); }); return rows; } }
+  function computeStatusCounts(){ const items = computeFilteredCadastros(); let reg=0, irr=0, ate=0, nao=0; items.forEach(e=>{ const k=keyOf(e); const sts = GROUPS.map(g=> (state.cnds[k]&&state.cnds[k][g]&&state.cnds[k][g].status)||'NÃO VERIFICADA'); if(sts.includes('IRREGULAR')) irr++; else if(sts.some(s=> s==='OBS' || s==='NÃO VERIFICADA')) ate++; else if(sts.includes('REGULAR')) reg++; else nao++; }); return {reg, irr, ate, nao}; }
+  function computeUFCounts(){ const items = computeFilteredCadastros(); const map={}; items.forEach(e=>{ if(!e.uf) return; map[e.uf]=(map[e.uf]||0)+1; }); const pairs=Object.entries(map).sort((a,b)=> b[1]-a[1]).slice(0,12); return {labels:pairs.map(p=>p[0]), values:pairs.map(p=>p[1])}; }
+  function renderCharts(){ const st=computeStatusCounts(); const labels=['REGULAR','IRREGULAR','ATENÇÃO','NÃO VERIF.']; const values=[st.reg, st.irr, st.ate, st.nao]; const colors=['#16A34A','#DC2626','#F59E0B','#94A3B8']; drawBar(document.getElementById('chartStatus').getContext('2d'), labels, values, colors); const uf=computeUFCounts(); const ufColors = Array(uf.labels.length).fill('#0FA3E4'); drawBar(document.getElementById('chartUF').getContext('2d'), uf.labels, uf.values, ufColors); }
+
+  // ===== Listeners gerais =====
+  q.addEventListener('input', renderAll); ufFilter.addEventListener('change', renderAll); statusFilter.addEventListener('change', ()=>{ quick=null; renderAll(); }); modeSel.addEventListener('change', ()=>{ quick=null; renderAll(); });
+  document.getElementById('btnLimpar').addEventListener('click', ()=>{ q.value=''; ufFilter.value=''; statusFilter.value=''; quick=null; renderAll(); });
 
   // Inicial
-  render();
+  if(!state){ state = seedFromEmbed(); save(STORAGE_MASTER_KEY, state); }
+  renderAll();
 })();
   </script>
 </body>
