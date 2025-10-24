@@ -18,9 +18,9 @@
   --eletro-blue: #0033A0;
   --eletro-yellow: #FFB81C;
   --eletro-orange: #FF6B00;
-  --shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.06), 0 1px 4px -1px rgba(0, 0, 0, 0.04);
-  --radius: 6px;
-  --transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow: 0 3px 10px -1px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+  --radius: 8px;
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   --gradient: linear-gradient(135deg, #0033A0, #0066CC);
   --gradient-light: linear-gradient(135deg, #0047BB, #0088FF);
   --gradient-card: linear-gradient(135deg, #FFFFFF, #F8FAFC);
@@ -41,77 +41,94 @@ html, body {
 body {
   background: var(--bg);
   color: var(--text);
-  font-size: 13px;
-  line-height: 1.3;
+  font-size: 14px;
+  line-height: 1.4;
 }
 
-/* Header mais compacto */
+/* Header mais compacto mas com tamanho aumentado */
 header {
   background: var(--gradient);
   color: white;
-  padding: 10px 14px;
+  padding: 12px 16px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  box-shadow: 0 1px 8px rgba(0, 51, 160, 0.15);
+  gap: 12px;
+  box-shadow: 0 2px 12px rgba(0, 51, 160, 0.2);
   position: sticky;
   top: 0;
   z-index: 100;
+  transition: var(--transition);
+}
+
+header:hover {
+  box-shadow: 0 4px 16px rgba(0, 51, 160, 0.25);
 }
 
 .logo {
-  width: 28px;
-  height: 28px;
-  border-radius: 5px;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
   background: var(--eletro-yellow);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--eletro-blue);
   font-weight: bold;
-  font-size: 12px;
-  box-shadow: 0 1px 6px rgba(255, 184, 28, 0.25);
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(255, 184, 28, 0.3);
+  transition: var(--transition);
+}
+
+.logo:hover {
+  transform: scale(1.05) rotate(5deg);
+  box-shadow: 0 4px 12px rgba(255, 184, 28, 0.4);
 }
 
 .title {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 700;
   letter-spacing: -0.01em;
+  transition: var(--transition);
 }
 
-/* Main content mais compacto */
+/* Main content com tamanho aumentado */
 main {
-  padding: 14px;
-  max-width: 1400px;
+  padding: 18px;
+  max-width: 1440px;
   margin: 0 auto;
   width: 100%;
 }
 
-/* Tabs mais compactas */
+/* Tabs com tamanho aumentado e mais transições */
 nav.tabs {
   background: white;
   border-radius: var(--radius);
-  padding: 3px;
+  padding: 4px;
   display: inline-flex;
-  gap: 1px;
-  margin-bottom: 14px;
+  gap: 2px;
+  margin-bottom: 18px;
   box-shadow: var(--shadow);
   border: 1px solid var(--line);
   transition: var(--transition);
 }
 
+nav.tabs:hover {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
 .tabs button {
   background: transparent;
   border: none;
-  padding: 6px 12px;
-  border-radius: 5px;
+  padding: 8px 16px;
+  border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
   color: var(--muted);
   transition: var(--transition);
   position: relative;
   overflow: hidden;
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .tabs button::before {
@@ -128,7 +145,7 @@ nav.tabs {
 
 .tabs button:hover {
   color: var(--eletro-blue);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .tabs button:hover::before {
@@ -139,23 +156,28 @@ nav.tabs {
 .tabs button.active {
   background: var(--gradient);
   color: white;
-  box-shadow: 0 1px 6px rgba(0, 51, 160, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 51, 160, 0.25);
   transform: translateY(0);
 }
 
-/* KPIs mais compactos */
+.tabs button.active:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 51, 160, 0.3);
+}
+
+/* KPIs com tamanho aumentado */
 .kpis {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin: 14px 0;
+  gap: 14px;
+  margin: 18px 0;
 }
 
 .card {
   background: var(--gradient-card);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 14px;
+  padding: 18px;
   box-shadow: var(--shadow);
   transition: var(--transition);
   position: relative;
@@ -176,32 +198,34 @@ nav.tabs {
 }
 
 .card:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
 .card:hover::before {
-  opacity: 0.03;
+  opacity: 0.04;
 }
 
 .card h4 {
-  margin: 0 0 6px;
+  margin: 0 0 8px;
   color: var(--muted);
   font-weight: 600;
-  font-size: 11px;
+  font-size: 12px;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   position: relative;
   z-index: 1;
+  transition: var(--transition);
 }
 
 .card .v {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 800;
   color: var(--eletro-blue);
   position: relative;
   z-index: 1;
+  transition: var(--transition);
 }
 
 .card.kpi {
@@ -209,24 +233,25 @@ nav.tabs {
 }
 
 .card.kpi.active {
-  box-shadow: 0 0 0 2px rgba(0, 51, 160, 0.15);
+  box-shadow: 0 0 0 3px rgba(0, 51, 160, 0.2);
   border-color: var(--eletro-blue);
+  transform: scale(1.02);
 }
 
 /* Cards com cores específicas */
-.card.kpi.total { border-left: 2px solid var(--eletro-blue); }
-.card.kpi.regular { border-left: 2px solid var(--ok); }
-.card.kpi.irregular { border-left: 2px solid var(--bad); }
-.card.kpi.atencao { border-left: 2px solid var(--eletro-orange); }
+.card.kpi.total { border-left: 3px solid var(--eletro-blue); }
+.card.kpi.regular { border-left: 3px solid var(--ok); }
+.card.kpi.irregular { border-left: 3px solid var(--bad); }
+.card.kpi.atencao { border-left: 3px solid var(--eletro-orange); }
 
-/* Controls mais compactos */
+/* Controls com tamanho aumentado */
 .controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin: 14px 0;
+  gap: 10px;
+  margin: 18px 0;
   align-items: center;
-  padding: 14px;
+  padding: 16px;
   background: white;
   border-radius: var(--radius);
   border: 1px solid var(--line);
@@ -235,29 +260,32 @@ nav.tabs {
 }
 
 .controls:hover {
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
 }
 
 .controls .sep {
-  height: 18px;
+  height: 20px;
   border-left: 1px solid var(--line);
+  transition: var(--transition);
 }
 
 input[type="search"], select, button {
   background: white;
   border: 1px solid var(--line);
-  border-radius: 5px;
-  padding: 6px 10px;
-  font-size: 11px;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 13px;
   transition: var(--transition);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   font-family: inherit;
 }
 
 input[type="search"]:focus, select:focus {
   outline: none;
   border-color: var(--eletro-blue);
-  box-shadow: 0 0 0 2px rgba(0, 51, 160, 0.08);
+  box-shadow: 0 0 0 3px rgba(0, 51, 160, 0.15);
+  transform: translateY(-1px);
 }
 
 button {
@@ -266,7 +294,7 @@ button {
   transition: var(--transition);
   position: relative;
   overflow: hidden;
-  font-size: 11px;
+  font-size: 13px;
   font-family: inherit;
 }
 
@@ -284,8 +312,8 @@ button::before {
 }
 
 button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 button:hover::before {
@@ -297,12 +325,13 @@ button:hover::before {
   background: var(--gradient);
   color: white;
   border: none;
-  box-shadow: 0 1px 4px rgba(0, 51, 160, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 51, 160, 0.2);
 }
 
 .btn-primary:hover {
   background: var(--gradient-light);
-  box-shadow: 0 2px 6px rgba(0, 51, 160, 0.2);
+  box-shadow: 0 4px 14px rgba(0, 51, 160, 0.3);
+  transform: translateY(-2px);
 }
 
 .btn-ghost {
@@ -317,14 +346,14 @@ button:hover::before {
   color: var(--eletro-blue);
 }
 
-/* Badges mais compactas */
+/* Badges com tamanho aumentado */
 .badge {
-  padding: 3px 6px;
-  border-radius: 12px;
-  font-size: 9px;
+  padding: 4px 8px;
+  border-radius: 14px;
+  font-size: 11px;
   font-weight: 600;
   display: inline-flex;
-  gap: 3px;
+  gap: 4px;
   align-items: center;
   white-space: nowrap;
   transition: var(--transition);
@@ -332,7 +361,8 @@ button:hover::before {
 }
 
 .badge:hover {
-  transform: scale(1.02);
+  transform: scale(1.05) translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .badge.regular {
@@ -359,7 +389,7 @@ button:hover::before {
   border: 1px solid rgba(148, 163, 184, 0.3);
 }
 
-/* Table mais compacta - MELHORIA PRINCIPAL */
+/* Table com tamanho aumentado - CORREÇÃO DOS ÍCONES */
 .table-container {
   background: white;
   border-radius: var(--radius);
@@ -370,14 +400,15 @@ button:hover::before {
 }
 
 .table-container:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
   background: white;
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .table thead {
@@ -385,18 +416,19 @@ button:hover::before {
 }
 
 .table th {
-  padding: 10px 8px;
+  padding: 12px 10px;
   text-align: left;
   font-weight: 600;
   color: var(--muted);
   border-bottom: 1px solid var(--line);
-  font-size: 10px;
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.3px;
+  transition: var(--transition);
 }
 
 .table td {
-  padding: 8px;
+  padding: 10px;
   border-bottom: 1px solid var(--line);
   transition: var(--transition);
   vertical-align: middle;
@@ -407,8 +439,8 @@ button:hover::before {
 }
 
 .table tbody tr:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+  transform: translateY(-2px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
 }
 
 .table tbody tr:hover td {
@@ -417,27 +449,29 @@ button:hover::before {
 
 .row-actions {
   display: flex;
-  gap: 4px;
+  gap: 6px;
   flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
 }
 
 .sub {
   color: var(--muted);
-  font-size: 9px;
-  margin-top: 1px;
-  line-height: 1.2;
+  font-size: 11px;
+  margin-top: 2px;
+  line-height: 1.3;
 }
 
 /* Melhorias específicas para CNPJ - SEM QUEBRA DE LINHA */
 .cnpj-cell {
   white-space: nowrap;
   font-family: 'SF Mono', 'Monaco', 'Consolas', 'Roboto Mono', monospace;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .empresa-cell {
-  max-width: 160px;
-  min-width: 130px;
+  max-width: 200px;
+  min-width: 160px;
 }
 
 .empresa-name {
@@ -446,48 +480,59 @@ button:hover::before {
   overflow: hidden;
   text-overflow: ellipsis;
   display: block;
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .local-info {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 9px;
+  font-size: 11px;
 }
 
 .ie-info {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
   white-space: nowrap;
-  font-size: 9px;
+  font-size: 11px;
 }
 
-/* Botões de ação compactos com ícones */
+/* CORREÇÃO DOS BOTÕES DE AÇÃO - ÍCONES DENTRO DO ESQUADRO */
 .btn-icon {
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
-  font-size: 11px;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: var(--transition);
+}
+
+.btn-icon:hover {
+  transform: scale(1.1) translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
 }
 
 .btn-icon-text {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 6px;
-  font-size: 10px;
+  gap: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  transition: var(--transition);
 }
 
-/* Modal mais compacto */
+.btn-icon-text:hover {
+  transform: translateY(-1px);
+}
+
+/* Modal com tamanho aumentado */
 .modal {
   position: fixed;
   inset: 0;
@@ -495,36 +540,43 @@ button:hover::before {
   display: none;
   align-items: center;
   justify-content: center;
-  padding: 14px;
+  padding: 20px;
   z-index: 1000;
   animation: fadeIn 0.3s ease-out;
 }
 
 .modal .box {
-  width: min(900px, 95%);
+  width: min(920px, 95%);
   background: white;
   border-radius: var(--radius);
-  padding: 18px;
-  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.15);
+  padding: 24px;
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.25);
   border: 1px solid var(--line);
   animation: modalSlideIn 0.3s ease-out;
   max-height: 90vh;
   overflow-y: auto;
+  transition: var(--transition);
+}
+
+.modal .box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 50px -8px rgba(0, 0, 0, 0.3);
 }
 
 .modal h3 {
-  margin: 0 0 14px;
-  font-size: 18px;
+  margin: 0 0 18px;
+  font-size: 22px;
   font-weight: 700;
   background: var(--gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  transition: var(--transition);
 }
 
 .grid-2, .grid-4 {
   display: grid;
-  gap: 10px;
+  gap: 14px;
 }
 
 .grid-2 { grid-template-columns: 1fr 1fr; }
@@ -533,101 +585,116 @@ button:hover::before {
 .field {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
 }
 
 label {
   color: var(--muted);
   font-weight: 600;
-  font-size: 11px;
+  font-size: 13px;
+  transition: var(--transition);
 }
 
 hr.sep {
   border: none;
   border-top: 1px solid var(--line);
-  margin: 14px 0;
+  margin: 18px 0;
+  transition: var(--transition);
 }
 
 .footer {
-  margin-top: 14px;
+  margin-top: 18px;
   color: var(--muted);
-  font-size: 9px;
+  font-size: 11px;
   text-align: center;
-  padding: 10px;
+  padding: 14px;
   background: #F8FAFC;
   border-radius: var(--radius);
+  transition: var(--transition);
 }
 
-/* Toast mais compacto */
+.footer:hover {
+  background: #F1F5F9;
+}
+
+/* Toast com tamanho aumentado */
 .toast {
   position: fixed;
-  right: 14px;
-  bottom: 14px;
+  right: 20px;
+  bottom: 20px;
   background: white;
   color: var(--text);
-  padding: 10px 14px;
+  padding: 14px 18px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   border: 1px solid var(--line);
   opacity: 0;
-  transform: translateY(14px);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(20px) scale(0.95);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1000;
   display: flex;
   align-items: center;
-  gap: 6px;
-  border-left: 2px solid var(--ok);
-  font-size: 11px;
+  gap: 8px;
+  border-left: 4px solid var(--ok);
+  font-size: 13px;
 }
 
 .toast.show {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
+}
+
+.toast:hover {
+  transform: translateY(-2px) scale(1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
 /* KPI dots */
 .kpi-dot {
   display: inline-block;
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
+  transition: var(--transition);
 }
 
 .dot-regular { background: var(--ok); }
 .dot-atencao { background: var(--eletro-orange); }
 .dot-irregular { background: var(--bad); }
 
-/* Charts mais compactos */
+/* Charts com tamanho aumentado */
 .chart {
   background: white;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 14px;
+  padding: 18px;
   box-shadow: var(--shadow);
   transition: var(--transition);
 }
 
 .chart:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .chart h5 {
-  margin: 0 0 10px;
+  margin: 0 0 14px;
   color: var(--muted);
   font-weight: 600;
-  font-size: 12px;
+  font-size: 15px;
+  transition: var(--transition);
 }
 
 .canvas {
   width: 100%;
-  height: 200px;
+  height: 240px;
+  transition: var(--transition);
 }
 
 .grid-2c {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: 18px;
 }
 
 /* Progress indicator */
@@ -637,7 +704,7 @@ hr.sep {
   top: 0;
   left: 0;
   width: 100%;
-  height: 2px;
+  height: 3px;
   background: var(--gradient);
   z-index: 2000;
   animation: progress 2s infinite;
@@ -657,11 +724,12 @@ hr.sep {
   background: white;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 6px;
+  padding: 8px;
   box-shadow: var(--shadow);
   z-index: 25;
-  min-width: 140px;
+  min-width: 160px;
   animation: fadeInUp 0.3s ease;
+  transition: var(--transition);
 }
 
 .mobile-menu-content.show {
@@ -670,23 +738,24 @@ hr.sep {
 
 .mobile-menu-content button {
   width: 100%;
-  margin-bottom: 1px;
+  margin-bottom: 2px;
   text-align: left;
-  font-size: 10px;
-  padding: 5px 6px;
+  font-size: 12px;
+  padding: 6px 8px;
 }
 
 /* Status com validade */
 .status-with-date {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
 }
 
 .expiry-date {
-  font-size: 8px;
+  font-size: 10px;
   color: var(--muted);
   font-weight: 500;
+  transition: var(--transition);
 }
 
 .expiry-date.expired {
@@ -709,27 +778,33 @@ hr.sep {
   font-weight: 600;
 }
 
-/* Animações */
+/* Animações melhoradas */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { 
+    opacity: 0; 
+    transform: scale(0.95);
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1);
+  }
 }
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(20px) scale(0.95);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
 @keyframes modalSlideIn {
   from {
     opacity: 0;
-    transform: translateY(-14px) scale(0.98);
+    transform: translateY(-20px) scale(0.9);
   }
   to {
     opacity: 1;
@@ -739,7 +814,20 @@ hr.sep {
 
 @keyframes progress {
   0% { transform: translateX(-100%); }
+  50% { transform: translateX(0%); }
   100% { transform: translateX(100%); }
+}
+
+/* Efeitos de shimmer para loading */
+.shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
 /* Responsive */
@@ -769,7 +857,7 @@ hr.sep {
 
 @media (max-width: 768px) {
   main {
-    padding: 10px;
+    padding: 14px;
   }
   
   .grid-2, .grid-4 {
@@ -799,12 +887,12 @@ hr.sep {
   
   /* Ajustes específicos para mobile na tabela */
   .table th, .table td {
-    padding: 6px 4px;
+    padding: 8px 6px;
   }
   
   .empresa-cell {
-    max-width: 120px;
-    min-width: 100px;
+    max-width: 140px;
+    min-width: 120px;
   }
   
   .btn-icon-text span {
@@ -812,7 +900,7 @@ hr.sep {
   }
   
   .btn-icon-text {
-    width: 24px;
+    width: 32px;
     padding: 0;
     justify-content: center;
   }
@@ -822,7 +910,29 @@ hr.sep {
 .btn-with-icon {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  transition: var(--transition);
+}
+
+/* Efeito de pulso para elementos importantes */
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(0, 51, 160, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(0, 51, 160, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 51, 160, 0); }
+}
+
+/* Efeito de brilho para elementos ativos */
+.glow {
+  box-shadow: 0 0 10px rgba(0, 51, 160, 0.3);
+  transition: var(--transition);
+}
+
+.glow:hover {
+  box-shadow: 0 0 15px rgba(0, 51, 160, 0.5);
 }
 </style>
 </head>
@@ -971,7 +1081,7 @@ hr.sep {
         <input type="text" id="me_ie" placeholder="Inscrição Estadual">
       </div>
       <hr class="sep">
-      <div style="display: flex; gap: 6px; justify-content: flex-end">
+      <div style="display: flex; gap: 8px; justify-content: flex-end">
         <button id="me_cancel" class="btn-ghost">Cancelar</button>
         <button id="me_save" class="btn-primary">Salvar</button>
       </div>
@@ -1510,10 +1620,10 @@ function renderKPIs() {
 function renderTable() {
   const filtered = state.empresas.filter(matchAllCadastro);
   
-  tblHead.innerHTML = '<tr><th>Empresa</th><th>CNPJ</th><th>IE</th><th>Federal</th><th>Estadual</th><th>Municipal</th><th>FGTS</th><th style="width:70px">Ações</th></tr>';
+  tblHead.innerHTML = '<tr><th>Empresa</th><th>CNPJ</th><th>IE</th><th>Federal</th><th>Estadual</th><th>Municipal</th><th>FGTS</th><th style="width:80px">Ações</th></tr>';
   
   if (filtered.length === 0) {
-    tblBody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 24px; color: var(--muted);">Nenhum registro encontrado</td></tr>';
+    tblBody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 30px; color: var(--muted);">Nenhum registro encontrado</td></tr>';
     return;
   }
   
