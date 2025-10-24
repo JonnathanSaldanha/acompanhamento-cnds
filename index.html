@@ -296,6 +296,9 @@ button {
   overflow: hidden;
   font-size: 13px;
   font-family: inherit;
+  /* CORREÇÃO: Garantir que botões não fiquem desativados */
+  pointer-events: auto !important;
+  opacity: 1 !important;
 }
 
 button::before {
@@ -778,6 +781,42 @@ hr.sep {
   font-weight: 600;
 }
 
+/* CORREÇÃO: Estilos para paginação */
+.paginacao {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin: 15px 0;
+  padding: 10px;
+  background: white;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+}
+
+.btn-pagina {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-pagina:hover:not(.disabled) {
+  background: #F8FAFC;
+  border-color: var(--eletro-blue);
+  color: var(--eletro-blue);
+  transform: translateY(-1px);
+}
+
+.btn-pagina.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
 /* Animações melhoradas */
 @keyframes fadeIn {
   from { 
@@ -933,6 +972,16 @@ hr.sep {
 
 .glow:hover {
   box-shadow: 0 0 15px rgba(0, 51, 160, 0.5);
+}
+
+/* CORREÇÃO: Garantir que nenhum elemento esteja bloqueando interações */
+body * {
+  pointer-events: auto !important;
+}
+
+/* CORREÇÃO: Remover qualquer overlay que possa estar bloqueando */
+.overlay-block {
+  display: none !important;
 }
 </style>
 </head>
@@ -1173,12 +1222,23 @@ hr.sep {
   </div>
 
   <script>
+// ===== CORREÇÃO: Verificar se há algum elemento bloqueando =====
+console.log('Inicializando sistema CND...');
+
 // ===== Constantes & helpers =====
 const STATUSES = ['REGULAR','IRREGULAR','OBS','NÃO VERIFICADA'];
 const GROUPS = ['federal','estadual','municipal','fgts'];
 const STORAGE_MASTER_KEY = 'cnds_data';
 const LEGACY_KEYS = ['cnds_data_v3_2','cnds_data_v3_1','cnds_data_v3','cnds_data_v2'];
 const ALL_UF = ['AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MG','MS','MT','PA','PB','PE','PI','PR','RJ','RN','RO','RR','RS','SC','SE','SP','TO'];
+
+// ===== SISTEMA DE BACKUP SEGURO =====
+const BACKUP_KEYS = {
+  current: STORAGE_MASTER_KEY,
+  backup1: 'cnds_backup_1',
+  backup2: 'cnds_backup_2', 
+  backup3: 'cnds_backup_3'
+};
 
 // Seletores DOM
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -1207,6 +1267,114 @@ const getToday = () => {
   return `${year}-${month}-${day}`;
 };
 
+// ===== VALIDAÇÃO REAL DE CNPJ =====
+function validarCNPJ(cnpj) {
+  cnpj = cnpj.replace(/[^\d]/g, '');
+  
+  if (cnpj.length !== 14) return false;
+  
+  // Elimina CNPJs inválidos conhecidos
+  if (/^(\d)\1{13}$/.test(cnpj)) return false;
+  
+  // Valida DVs
+  let tamanho = cnpj.length - 2;
+  let numeros = cnpj.substring(0, tamanho);
+  let digitos = cnpj.substring(tamanho);
+  let soma = 0;
+  let pos = tamanho - 7;
+  
+  for (let i = tamanho; i >= 1; i--) {
+    soma += numeros.charAt(tamanho - i) * pos--;
+    if (pos < 2) pos = 9;
+  }
+  
+  let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+  if (resultado !== parseInt(digitos.charAt(0))) return false;
+  
+  tamanho = tamanho + 1;
+  numeros = cnpj.substring(0, tamanho);
+  soma = 0;
+  pos = tamanho - 7;
+  
+  for (let i = tamanho; i >= 1; i--) {
+    soma += numeros.charAt(tamanho - i) * pos--;
+    if (pos < 2) pos = 9;
+  }
+  
+  resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+  if (resultado !== parseInt(digitos.charAt(1))) return false;
+  
+  return true;
+}
+
+// ===== SISTEMA DE BACKUP SEGURO =====
+function createSafeBackup() {
+  const data = JSON.stringify(state, null, 2);
+  
+  // Rotação de backups (mantém 3 versões)
+  const backup3 = localStorage.getItem(BACKUP_KEYS.backup2);
+  if (backup3) localStorage.setItem(BACKUP_KEYS.backup3, backup3);
+  
+  const backup2 = localStorage.getItem(BACKUP_KEYS.backup1);
+  if (backup2) localStorage.setItem(BACKUP_KEYS.backup2, backup2);
+  
+  localStorage.setItem(BACKUP_KEYS.backup1, data);
+}
+
+function restoreFromBackup(backupKey) {
+  const backupData = load(backupKey);
+  if (backupData && backupData.empresas && backupData.cnds) {
+    return backupData;
+  }
+  return null;
+}
+
+function showRestoreOptions() {
+  const backups = [];
+  
+  // Verificar quais backups existem
+  Object.entries(BACKUP_KEYS).forEach(([name, key]) => {
+    if (key !== STORAGE_MASTER_KEY) {
+      const data = load(key);
+      if (data) {
+        const backupInfo = data._backupInfo || { timestamp: new Date().getTime() };
+        const date = new Date(backupInfo.timestamp).toLocaleString('pt-BR');
+        backups.push({ name: `Backup ${name.replace('backup', '')}`, key, date });
+      }
+    }
+  });
+  
+  if (backups.length === 0) {
+    alert('Nenhum backup encontrado para recuperação.');
+    return;
+  }
+  
+  // Criar interface simples para seleção
+  let message = 'Selecione o backup para recuperar:\n\n';
+  backups.forEach((backup, index) => {
+    message += `${index + 1}. ${backup.name} (${backup.date})\n`;
+  });
+  
+  const choice = prompt(message + '\nDigite o número do backup:');
+  const selectedIndex = parseInt(choice) - 1;
+  
+  if (selectedIndex >= 0 && selectedIndex < backups.length) {
+    const selectedBackup = backups[selectedIndex];
+    if (confirm(`ATENÇÃO: Isso substituirá todos os dados atuais pelo ${selectedBackup.name}. Continuar?`)) {
+      const restoredData = restoreFromBackup(selectedBackup.key);
+      if (restoredData) {
+        state = restoredData;
+        save(STORAGE_MASTER_KEY, state);
+        renderAll();
+        refreshEmpresaFilter();
+        showToast(`Backup ${selectedBackup.name} recuperado com sucesso!`);
+      } else {
+        alert('Erro ao recuperar backup. Dados corrompidos.');
+      }
+    }
+  }
+}
+
 // ===== Estado & recuperação =====
 function load(key) { 
   try { 
@@ -1217,8 +1385,14 @@ function load(key) {
 }
 
 function save(key, value) { 
+  // Adicionar informação de backup
+  if (!value._backupInfo) {
+    value._backupInfo = { timestamp: new Date().getTime(), version: value.schemaVersion || 4 };
+  }
+  
   localStorage.setItem(key, JSON.stringify(value)); 
   if (key === STORAGE_MASTER_KEY) {
+    createSafeBackup(); // Backup seguro sempre que salvar
     autoSave();
   }
 }
@@ -1293,6 +1467,68 @@ if (!state) {
 } else {
   state = migrateIfNeeded(state);
   save(STORAGE_MASTER_KEY, state);
+}
+
+// ===== PAGINAÇÃO =====
+const ITENS_POR_PAGINA = 50;
+let paginaAtual = 1;
+let dadosFiltrados = [];
+
+function setupPaginacao() {
+  const paginacaoContainer = document.createElement('div');
+  paginacaoContainer.className = 'paginacao';
+  paginacaoContainer.style.cssText = `
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 15px 0;
+    padding: 10px;
+    background: white;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+  `;
+  
+  return paginacaoContainer;
+}
+
+function renderPaginacao() {
+  const totalPaginas = Math.ceil(dadosFiltrados.length / ITENS_POR_PAGINA);
+  
+  if (totalPaginas <= 1) {
+    const existingPagination = $('.paginacao');
+    if (existingPagination) existingPagination.remove();
+    return;
+  }
+  
+  let paginacaoContainer = $('.paginacao');
+  if (!paginacaoContainer) {
+    paginacaoContainer = setupPaginacao();
+    $('#view-lista').insertBefore(paginacaoContainer, $('.footer'));
+  }
+  
+  paginacaoContainer.innerHTML = `
+    <button class="btn-ghost btn-pagina ${paginaAtual === 1 ? 'disabled' : ''}" data-pagina="${paginaAtual - 1}">‹ Anterior</button>
+    <span style="color: var(--muted); font-size: 12px;">
+      Página ${paginaAtual} de ${totalPaginas} (${dadosFiltrados.length} itens)
+    </span>
+    <button class="btn-ghost btn-pagina ${paginaAtual === totalPaginas ? 'disabled' : ''}" data-pagina="${paginaAtual + 1}">Próxima ›</button>
+  `;
+  
+  // Event listeners para paginação
+  $$('.btn-pagina').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      if (btn.classList.contains('disabled')) return;
+      paginaAtual = parseInt(e.target.dataset.pagina);
+      renderTable();
+    });
+  });
+}
+
+function getDadosPagina() {
+  const inicio = (paginaAtual - 1) * ITENS_POR_PAGINA;
+  const fim = inicio + ITENS_POR_PAGINA;
+  return dadosFiltrados.slice(inicio, fim);
 }
 
 // ===== Tabs =====
@@ -1387,10 +1623,18 @@ $('#me_save').addEventListener('click', () => {
     alert('Informe a razão social.');
     return;
   }
+  
+  // VALIDAÇÃO REAL DO CNPJ
   if (!/^\d{14}$/.test(cnpj)) {
     alert('CNPJ inválido (14 dígitos).');
     return;
   }
+  
+  if (!validarCNPJ(cnpj)) {
+    alert('CNPJ inválido. Verifique os dígitos.');
+    return;
+  }
+  
   if (!uf) {
     alert('Selecione a UF.');
     return;
@@ -1639,16 +1883,27 @@ function renderKPIs() {
 }
 
 function renderTable() {
-  const filtered = state.empresas.filter(matchAllCadastro);
+  dadosFiltrados = state.empresas.filter(matchAllCadastro);
+  
+  // Resetar para primeira página se necessário
+  const totalPaginas = Math.ceil(dadosFiltrados.length / ITENS_POR_PAGINA);
+  if (paginaAtual > totalPaginas && totalPaginas > 0) {
+    paginaAtual = 1;
+  }
+  
+  const dadosPagina = getDadosPagina();
   
   tblHead.innerHTML = '<tr><th>Empresa</th><th>CNPJ</th><th>IE</th><th>Federal</th><th>Estadual</th><th>Municipal</th><th>FGTS</th><th style="width:80px">Ações</th></tr>';
   
-  if (filtered.length === 0) {
+  if (dadosPagina.length === 0) {
     tblBody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 30px; color: var(--muted);">Nenhum registro encontrado</td></tr>';
+    // Remover paginação se não há dados
+    const existingPagination = $('.paginacao');
+    if (existingPagination) existingPagination.remove();
     return;
   }
   
-  const rows = filtered.map(e => {
+  const rows = dadosPagina.map(e => {
     const key = keyOf(e);
     
     return `<tr>
@@ -1682,6 +1937,9 @@ function renderTable() {
   $$('.btnEditEmp').forEach(b => {
     b.addEventListener('click', () => openModalEmpresa(b.dataset.key));
   });
+  
+  // Renderizar paginação
+  renderPaginacao();
 }
 
 function renderAll() {
@@ -1827,21 +2085,18 @@ function drawBar(ctx, labels, values, colors) {
   });
 }
 
-// CORREÇÃO: Função computeStatusCounts corrigida
+// CORREÇÃO: Função computeStatusCounts corrigida para separar ATENÇÃO e NÃO VERIFICADA
 function computeStatusCounts() {
   const counts = { reg: 0, irr: 0, ate: 0, nao: 0 };
   
   state.empresas.forEach(e => {
     const key = keyOf(e);
-    const statuses = GROUPS.map(g => rowStatus(key, g));
-    
-    // Contar cada status individualmente para o dashboard
-    // (diferente da lógica de filtro onde uma empresa pode ter múltiplos status)
-    statuses.forEach(status => {
+    GROUPS.forEach(g => {
+      const status = rowStatus(key, g);
       if (status === 'REGULAR') counts.reg++;
       else if (status === 'IRREGULAR') counts.irr++;
-      else if (isAtencao(status)) counts.ate++;
-      else if (status === 'NÃO VERIFICADA') counts.nao++;
+      else if (status === 'OBS') counts.ate++; // ATENÇÃO
+      else if (status === 'NÃO VERIFICADA') counts.nao++; // NÃO VERIFICADA
     });
   });
   
@@ -1875,96 +2130,155 @@ function renderCharts() {
   drawBar(ufCtx, uf.labels, uf.values, Array(uf.labels.length).fill('#0033A0'));
 }
 
-// ===== Event Listeners =====
-document.getElementById('btnNovo').addEventListener('click', () => openModalEmpresa(null));
-document.getElementById('btnExportCSV').addEventListener('click', exportCSV);
-document.getElementById('btnExportXLS').addEventListener('click', exportXLS);
-document.getElementById('btnExport').addEventListener('click', () => {
-  const data = JSON.stringify(state, null, 2);
-  const blob = new Blob([data], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'cnds_backup.json';
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('Backup exportado com sucesso');
-});
-document.getElementById('btnAutoBackup').addEventListener('click', pickBackupFile);
-document.getElementById('btnImport').addEventListener('click', () => document.getElementById('importFile').click());
-document.getElementById('btnRescue').addEventListener('click', () => {
-  const cands = scanCandidates();
-  if (cands.length > 1) {
-    // Implementar modal de seleção se houver múltiplas opções
-    showToast('Use "Carregar backup" para dados antigos');
-  } else if (cands.length === 1) {
-    state = migrateIfNeeded(load(cands[0].key));
-    save(STORAGE_MASTER_KEY, state);
-    renderAll();
-    showToast('Dados recuperados');
-  } else {
-    alert('Nenhum dado antigo encontrado.');
-  }
-});
-
-document.getElementById('importFile').addEventListener('change', (ev) => {
-  const file = ev.target.files[0];
-  if (!file) return;
-  
-  const reader = new FileReader();
-  reader.onload = () => {
-    try {
-      const obj = JSON.parse(reader.result);
-      if (!obj.empresas || !obj.cnds) throw new Error('Estrutura inválida');
-      
-      state = migrateIfNeeded(obj);
-      save(STORAGE_MASTER_KEY, state);
-      renderAll();
-      refreshEmpresaFilter();
-      showToast('Backup carregado com sucesso');
-    } catch(e) {
-      alert('Arquivo inválido: ' + e.message);
-    }
+// ===== FEEDBACK VISUAL =====
+function showProgress() {
+  const progress = $('#progress');
+  progress.style.display = 'block';
+  return () => {
+    progress.style.display = 'none';
   };
-  reader.readAsText(file);
-});
+}
 
-// Filtros
-q.addEventListener('input', renderAll);
-ufFilter.addEventListener('change', renderAll);
-empresaFilter.addEventListener('change', renderAll);
-tipoCND.addEventListener('change', renderAll);
-statusFilter.addEventListener('change', () => {
-  quick = null;
-  renderAll();
-});
-modeSel.addEventListener('change', renderAll);
+// ===== CORREÇÃO: Inicialização dos Event Listeners =====
+function initializeEventListeners() {
+  console.log('Inicializando event listeners...');
+  
+  // CORREÇÃO: Garantir que todos os botões tenham event listeners
+  document.getElementById('btnNovo').addEventListener('click', () => {
+    console.log('Botão Novo clicado');
+    openModalEmpresa(null);
+  });
+  
+  document.getElementById('btnExportCSV').addEventListener('click', () => {
+    console.log('Botão CSV clicado');
+    exportCSV();
+  });
+  
+  document.getElementById('btnExportXLS').addEventListener('click', () => {
+    console.log('Botão Excel clicado');
+    exportXLS();
+  });
+  
+  document.getElementById('btnExport').addEventListener('click', () => {
+    console.log('Botão Backup clicado');
+    const data = JSON.stringify(state, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'cnds_backup.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Backup exportado com sucesso');
+  });
+  
+  document.getElementById('btnAutoBackup').addEventListener('click', () => {
+    console.log('Botão Auto Backup clicado');
+    pickBackupFile();
+  });
+  
+  document.getElementById('btnImport').addEventListener('click', () => {
+    console.log('Botão Importar clicado');
+    document.getElementById('importFile').click();
+  });
 
-document.getElementById('btnLimpar').addEventListener('click', () => {
-  q.value = '';
-  ufFilter.value = '';
-  empresaFilter.value = '';
-  tipoCND.value = '';
-  statusFilter.value = '';
-  quick = null;
-  renderAll();
-});
+  // CORREÇÃO: Botão recuperar com sistema seguro
+  document.getElementById('btnRescue').addEventListener('click', () => {
+    console.log('Botão Recuperar clicado');
+    showRestoreOptions();
+  });
 
-// Mobile menu
-document.getElementById('btnMobileMenu').addEventListener('click', () => {
-  document.getElementById('mobileMenuContent').classList.toggle('show');
-});
+  document.getElementById('importFile').addEventListener('change', (ev) => {
+    const file = ev.target.files[0];
+    if (!file) return;
+    
+    const hideProgress = showProgress();
+    
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const obj = JSON.parse(reader.result);
+        if (!obj.empresas || !obj.cnds) throw new Error('Estrutura inválida');
+        
+        state = migrateIfNeeded(obj);
+        save(STORAGE_MASTER_KEY, state);
+        renderAll();
+        refreshEmpresaFilter();
+        showToast('Backup carregado com sucesso');
+      } catch(e) {
+        alert('Arquivo inválido: ' + e.message);
+      } finally {
+        hideProgress();
+      }
+    };
+    reader.readAsText(file);
+  });
 
-// Mobile buttons
-document.getElementById('btnNovoMobile').addEventListener('click', () => openModalEmpresa(null));
-document.getElementById('btnExportXLSMobile').addEventListener('click', exportXLS);
-document.getElementById('btnExportCSVMobile').addEventListener('click', exportCSV);
-document.getElementById('btnExportMobile').addEventListener('click', () => document.getElementById('btnExport').click());
-document.getElementById('btnAutoBackupMobile').addEventListener('click', pickBackupFile);
-document.getElementById('btnImportMobile').addEventListener('click', () => document.getElementById('importFile').click());
-document.getElementById('btnRescueMobile').addEventListener('click', () => document.getElementById('btnRescue').click());
+  // Filtros
+  q.addEventListener('input', () => {
+    paginaAtual = 1;
+    renderAll();
+  });
+  
+  ufFilter.addEventListener('change', () => {
+    paginaAtual = 1;
+    renderAll();
+  });
+  
+  empresaFilter.addEventListener('change', () => {
+    paginaAtual = 1;
+    renderAll();
+  });
+  
+  tipoCND.addEventListener('change', () => {
+    paginaAtual = 1;
+    renderAll();
+  });
+  
+  statusFilter.addEventListener('change', () => {
+    quick = null;
+    paginaAtual = 1;
+    renderAll();
+  });
+  
+  modeSel.addEventListener('change', () => {
+    paginaAtual = 1;
+    renderAll();
+  });
+
+  document.getElementById('btnLimpar').addEventListener('click', () => {
+    q.value = '';
+    ufFilter.value = '';
+    empresaFilter.value = '';
+    tipoCND.value = '';
+    statusFilter.value = '';
+    quick = null;
+    paginaAtual = 1;
+    renderAll();
+  });
+
+  // Mobile menu
+  document.getElementById('btnMobileMenu').addEventListener('click', () => {
+    document.getElementById('mobileMenuContent').classList.toggle('show');
+  });
+
+  // Mobile buttons
+  document.getElementById('btnNovoMobile').addEventListener('click', () => openModalEmpresa(null));
+  document.getElementById('btnExportXLSMobile').addEventListener('click', exportXLS);
+  document.getElementById('btnExportCSVMobile').addEventListener('click', exportCSV);
+  document.getElementById('btnExportMobile').addEventListener('click', () => document.getElementById('btnExport').click());
+  document.getElementById('btnAutoBackupMobile').addEventListener('click', pickBackupFile);
+  document.getElementById('btnImportMobile').addEventListener('click', () => document.getElementById('importFile').click());
+
+  // CORREÇÃO: Botão recuperar mobile com sistema seguro
+  document.getElementById('btnRescueMobile').addEventListener('click', showRestoreOptions);
+
+  console.log('Event listeners inicializados com sucesso!');
+}
 
 // Inicialização
+console.log('Iniciando renderização...');
+initializeEventListeners();
 renderAll();
 
 // Formatação automática do CNPJ
@@ -1973,6 +2287,8 @@ document.getElementById('me_cnpj').addEventListener('input', function(e) {
   if (value.length > 14) value = value.slice(0, 14);
   e.target.value = fmtCNPJ(value);
 });
+
+console.log('Sistema CND inicializado com sucesso!');
   </script>
 </body>
 </html>
