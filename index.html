@@ -1545,29 +1545,47 @@ function rowStatus(key, g) {
   return (state.cnds[key] && state.cnds[key][g] && state.cnds[key][g].status) || 'NÃO VERIFICADA';
 }
 
+// CORREÇÃO: Função de filtro corrigida
 function matchAllCadastro(e) {
   const term = q.value.trim().toLowerCase();
   const key = keyOf(e);
   
   const okEmpresa = !empresaFilter.value || e.empresa === empresaFilter.value;
-  const okTerm = !term || [e.cnpj, e.municipio, e.uf, e.inscricao_estadual].some(v => String(v || '').toLowerCase().includes(term));
+  const okTerm = !term || [e.empresa, e.cnpj, e.municipio, e.uf, e.inscricao_estadual]
+    .some(v => String(v || '').toLowerCase().includes(term));
   const okUF = !ufFilter.value || e.uf === ufFilter.value;
   
   const okStatus = (function() {
-    const v = statusFilter.value;
-    if (!v) return true;
-    if (v === 'ATENCAO') {
+    const statusFilterValue = statusFilter.value;
+    const tipoCNDValue = tipoCND.value;
+    
+    if (!statusFilterValue && !tipoCNDValue) return true;
+    
+    // Se há filtro de tipo CND específico
+    if (tipoCNDValue) {
+      const status = rowStatus(key, tipoCNDValue);
+      if (!statusFilterValue) return true; // Apenas filtro por tipo
+      
+      // Filtro combinado: tipo CND + status
+      if (statusFilterValue === 'ATENCAO') return isAtencao(status);
+      if (statusFilterValue === 'NAO_VERIFICADA') return status === 'NÃO VERIFICADA';
+      return status === statusFilterValue;
+    }
+    
+    // Apenas filtro de status geral (pelo menos um CND com esse status)
+    if (statusFilterValue === 'ATENCAO') {
       return GROUPS.some(g => isAtencao(rowStatus(key, g)));
     }
-    if (v === 'NAO_VERIFICADA') {
+    if (statusFilterValue === 'NAO_VERIFICADA') {
       return GROUPS.some(g => rowStatus(key, g) === 'NÃO VERIFICADA');
     }
-    return GROUPS.some(g => rowStatus(key, g) === v);
+    return GROUPS.some(g => rowStatus(key, g) === statusFilterValue);
   })();
   
   return okEmpresa && okTerm && okUF && okStatus;
 }
 
+// CORREÇÃO: Função computeOverview corrigida
 function computeOverview() {
   const filtered = state.empresas.filter(matchAllCadastro);
   const t = { total: filtered.length, regular: 0, irregular: 0, atencao: 0 };
@@ -1576,9 +1594,12 @@ function computeOverview() {
     const key = keyOf(e);
     const statuses = GROUPS.map(g => rowStatus(key, g));
     
-    if (statuses.includes('REGULAR')) t.regular++;
-    if (statuses.includes('IRREGULAR')) t.irregular++;
-    if (statuses.some(s => isAtencao(s))) t.atencao++;
+    // Contar quantos CNDs de cada status existem nos filtrados
+    statuses.forEach(status => {
+      if (status === 'REGULAR') t.regular++;
+      else if (status === 'IRREGULAR') t.irregular++;
+      else if (isAtencao(status)) t.atencao++;
+    });
   });
   
   return t;
@@ -1806,21 +1827,25 @@ function drawBar(ctx, labels, values, colors) {
   });
 }
 
+// CORREÇÃO: Função computeStatusCounts corrigida
 function computeStatusCounts() {
-  const items = state.empresas;
-  let reg = 0, irr = 0, ate = 0, nao = 0;
+  const counts = { reg: 0, irr: 0, ate: 0, nao: 0 };
   
-  items.forEach(e => {
+  state.empresas.forEach(e => {
     const key = keyOf(e);
     const statuses = GROUPS.map(g => rowStatus(key, g));
     
-    if (statuses.includes('IRREGULAR')) irr++;
-    else if (statuses.some(s => isAtencao(s))) ate++;
-    else if (statuses.includes('REGULAR')) reg++;
-    else nao++;
+    // Contar cada status individualmente para o dashboard
+    // (diferente da lógica de filtro onde uma empresa pode ter múltiplos status)
+    statuses.forEach(status => {
+      if (status === 'REGULAR') counts.reg++;
+      else if (status === 'IRREGULAR') counts.irr++;
+      else if (isAtencao(status)) counts.ate++;
+      else if (status === 'NÃO VERIFICADA') counts.nao++;
+    });
   });
   
-  return { reg, irr, ate, nao };
+  return counts;
 }
 
 function computeUFCounts() {
