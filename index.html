@@ -18,9 +18,9 @@
   --eletro-blue: #0033A0;
   --eletro-yellow: #FFB81C;
   --eletro-orange: #FF6B00;
-  --shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --radius: 12px;
-  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.06), 0 1px 4px -1px rgba(0, 0, 0, 0.04);
+  --radius: 6px;
+  --transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   --gradient: linear-gradient(135deg, #0033A0, #0066CC);
   --gradient-light: linear-gradient(135deg, #0047BB, #0088FF);
   --gradient-card: linear-gradient(135deg, #FFFFFF, #F8FAFC);
@@ -34,66 +34,67 @@
 
 html, body {
   height: 100%;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  /* Patronização de fontes */
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 body {
   background: var(--bg);
   color: var(--text);
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 13px;
+  line-height: 1.3;
 }
 
-/* Header */
+/* Header mais compacto */
 header {
   background: var(--gradient);
   color: white;
-  padding: 16px 24px;
+  padding: 10px 14px;
   display: flex;
   align-items: center;
-  gap: 16px;
-  box-shadow: 0 4px 20px rgba(0, 51, 160, 0.3);
+  gap: 10px;
+  box-shadow: 0 1px 8px rgba(0, 51, 160, 0.15);
   position: sticky;
   top: 0;
   z-index: 100;
 }
 
 .logo {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 5px;
   background: var(--eletro-yellow);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--eletro-blue);
   font-weight: bold;
-  font-size: 18px;
-  box-shadow: 0 4px 12px rgba(255, 184, 28, 0.4);
+  font-size: 12px;
+  box-shadow: 0 1px 6px rgba(255, 184, 28, 0.25);
 }
 
 .title {
-  font-size: 20px;
+  font-size: 15px;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
-/* Main content */
+/* Main content mais compacto */
 main {
-  padding: 24px;
+  padding: 14px;
   max-width: 1400px;
   margin: 0 auto;
   width: 100%;
 }
 
-/* Tabs */
+/* Tabs mais compactas */
 nav.tabs {
   background: white;
   border-radius: var(--radius);
-  padding: 8px;
+  padding: 3px;
   display: inline-flex;
-  gap: 4px;
-  margin-bottom: 24px;
+  gap: 1px;
+  margin-bottom: 14px;
   box-shadow: var(--shadow);
   border: 1px solid var(--line);
   transition: var(--transition);
@@ -102,14 +103,15 @@ nav.tabs {
 .tabs button {
   background: transparent;
   border: none;
-  padding: 12px 20px;
-  border-radius: 8px;
+  padding: 6px 12px;
+  border-radius: 5px;
   cursor: pointer;
   font-weight: 600;
   color: var(--muted);
   transition: var(--transition);
   position: relative;
   overflow: hidden;
+  font-size: 11px;
 }
 
 .tabs button::before {
@@ -126,7 +128,7 @@ nav.tabs {
 
 .tabs button:hover {
   color: var(--eletro-blue);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 .tabs button:hover::before {
@@ -137,23 +139,23 @@ nav.tabs {
 .tabs button.active {
   background: var(--gradient);
   color: white;
-  box-shadow: 0 4px 12px rgba(0, 51, 160, 0.3);
+  box-shadow: 0 1px 6px rgba(0, 51, 160, 0.15);
   transform: translateY(0);
 }
 
-/* KPIs */
+/* KPIs mais compactos */
 .kpis {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin: 20px 0;
+  gap: 10px;
+  margin: 14px 0;
 }
 
 .card {
   background: var(--gradient-card);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 20px;
+  padding: 14px;
   box-shadow: var(--shadow);
   transition: var(--transition);
   position: relative;
@@ -174,8 +176,8 @@ nav.tabs {
 }
 
 .card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .card:hover::before {
@@ -183,19 +185,19 @@ nav.tabs {
 }
 
 .card h4 {
-  margin: 0 0 12px;
+  margin: 0 0 6px;
   color: var(--muted);
   font-weight: 600;
-  font-size: 14px;
+  font-size: 11px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 5px;
   position: relative;
   z-index: 1;
 }
 
 .card .v {
-  font-size: 32px;
+  font-size: 20px;
   font-weight: 800;
   color: var(--eletro-blue);
   position: relative;
@@ -207,24 +209,24 @@ nav.tabs {
 }
 
 .card.kpi.active {
-  box-shadow: 0 0 0 3px rgba(0, 51, 160, 0.2);
+  box-shadow: 0 0 0 2px rgba(0, 51, 160, 0.15);
   border-color: var(--eletro-blue);
 }
 
 /* Cards com cores específicas */
-.card.kpi.total { border-left: 4px solid var(--eletro-blue); }
-.card.kpi.regular { border-left: 4px solid var(--ok); }
-.card.kpi.irregular { border-left: 4px solid var(--bad); }
-.card.kpi.atencao { border-left: 4px solid var(--eletro-orange); }
+.card.kpi.total { border-left: 2px solid var(--eletro-blue); }
+.card.kpi.regular { border-left: 2px solid var(--ok); }
+.card.kpi.irregular { border-left: 2px solid var(--bad); }
+.card.kpi.atencao { border-left: 2px solid var(--eletro-orange); }
 
-/* Controls */
+/* Controls mais compactos */
 .controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin: 24px 0;
+  gap: 8px;
+  margin: 14px 0;
   align-items: center;
-  padding: 20px;
+  padding: 14px;
   background: white;
   border-radius: var(--radius);
   border: 1px solid var(--line);
@@ -233,28 +235,29 @@ nav.tabs {
 }
 
 .controls:hover {
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
 }
 
 .controls .sep {
-  height: 24px;
+  height: 18px;
   border-left: 1px solid var(--line);
 }
 
 input[type="search"], select, button {
   background: white;
   border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 12px 16px;
-  font-size: 14px;
+  border-radius: 5px;
+  padding: 6px 10px;
+  font-size: 11px;
   transition: var(--transition);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  font-family: inherit;
 }
 
 input[type="search"]:focus, select:focus {
   outline: none;
   border-color: var(--eletro-blue);
-  box-shadow: 0 0 0 3px rgba(0, 51, 160, 0.1);
+  box-shadow: 0 0 0 2px rgba(0, 51, 160, 0.08);
 }
 
 button {
@@ -263,6 +266,8 @@ button {
   transition: var(--transition);
   position: relative;
   overflow: hidden;
+  font-size: 11px;
+  font-family: inherit;
 }
 
 button::before {
@@ -279,8 +284,8 @@ button::before {
 }
 
 button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
 }
 
 button:hover::before {
@@ -292,12 +297,12 @@ button:hover::before {
   background: var(--gradient);
   color: white;
   border: none;
-  box-shadow: 0 4px 12px rgba(0, 51, 160, 0.3);
+  box-shadow: 0 1px 4px rgba(0, 51, 160, 0.15);
 }
 
 .btn-primary:hover {
   background: var(--gradient-light);
-  box-shadow: 0 6px 20px rgba(0, 51, 160, 0.4);
+  box-shadow: 0 2px 6px rgba(0, 51, 160, 0.2);
 }
 
 .btn-ghost {
@@ -312,21 +317,22 @@ button:hover::before {
   color: var(--eletro-blue);
 }
 
-/* Badges */
+/* Badges mais compactas */
 .badge {
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px;
+  padding: 3px 6px;
+  border-radius: 12px;
+  font-size: 9px;
   font-weight: 600;
   display: inline-flex;
-  gap: 6px;
+  gap: 3px;
   align-items: center;
   white-space: nowrap;
   transition: var(--transition);
+  line-height: 1;
 }
 
 .badge:hover {
-  transform: scale(1.05);
+  transform: scale(1.02);
 }
 
 .badge.regular {
@@ -353,7 +359,7 @@ button:hover::before {
   border: 1px solid rgba(148, 163, 184, 0.3);
 }
 
-/* Table */
+/* Table mais compacta - MELHORIA PRINCIPAL */
 .table-container {
   background: white;
   border-radius: var(--radius);
@@ -364,13 +370,14 @@ button:hover::before {
 }
 
 .table-container:hover {
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
   background: white;
+  font-size: 11px;
 }
 
 .table thead {
@@ -378,20 +385,21 @@ button:hover::before {
 }
 
 .table th {
-  padding: 16px;
+  padding: 10px 8px;
   text-align: left;
   font-weight: 600;
   color: var(--muted);
   border-bottom: 1px solid var(--line);
-  font-size: 13px;
+  font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.2px;
 }
 
 .table td {
-  padding: 16px;
+  padding: 8px;
   border-bottom: 1px solid var(--line);
   transition: var(--transition);
+  vertical-align: middle;
 }
 
 .table tbody tr {
@@ -400,7 +408,7 @@ button:hover::before {
 
 .table tbody tr:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
 }
 
 .table tbody tr:hover td {
@@ -409,17 +417,77 @@ button:hover::before {
 
 .row-actions {
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+  gap: 4px;
+  flex-wrap: nowrap;
 }
 
 .sub {
   color: var(--muted);
-  font-size: 12px;
-  margin-top: 4px;
+  font-size: 9px;
+  margin-top: 1px;
+  line-height: 1.2;
 }
 
-/* Modal */
+/* Melhorias específicas para CNPJ - SEM QUEBRA DE LINHA */
+.cnpj-cell {
+  white-space: nowrap;
+  font-family: 'SF Mono', 'Monaco', 'Consolas', 'Roboto Mono', monospace;
+  font-size: 10px;
+}
+
+.empresa-cell {
+  max-width: 160px;
+  min-width: 130px;
+}
+
+.empresa-name {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  font-size: 11px;
+}
+
+.local-info {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 9px;
+}
+
+.ie-info {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+  font-size: 9px;
+}
+
+/* Botões de ação compactos com ícones */
+.btn-icon {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.btn-icon-text {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px;
+  font-size: 10px;
+}
+
+/* Modal mais compacto */
 .modal {
   position: fixed;
   inset: 0;
@@ -427,7 +495,7 @@ button:hover::before {
   display: none;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 14px;
   z-index: 1000;
   animation: fadeIn 0.3s ease-out;
 }
@@ -436,15 +504,17 @@ button:hover::before {
   width: min(900px, 95%);
   background: white;
   border-radius: var(--radius);
-  padding: 24px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  padding: 18px;
+  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.15);
   border: 1px solid var(--line);
   animation: modalSlideIn 0.3s ease-out;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .modal h3 {
-  margin: 0 0 20px;
-  font-size: 24px;
+  margin: 0 0 14px;
+  font-size: 18px;
   font-weight: 700;
   background: var(--gradient);
   -webkit-background-clip: text;
@@ -454,7 +524,7 @@ button:hover::before {
 
 .grid-2, .grid-4 {
   display: grid;
-  gap: 16px;
+  gap: 10px;
 }
 
 .grid-2 { grid-template-columns: 1fr 1fr; }
@@ -463,50 +533,51 @@ button:hover::before {
 .field {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 5px;
 }
 
 label {
   color: var(--muted);
   font-weight: 600;
-  font-size: 14px;
+  font-size: 11px;
 }
 
 hr.sep {
   border: none;
   border-top: 1px solid var(--line);
-  margin: 20px 0;
+  margin: 14px 0;
 }
 
 .footer {
-  margin-top: 24px;
+  margin-top: 14px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 9px;
   text-align: center;
-  padding: 16px;
+  padding: 10px;
   background: #F8FAFC;
   border-radius: var(--radius);
 }
 
-/* Toast */
+/* Toast mais compacto */
 .toast {
   position: fixed;
-  right: 24px;
-  bottom: 24px;
+  right: 14px;
+  bottom: 14px;
   background: white;
   color: var(--text);
-  padding: 16px 20px;
+  padding: 10px 14px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   border: 1px solid var(--line);
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(14px);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1000;
   display: flex;
   align-items: center;
-  gap: 12px;
-  border-left: 4px solid var(--ok);
+  gap: 6px;
+  border-left: 2px solid var(--ok);
+  font-size: 11px;
 }
 
 .toast.show {
@@ -517,8 +588,8 @@ hr.sep {
 /* KPI dots */
 .kpi-dot {
   display: inline-block;
-  width: 8px;
-  height: 8px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
 }
 
@@ -526,36 +597,37 @@ hr.sep {
 .dot-atencao { background: var(--eletro-orange); }
 .dot-irregular { background: var(--bad); }
 
-/* Charts */
+/* Charts mais compactos */
 .chart {
   background: white;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 20px;
+  padding: 14px;
   box-shadow: var(--shadow);
   transition: var(--transition);
 }
 
 .chart:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .chart h5 {
-  margin: 0 0 16px;
+  margin: 0 0 10px;
   color: var(--muted);
   font-weight: 600;
+  font-size: 12px;
 }
 
 .canvas {
   width: 100%;
-  height: 280px;
+  height: 200px;
 }
 
 .grid-2c {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: 14px;
 }
 
 /* Progress indicator */
@@ -565,7 +637,7 @@ hr.sep {
   top: 0;
   left: 0;
   width: 100%;
-  height: 3px;
+  height: 2px;
   background: var(--gradient);
   z-index: 2000;
   animation: progress 2s infinite;
@@ -585,10 +657,10 @@ hr.sep {
   background: white;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 12px;
+  padding: 6px;
   box-shadow: var(--shadow);
   z-index: 25;
-  min-width: 200px;
+  min-width: 140px;
   animation: fadeInUp 0.3s ease;
 }
 
@@ -598,19 +670,21 @@ hr.sep {
 
 .mobile-menu-content button {
   width: 100%;
-  margin-bottom: 4px;
+  margin-bottom: 1px;
   text-align: left;
+  font-size: 10px;
+  padding: 5px 6px;
 }
 
 /* Status com validade */
 .status-with-date {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 1px;
 }
 
 .expiry-date {
-  font-size: 11px;
+  font-size: 8px;
   color: var(--muted);
   font-weight: 500;
 }
@@ -644,7 +718,7 @@ hr.sep {
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(14px);
   }
   to {
     opacity: 1;
@@ -655,7 +729,7 @@ hr.sep {
 @keyframes modalSlideIn {
   from {
     opacity: 0;
-    transform: translateY(-20px) scale(0.95);
+    transform: translateY(-14px) scale(0.98);
   }
   to {
     opacity: 1;
@@ -695,7 +769,7 @@ hr.sep {
 
 @media (max-width: 768px) {
   main {
-    padding: 16px;
+    padding: 10px;
   }
   
   .grid-2, .grid-4 {
@@ -722,13 +796,33 @@ hr.sep {
   .kpis {
     grid-template-columns: 1fr;
   }
+  
+  /* Ajustes específicos para mobile na tabela */
+  .table th, .table td {
+    padding: 6px 4px;
+  }
+  
+  .empresa-cell {
+    max-width: 120px;
+    min-width: 100px;
+  }
+  
+  .btn-icon-text span {
+    display: none;
+  }
+  
+  .btn-icon-text {
+    width: 24px;
+    padding: 0;
+    justify-content: center;
+  }
 }
 
 /* Botões com ícones */
 .btn-with-icon {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 }
 </style>
 </head>
@@ -740,14 +834,14 @@ hr.sep {
     <div class="title">Acompanhamento de CNDs</div>
     <div style="margin-left:auto" class="row-actions">
       <button id="btnNovo" class="btn-primary btn-with-icon">
-        <span>+</span> Novo cadastro
+        <span>+</span> Novo
       </button>
-      <button id="btnExportXLS" class="btn-ghost">Exportar Excel</button>
-      <button id="btnExportCSV" class="btn-ghost">Exportar CSV</button>
-      <button id="btnExport" class="btn-ghost">Salvar backup</button>
-      <button id="btnAutoBackup" class="btn-ghost">Backup automático</button>
-      <button id="btnImport" class="btn-ghost">Carregar backup</button>
-      <button id="btnRescue" class="btn-ghost">Recuperar dados</button>
+      <button id="btnExportXLS" class="btn-ghost">Excel</button>
+      <button id="btnExportCSV" class="btn-ghost">CSV</button>
+      <button id="btnExport" class="btn-ghost">Backup</button>
+      <button id="btnAutoBackup" class="btn-ghost">Auto Backup</button>
+      <button id="btnImport" class="btn-ghost">Importar</button>
+      <button id="btnRescue" class="btn-ghost">Recuperar</button>
       <input id="importFile" type="file" accept="application/json" hidden />
     </div>
     
@@ -755,13 +849,13 @@ hr.sep {
     <div class="mobile-menu">
       <button id="btnMobileMenu" class="btn-ghost">☰</button>
       <div class="mobile-menu-content" id="mobileMenuContent">
-        <button id="btnNovoMobile" class="btn-ghost">+ Novo cadastro</button>
-        <button id="btnExportXLSMobile" class="btn-ghost">Exportar Excel</button>
-        <button id="btnExportCSVMobile" class="btn-ghost">Exportar CSV</button>
-        <button id="btnExportMobile" class="btn-ghost">Salvar backup</button>
-        <button id="btnAutoBackupMobile" class="btn-ghost">Backup automático</button>
-        <button id="btnImportMobile" class="btn-ghost">Carregar backup</button>
-        <button id="btnRescueMobile" class="btn-ghost">Recuperar dados</button>
+        <button id="btnNovoMobile" class="btn-ghost">+ Novo</button>
+        <button id="btnExportXLSMobile" class="btn-ghost">Excel</button>
+        <button id="btnExportCSVMobile" class="btn-ghost">CSV</button>
+        <button id="btnExportMobile" class="btn-ghost">Backup</button>
+        <button id="btnAutoBackupMobile" class="btn-ghost">Auto Backup</button>
+        <button id="btnImportMobile" class="btn-ghost">Importar</button>
+        <button id="btnRescueMobile" class="btn-ghost">Recuperar</button>
       </div>
     </div>
   </header>
@@ -786,8 +880,8 @@ hr.sep {
       <span class="sep"></span>
       <label style="color:var(--muted);font-weight:600">Modo:</label>
       <select id="mode"><option value="CADASTRO">Cadastros</option><option value="CNPJ">CNPJ</option></select>
-      <button id="btnLimpar" class="btn-ghost">Limpar filtros</button>
-      <input type="search" id="q" placeholder="Buscar em CNPJ/IE/Município/UF…"/>
+      <button id="btnLimpar" class="btn-ghost">Limpar</button>
+      <input type="search" id="q" placeholder="Buscar…"/>
     </div>
 
     <section id="view-lista">
@@ -877,7 +971,7 @@ hr.sep {
         <input type="text" id="me_ie" placeholder="Inscrição Estadual">
       </div>
       <hr class="sep">
-      <div style="display: flex; gap: 8px; justify-content: flex-end">
+      <div style="display: flex; gap: 6px; justify-content: flex-end">
         <button id="me_cancel" class="btn-ghost">Cancelar</button>
         <button id="me_save" class="btn-primary">Salvar</button>
       </div>
@@ -957,8 +1051,8 @@ hr.sep {
       <hr class="sep">
       <div class="row-actions" style="justify-content: space-between">
         <div class="row-actions">
-          <button id="btnEditarEmpresa" class="btn-ghost">Editar cadastro</button>
-          <button id="btnExcluirEmpresa" class="btn-ghost" style="color:#DC2626">Excluir</button>
+          <button id="btnEditarEmpresa" class="btn-ghost btn-icon-text">✏️ <span>Editar</span></button>
+          <button id="btnExcluirEmpresa" class="btn-ghost btn-icon-text" style="color:#DC2626">🗑️ <span>Excluir</span></button>
         </div>
         <div class="row-actions">
           <button id="btnFechar" class="btn-ghost">Cancelar</button>
@@ -1416,10 +1510,10 @@ function renderKPIs() {
 function renderTable() {
   const filtered = state.empresas.filter(matchAllCadastro);
   
-  tblHead.innerHTML = '<tr><th>Empresa</th><th>CNPJ</th><th>IE</th><th>Federal</th><th>Estadual</th><th>Municipal</th><th>FGTS</th><th style="width:220px">Ações</th></tr>';
+  tblHead.innerHTML = '<tr><th>Empresa</th><th>CNPJ</th><th>IE</th><th>Federal</th><th>Estadual</th><th>Municipal</th><th>FGTS</th><th style="width:70px">Ações</th></tr>';
   
   if (filtered.length === 0) {
-    tblBody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: var(--muted);">Nenhum registro encontrado</td></tr>';
+    tblBody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 24px; color: var(--muted);">Nenhum registro encontrado</td></tr>';
     return;
   }
   
@@ -1427,16 +1521,22 @@ function renderTable() {
     const key = keyOf(e);
     
     return `<tr>
-      <td>${e.empresa}<div class="sub">${e.municipio}/${e.uf} • IE ${e.inscricao_estadual || '—'}</div></td>
-      <td>${fmtCNPJ(e.cnpj)}</td>
+      <td class="empresa-cell">
+        <span class="empresa-name">${e.empresa}</span>
+        <div class="sub">
+          <div class="local-info">${e.municipio}/${e.uf}</div>
+          <div class="ie-info">IE: ${e.inscricao_estadual || '—'}</div>
+        </div>
+      </td>
+      <td class="cnpj-cell">${fmtCNPJ(e.cnpj)}</td>
       <td>${e.inscricao_estadual || '—'}</td>
       <td>${statusBadge(rowStatus(key, 'federal'))}</td>
       <td>${statusBadge(rowStatus(key, 'estadual'))}</td>
       <td>${statusBadge(rowStatus(key, 'municipal'))}</td>
       <td>${statusBadge(rowStatus(key, 'fgts'))}</td>
       <td class="row-actions">
-        <button data-key="${key}" class="btnEditar btn-ghost">Editar CND</button>
-        <button data-key="${key}" class="btnEditEmp btn-ghost">Editar</button>
+        <button data-key="${key}" class="btnEditar btn-ghost btn-icon" title="Editar CND">✏️</button>
+        <button data-key="${key}" class="btnEditEmp btn-ghost btn-icon" title="Editar Cadastro">📝</button>
       </td>
     </tr>`;
   }).join('');
