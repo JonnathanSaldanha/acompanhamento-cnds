@@ -1910,15 +1910,36 @@ function rowStatus(key, g) {
   return (state.cnds[key] && state.cnds[key][g] && state.cnds[key][g].status) || 'NÃO VERIFICADA';
 }
 
-// CORREÇÃO: Função de filtro corrigida
+// CORREÇÃO: Função de filtro corrigida para aceitar CNPJ em qualquer formato
 function matchAllCadastro(e) {
-  const term = q.value.trim().toLowerCase();
+  const term = q.value.trim();
   const key = keyOf(e);
   
   const okEmpresa = !empresaFilter.value || e.empresa === empresaFilter.value;
-  const okTerm = !term || [e.empresa, e.cnpj, e.municipio, e.uf, e.inscricao_estadual]
-    .some(v => String(v || '').toLowerCase().includes(term));
   const okUF = !ufFilter.value || e.uf === ufFilter.value;
+  
+  // CORREÇÃO AVANÇADA: Busca inteligente que aceita CNPJ em qualquer formato
+  let okTerm = true;
+  if (term) {
+    const termLower = term.toLowerCase();
+    const cnpjLimpo = onlyDigits(term);
+    const cnpjFormatado = fmtCNPJ(cnpjLimpo);
+    
+    // Busca em todos os campos, incluindo CNPJ formatado e sem formatação
+    okTerm = [
+      e.empresa,
+      e.cnpj, // CNPJ sem formatação
+      fmtCNPJ(e.cnpj), // CNPJ formatado
+      e.municipio, 
+      e.uf, 
+      e.inscricao_estadual
+    ].some(v => {
+      const valor = String(v || '').toLowerCase();
+      return valor.includes(termLower) || 
+             (cnpjLimpo.length === 14 && valor.includes(cnpjLimpo)) ||
+             (cnpjFormatado && valor.includes(cnpjFormatado.toLowerCase()));
+    });
+  }
   
   const okStatus = (function() {
     const statusFilterValue = statusFilter.value;
@@ -1929,15 +1950,14 @@ function matchAllCadastro(e) {
     // Se há filtro de tipo CND específico
     if (tipoCNDValue) {
       const status = rowStatus(key, tipoCNDValue);
-      if (!statusFilterValue) return true; // Apenas filtro por tipo
+      if (!statusFilterValue) return true;
       
-      // Filtro combinado: tipo CND + status
       if (statusFilterValue === 'ATENCAO') return isAtencao(status);
       if (statusFilterValue === 'NAO_VERIFICADA') return status === 'NÃO VERIFICADA';
       return status === statusFilterValue;
     }
     
-    // Apenas filtro de status geral (pelo menos um CND com esse status)
+    // Apenas filtro de status geral
     if (statusFilterValue === 'ATENCAO') {
       return GROUPS.some(g => isAtencao(rowStatus(key, g)));
     }
