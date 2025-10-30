@@ -1001,6 +1001,7 @@ body * {
       <button id="btnAutoBackup" class="btn-ghost">Auto Backup</button>
       <button id="btnImport" class="btn-ghost">Importar</button>
       <button id="btnRescue" class="btn-ghost">Recuperar</button>
+      <button id="btnLimparStorage" class="btn-ghost" style="color: var(--bad)">🧹 Limpar Cache</button>
       <input id="importFile" type="file" accept="application/json" hidden />
     </div>
     
@@ -1015,6 +1016,7 @@ body * {
         <button id="btnAutoBackupMobile" class="btn-ghost">Auto Backup</button>
         <button id="btnImportMobile" class="btn-ghost">Importar</button>
         <button id="btnRescueMobile" class="btn-ghost">Recuperar</button>
+        <button id="btnLimparStorageMobile" class="btn-ghost" style="color: var(--bad)">Limpar Cache</button>
       </div>
     </div>
   </header>
@@ -1232,7 +1234,7 @@ const STORAGE_MASTER_KEY = 'cnds_data';
 const LEGACY_KEYS = ['cnds_data_v3_2','cnds_data_v3_1','cnds_data_v3','cnds_data_v2'];
 const ALL_UF = ['AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MG','MS','MT','PA','PB','PE','PI','PR','RJ','RN','RO','RR','RS','SC','SE','SP','TO'];
 
-// ===== SISTEMA DE BACKUP SEGURO =====
+// ===== SISTEMA DE BACKUP SEGURO OTIMIZADO =====
 const BACKUP_KEYS = {
   current: STORAGE_MASTER_KEY,
   backup1: 'cnds_backup_1',
@@ -1307,18 +1309,104 @@ function validarCNPJ(cnpj) {
   return true;
 }
 
-// ===== SISTEMA DE BACKUP SEGURO =====
+// ===== SISTEMA DE BACKUP SEGURO OTIMIZADO =====
 function createSafeBackup() {
-  const data = JSON.stringify(state, null, 2);
-  
-  // Rotação de backups (mantém 3 versões)
-  const backup3 = localStorage.getItem(BACKUP_KEYS.backup2);
-  if (backup3) localStorage.setItem(BACKUP_KEYS.backup3, backup3);
-  
-  const backup2 = localStorage.getItem(BACKUP_KEYS.backup1);
-  if (backup2) localStorage.setItem(BACKUP_KEYS.backup2, backup2);
-  
-  localStorage.setItem(BACKUP_KEYS.backup1, data);
+  try {
+    const data = JSON.stringify(state, null, 2);
+    
+    // Verificar se os dados são muito grandes
+    if (data.length > 4 * 1024 * 1024) { // 4MB
+      console.warn('Dados muito grandes para backup completo, criando backup compactado');
+      // Criar versão compactada sem espaços
+      const compactData = JSON.stringify(state);
+      
+      // Rotação de backups (mantém apenas 2 versões para economizar espaço)
+      const backup2 = localStorage.getItem(BACKUP_KEYS.backup1);
+      if (backup2) localStorage.setItem(BACKUP_KEYS.backup2, backup2);
+      
+      localStorage.setItem(BACKUP_KEYS.backup1, compactData);
+      return;
+    }
+    
+    // Rotação de backups (mantém apenas 2 versões)
+    const backup2 = localStorage.getItem(BACKUP_KEYS.backup1);
+    if (backup2) localStorage.setItem(BACKUP_KEYS.backup2, backup2);
+    
+    localStorage.setItem(BACKUP_KEYS.backup1, data);
+    
+  } catch (e) {
+    console.error('Erro no backup:', e);
+    // Não quebrar o fluxo principal se o backup falhar
+  }
+}
+
+// ===== FUNÇÃO DE LIMPEZA DE BACKUPS ANTIGOS =====
+function limparBackupsAntigos() {
+  try {
+    const keysToRemove = [];
+    
+    // Verificar tamanho atual do localStorage
+    let totalSize = 0;
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('cnds_')) {
+        const value = localStorage.getItem(key);
+        totalSize += value ? value.length : 0;
+        
+        // Marcar backups muito antigos para remoção (exceto o atual)
+        if (key !== STORAGE_MASTER_KEY && key !== BACKUP_KEYS.backup1) {
+          keysToRemove.push(key);
+        }
+      }
+    }
+    
+    // Se ainda estiver perto do limite, remover mais backups
+    if (totalSize > 4 * 1024 * 1024) { // 4MB
+      keysToRemove.push(BACKUP_KEYS.backup2);
+    }
+    
+    // Remover chaves selecionadas
+    keysToRemove.forEach(key => {
+      localStorage.removeItem(key);
+      console.log('Removido backup antigo:', key);
+    });
+    
+    return keysToRemove.length;
+    
+  } catch (e) {
+    console.error('Erro ao limpar backups:', e);
+    return 0;
+  }
+}
+
+// ===== CONTROLE DE ESPAÇO NO STORAGE =====
+function verificarEspacoStorage() {
+  try {
+    let totalSize = 0;
+    const items = [];
+    
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      const value = localStorage.getItem(key);
+      const size = value ? value.length : 0;
+      totalSize += size;
+      
+      if (key && key.startsWith('cnds_')) {
+        items.push({ key, size: (size / 1024).toFixed(2) + ' KB' });
+      }
+    }
+    
+    console.log('Uso total do storage:', (totalSize / 1024 / 1024).toFixed(2), 'MB');
+    console.log('Itens CND:', items);
+    
+    return {
+      totalMB: (totalSize / 1024 / 1024).toFixed(2),
+      items: items
+    };
+  } catch (e) {
+    console.error('Erro ao verificar storage:', e);
+    return null;
+  }
 }
 
 function restoreFromBackup(backupKey) {
@@ -1385,15 +1473,48 @@ function load(key) {
 }
 
 function save(key, value) { 
-  // Adicionar informação de backup
-  if (!value._backupInfo) {
-    value._backupInfo = { timestamp: new Date().getTime(), version: value.schemaVersion || 4 };
-  }
-  
-  localStorage.setItem(key, JSON.stringify(value)); 
-  if (key === STORAGE_MASTER_KEY) {
-    createSafeBackup(); // Backup seguro sempre que salvar
-    autoSave();
+  try {
+    // Adicionar informação de backup
+    if (!value._backupInfo) {
+      value._backupInfo = { 
+        timestamp: new Date().getTime(), 
+        version: value.schemaVersion || 4,
+        size: JSON.stringify(value).length
+      };
+    }
+    
+    // Tentar salvar
+    localStorage.setItem(key, JSON.stringify(value));
+    
+    if (key === STORAGE_MASTER_KEY) {
+      // Limpar backups antigos antes de criar novo
+      limparBackupsAntigos();
+      createSafeBackup();
+      autoSave();
+    }
+    
+    return true;
+    
+  } catch (e) {
+    if (e.name === 'QuotaExceededError') {
+      console.error('Storage cheio, executando limpeza emergencial...');
+      
+      // Limpeza emergencial
+      localStorage.removeItem(BACKUP_KEYS.backup3);
+      localStorage.removeItem(BACKUP_KEYS.backup2);
+      
+      // Tentar novamente
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+        showToast('Dados salvos (backups antigos removidos)');
+        return true;
+      } catch (e2) {
+        console.error('Falha após limpeza emergencial:', e2);
+        alert('ERRO: Storage cheio. Exporte seus dados e limpe o sistema.');
+        return false;
+      }
+    }
+    throw e;
   }
 }
 
@@ -2188,6 +2309,15 @@ function initializeEventListeners() {
     showRestoreOptions();
   });
 
+  // CORREÇÃO: Botão limpar cache
+  document.getElementById('btnLimparStorage').addEventListener('click', () => {
+    if (confirm('ISSO REMOVERÁ TODOS OS BACKUPS ANTIGOS (exceto dados atuais). Continuar?')) {
+      const removidos = limparBackupsAntigos();
+      const espaco = verificarEspacoStorage();
+      showToast(`${removidos} backups antigos removidos. Espaço: ${espaco?.totalMB}MB`);
+    }
+  });
+
   document.getElementById('importFile').addEventListener('change', (ev) => {
     const file = ev.target.files[0];
     if (!file) return;
@@ -2272,6 +2402,11 @@ function initializeEventListeners() {
 
   // CORREÇÃO: Botão recuperar mobile com sistema seguro
   document.getElementById('btnRescueMobile').addEventListener('click', showRestoreOptions);
+
+  // CORREÇÃO: Botão limpar cache mobile
+  document.getElementById('btnLimparStorageMobile').addEventListener('click', () => {
+    document.getElementById('btnLimparStorage').click();
+  });
 
   console.log('Event listeners inicializados com sucesso!');
 }
