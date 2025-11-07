@@ -168,7 +168,7 @@ nav.tabs:hover {
 /* KPIs com tamanho aumentado */
 .kpis {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 14px;
   margin: 18px 0;
 }
@@ -240,9 +240,11 @@ nav.tabs:hover {
 
 /* Cards com cores específicas */
 .card.kpi.total { border-left: 3px solid var(--eletro-blue); }
-.card.kpi.regular { border-left: 3px solid var(--ok); }
-.card.kpi.irregular { border-left: 3px solid var(--bad); }
-.card.kpi.atencao { border-left: 3px solid var(--eletro-orange); }
+.card.kpi.positiva { border-left: 3px solid var(--ok); }
+.card.kpi.negativa { border-left: 3px solid var(--bad); }
+.card.kpi.pendente { border-left: 3px solid var(--eletro-orange); }
+.card.kpi.positiva-efeito-negativa { border-left: 3px solid #9333EA; }
+.card.kpi.nao-verificado { border-left: 3px solid var(--na); }
 
 /* Controls com tamanho aumentado */
 .controls {
@@ -368,25 +370,37 @@ button:hover::before {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-.badge.regular {
-  background: rgba(5, 150, 105, 0.1);
-  color: #065F46;
-  border: 1px solid rgba(5, 150, 105, 0.3);
+.badge.nao-verificado {
+  background: rgba(148, 163, 184, 0.1);
+  color: #374151;
+  border: 1px solid rgba(148, 163, 184, 0.3);
 }
 
-.badge.irregular {
+.badge.negativa {
   background: rgba(220, 38, 38, 0.1);
   color: #7F1D1D;
   border: 1px solid rgba(220, 38, 38, 0.3);
 }
 
-.badge.atencao {
+.badge.pendente {
   background: rgba(255, 107, 0, 0.1);
   color: #7C2D12;
   border: 1px solid rgba(255, 107, 0, 0.3);
 }
 
-.badge.nao-verificada {
+.badge.positiva {
+  background: rgba(5, 150, 105, 0.1);
+  color: #065F46;
+  border: 1px solid rgba(5, 150, 105, 0.3);
+}
+
+.badge.positiva-efeito-negativa {
+  background: rgba(147, 51, 234, 0.1);
+  color: #581C87;
+  border: 1px solid rgba(147, 51, 234, 0.3);
+}
+
+.badge.nao-aplicavel {
   background: rgba(148, 163, 184, 0.1);
   color: #374151;
   border: 1px solid rgba(148, 163, 184, 0.3);
@@ -577,13 +591,13 @@ button:hover::before {
   transition: var(--transition);
 }
 
-.grid-2, .grid-4 {
+.grid-2, .grid-3 {
   display: grid;
   gap: 14px;
 }
 
 .grid-2 { grid-template-columns: 1fr 1fr; }
-.grid-4 { grid-template-columns: repeat(4, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
 
 .field {
   display: flex;
@@ -661,9 +675,12 @@ hr.sep {
   transition: var(--transition);
 }
 
-.dot-regular { background: var(--ok); }
-.dot-atencao { background: var(--eletro-orange); }
-.dot-irregular { background: var(--bad); }
+.dot-positiva { background: var(--ok); }
+.dot-pendente { background: var(--eletro-orange); }
+.dot-negativa { background: var(--bad); }
+.dot-positiva-efeito-negativa { background: #9333EA; }
+.dot-nao-verificado { background: var(--na); }
+.dot-nao-aplicavel { background: var(--na); }
 
 /* Charts com tamanho aumentado */
 .chart {
@@ -878,7 +895,7 @@ hr.sep {
 
 @media (max-width: 1024px) {
   .kpis {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
   
   .grid-2c {
@@ -899,7 +916,7 @@ hr.sep {
     padding: 14px;
   }
   
-  .grid-2, .grid-4 {
+  .grid-2, .grid-3, .grid-4 {
     grid-template-columns: 1fr;
   }
   
@@ -1037,7 +1054,7 @@ body * {
       <select id="empresaFilter"><option value="">Empresa (todas)</option></select>
       <select id="ufFilter"><option value="">UF (todas)</option></select>
       <select id="tipoCND"><option value="">Tipo de CND (todas)</option><option value="federal">Federal</option><option value="estadual">Estadual</option><option value="municipal">Municipal</option><option value="fgts">FGTS</option></select>
-      <select id="statusFilter"><option value="">Status (todos)</option><option value="REGULAR">REGULAR</option><option value="IRREGULAR">IRREGULAR</option><option value="ATENCAO">ATENÇÃO</option><option value="NAO_VERIFICADA">NÃO VERIFICADA</option></select>
+      <select id="statusFilter"><option value="">Status (todos)</option><option value="POSITIVA">Positiva</option><option value="NEGATIVA">Negativa</option><option value="PENDENTE">Pendente</option><option value="POSITIVA_EFEITO_NEGATIVA">Positiva Efeito Negativa</option><option value="NAO_VERIFICADO">Não Verificado</option><option value="NAO_APLICAVEL">N/A</option></select>
       <span class="sep"></span>
       <label style="color:var(--muted);font-weight:600">Modo:</label>
       <select id="mode"><option value="CADASTRO">Cadastros</option><option value="CNPJ">CNPJ</option></select>
@@ -1127,9 +1144,15 @@ body * {
           </select>
         </div>
       </div>
-      <div class="field">
-        <label>Inscrição Estadual</label>
-        <input type="text" id="me_ie" placeholder="Inscrição Estadual">
+      <div class="grid-2">
+        <div class="field">
+          <label>Inscrição Estadual</label>
+          <input type="text" id="me_ie" placeholder="Inscrição Estadual">
+        </div>
+        <div class="field">
+          <label>Inscrição Municipal</label>
+          <input type="text" id="me_im" placeholder="Inscrição Municipal">
+        </div>
       </div>
       <hr class="sep">
       <div style="display: flex; gap: 8px; justify-content: flex-end">
@@ -1147,10 +1170,12 @@ body * {
         <div class="field">
           <label>FEDERAL — Status</label>
           <select id="federal_status">
-            <option value="REGULAR">REGULAR</option>
-            <option value="IRREGULAR">IRREGULAR</option>
-            <option value="OBS">ATENÇÃO</option>
-            <option value="NÃO VERIFICADA">NÃO VERIFICADA</option>
+            <option value="NAO_VERIFICADO">Não Verificado</option>
+            <option value="NEGATIVA">Negativa</option>
+            <option value="PENDENTE">Pendente</option>
+            <option value="POSITIVA">Positiva</option>
+            <option value="POSITIVA_EFEITO_NEGATIVA">Positiva Efeito Negativa</option>
+            <option value="NAO_APLICAVEL">N/A</option>
           </select>
           <label>Validade</label>
           <input id="federal_validade" type="date">
@@ -1163,10 +1188,12 @@ body * {
         <div class="field">
           <label>ESTADUAL — Status</label>
           <select id="estadual_status">
-            <option value="REGULAR">REGULAR</option>
-            <option value="IRREGULAR">IRREGULAR</option>
-            <option value="OBS">ATENÇÃO</option>
-            <option value="NÃO VERIFICADA">NÃO VERIFICADA</option>
+            <option value="NAO_VERIFICADO">Não Verificado</option>
+            <option value="NEGATIVA">Negativa</option>
+            <option value="PENDENTE">Pendente</option>
+            <option value="POSITIVA">Positiva</option>
+            <option value="POSITIVA_EFEITO_NEGATIVA">Positiva Efeito Negativa</option>
+            <option value="NAO_APLICAVEL">N/A</option>
           </select>
           <label>Validade</label>
           <input id="estadual_validade" type="date">
@@ -1179,10 +1206,12 @@ body * {
         <div class="field">
           <label>MUNICIPAL — Status</label>
           <select id="municipal_status">
-            <option value="REGULAR">REGULAR</option>
-            <option value="IRREGULAR">IRREGULAR</option>
-            <option value="OBS">ATENÇÃO</option>
-            <option value="NÃO VERIFICADA">NÃO VERIFICADA</option>
+            <option value="NAO_VERIFICADO">Não Verificado</option>
+            <option value="NEGATIVA">Negativa</option>
+            <option value="PENDENTE">Pendente</option>
+            <option value="POSITIVA">Positiva</option>
+            <option value="POSITIVA_EFEITO_NEGATIVA">Positiva Efeito Negativa</option>
+            <option value="NAO_APLICAVEL">N/A</option>
           </select>
           <label>Validade</label>
           <input id="municipal_validade" type="date">
@@ -1195,10 +1224,12 @@ body * {
         <div class="field">
           <label>FGTS — Status</label>
           <select id="fgts_status">
-            <option value="REGULAR">REGULAR</option>
-            <option value="IRREGULAR">IRREGULAR</option>
-            <option value="OBS">ATENÇÃO</option>
-            <option value="NÃO VERIFICADA">NÃO VERIFICADA</option>
+            <option value="NAO_VERIFICADO">Não Verificado</option>
+            <option value="NEGATIVA">Negativa</option>
+            <option value="PENDENTE">Pendente</option>
+            <option value="POSITIVA">Positiva</option>
+            <option value="POSITIVA_EFEITO_NEGATIVA">Positiva Efeito Negativa</option>
+            <option value="NAO_APLICAVEL">N/A</option>
           </select>
           <label>Validade</label>
           <input id="fgts_validade" type="date">
@@ -1228,7 +1259,7 @@ body * {
 console.log('Inicializando sistema CND...');
 
 // ===== Constantes & helpers =====
-const STATUSES = ['REGULAR','IRREGULAR','OBS','NÃO VERIFICADA'];
+const STATUSES = ['NAO_VERIFICADO', 'NEGATIVA', 'PENDENTE', 'POSITIVA', 'POSITIVA_EFEITO_NEGATIVA', 'NAO_APLICAVEL'];
 const GROUPS = ['federal','estadual','municipal','fgts'];
 const STORAGE_MASTER_KEY = 'cnds_data';
 const LEGACY_KEYS = ['cnds_data_v3_2','cnds_data_v3_1','cnds_data_v3','cnds_data_v2'];
@@ -1250,8 +1281,15 @@ const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 const fmtCNPJ = c => c && c.length === 14 ? c.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : c;
 const onlyDigits = s => String(s || '').replace(/\D/g, '');
 const norm = s => String(s || '').trim().toUpperCase();
-const uiStatus = s => s === 'OBS' ? 'ATENÇÃO' : s;
-const isAtencao = s => s === 'OBS' || s === 'NÃO VERIFICADA';
+const uiStatus = s => {
+  switch(s) {
+    case 'POSITIVA_EFEITO_NEGATIVA': return 'Positiva Efeito Negativa';
+    case 'NAO_VERIFICADO': return 'Não Verificado';
+    case 'NAO_APLICAVEL': return 'N/A';
+    default: return s;
+  }
+};
+const isAtencao = s => s === 'PENDENTE' || s === 'POSITIVA_EFEITO_NEGATIVA';
 const keyOf = e => [e.cnpj, norm(e.uf), norm(e.municipio), norm(e.inscricao_estadual)].join('|');
 const showToast = (msg) => { 
   const t = $('#toast'); 
@@ -1525,17 +1563,18 @@ function seedFromEmbed() {
       cnpj: "00000000000191",
       municipio: "Rio de Janeiro",
       uf: "RJ",
-      inscricao_estadual: "123456789"
+      inscricao_estadual: "123456789",
+      inscricao_municipal: "987654321"
     }
   ];
   
   const cnds = {};
   empresas.forEach(e => {
     cnds[keyOf(e)] = {
-      federal: { status: 'NÃO VERIFICADA', validade: '', link: '', obs: '' },
-      estadual: { status: 'NÃO VERIFICADA', validade: '', link: '', obs: '' },
-      municipal: { status: 'NÃO VERIFICADA', validade: '', link: '', obs: '' },
-      fgts: { status: 'NÃO VERIFICADA', validade: '', link: '', obs: '' }
+      federal: { status: 'NAO_VERIFICADO', validade: '', link: '', obs: '' },
+      estadual: { status: 'NAO_VERIFICADO', validade: '', link: '', obs: '' },
+      municipal: { status: 'NAO_VERIFICADO', validade: '', link: '', obs: '' },
+      fgts: { status: 'NAO_VERIFICADO', validade: '', link: '', obs: '' }
     };
   });
   
@@ -1545,10 +1584,25 @@ function seedFromEmbed() {
 function migrateIfNeeded(state) {
   if (!state || !state.cnds || !state.empresas) return state;
   
+  // Mapeamento dos status antigos para os novos
+  const statusMapping = {
+    'REGULAR': 'POSITIVA',
+    'IRREGULAR': 'NEGATIVA', 
+    'OBS': 'PENDENTE',
+    'NÃO VERIFICADA': 'NAO_VERIFICADO',
+    'NA': 'NAO_APLICAVEL'
+  };
+  
   Object.keys(state.cnds).forEach(k => {
     GROUPS.forEach(g => {
       if (!state.cnds[k][g]) {
-        state.cnds[k][g] = { status: 'NÃO VERIFICADA', validade: '', link: '', obs: '' };
+        state.cnds[k][g] = { status: 'NAO_VERIFICADO', validade: '', link: '', obs: '' };
+      } else {
+        // Migrar status antigo para novo
+        const oldStatus = state.cnds[k][g].status;
+        if (statusMapping[oldStatus]) {
+          state.cnds[k][g].status = statusMapping[oldStatus];
+        }
       }
     });
   });
@@ -1711,12 +1765,14 @@ function openModalEmpresa(key) {
     $('#me_municipio').value = e.municipio || '';
     $('#me_uf').value = e.uf || '';
     $('#me_ie').value = e.inscricao_estadual || '';
+    $('#me_im').value = e.inscricao_municipal || '';
   } else {
     $('#me_empresa').value = '';
     $('#me_cnpj').value = '';
     $('#me_municipio').value = '';
     $('#me_uf').value = '';
     $('#me_ie').value = '';
+    $('#me_im').value = '';
   }
   
   modal.style.display = 'flex';
@@ -1739,6 +1795,7 @@ $('#me_save').addEventListener('click', () => {
   const municipio = $('#me_municipio').value.trim();
   const uf = $('#me_uf').value;
   const ie = $('#me_ie').value.trim();
+  const im = $('#me_im').value.trim();
   
   if (!empresa) {
     alert('Informe a razão social.');
@@ -1761,7 +1818,7 @@ $('#me_save').addEventListener('click', () => {
     return;
   }
   
-  const novo = { empresa, cnpj, municipio, uf, inscricao_estadual: ie };
+  const novo = { empresa, cnpj, municipio, uf, inscricao_estadual: ie, inscricao_municipal: im };
   const newKey = keyOf(novo);
   
   if (editingKey) {
@@ -1793,10 +1850,10 @@ $('#me_save').addEventListener('click', () => {
   state.empresas.push(novo);
   if (!state.cnds[newKey]) {
     state.cnds[newKey] = {
-      federal: { status: 'NÃO VERIFICADA', validade: '', link: '', obs: '' },
-      estadual: { status: 'NÃO VERIFICADA', validade: '', link: '', obs: '' },
-      municipal: { status: 'NÃO VERIFICADA', validade: '', link: '', obs: '' },
-      fgts: { status: 'NÃO VERIFICADA', validade: '', link: '', obs: '' }
+      federal: { status: 'NAO_VERIFICADO', validade: '', link: '', obs: '' },
+      estadual: { status: 'NAO_VERIFICADO', validade: '', link: '', obs: '' },
+      municipal: { status: 'NAO_VERIFICADO', validade: '', link: '', obs: '' },
+      fgts: { status: 'NAO_VERIFICADO', validade: '', link: '', obs: '' }
     };
   }
   
@@ -1813,17 +1870,17 @@ function openModalCND(key) {
   currentKey = key;
   const e = state.empresas.find(x => keyOf(x) === key);
   const rec = state.cnds[key] || {
-    federal: { status: 'NÃO VERIFICADA', validade: '', link: '', obs: '' },
-    estadual: { status: 'NÃO VERIFICADA', validade: '', link: '', obs: '' },
-    municipal: { status: 'NÃO VERIFICADA', validade: '', link: '', obs: '' },
-    fgts: { status: 'NÃO VERIFICADA', validade: '', link: '', obs: '' }
+    federal: { status: 'NAO_VERIFICADO', validade: '', link: '', obs: '' },
+    estadual: { status: 'NAO_VERIFICADO', validade: '', link: '', obs: '' },
+    municipal: { status: 'NAO_VERIFICADO', validade: '', link: '', obs: '' },
+    fgts: { status: 'NAO_VERIFICADO', validade: '', link: '', obs: '' }
   };
   
   $('#mEmpresa').textContent = `${e.empresa} — ${fmtCNPJ(e.cnpj)}`;
   
   GROUPS.forEach(g => {
     const v = rec[g] || {};
-    $(`#${g}_status`).value = v.status || 'NÃO VERIFICADA';
+    $(`#${g}_status`).value = v.status || 'NAO_VERIFICADO';
     $(`#${g}_validade`).value = v.validade || '';
     $(`#${g}_link`).value = v.link || '';
     $(`#${g}_obs`).value = v.obs || '';
@@ -1907,7 +1964,7 @@ $('#btnExcluirEmpresa').addEventListener('click', () => {
 let quick = null;
 
 function rowStatus(key, g) {
-  return (state.cnds[key] && state.cnds[key][g] && state.cnds[key][g].status) || 'NÃO VERIFICADA';
+  return (state.cnds[key] && state.cnds[key][g] && state.cnds[key][g].status) || 'NAO_VERIFICADO';
 }
 
 // CORREÇÃO: Função de filtro corrigida para aceitar CNPJ em qualquer formato
@@ -1932,7 +1989,8 @@ function matchAllCadastro(e) {
       fmtCNPJ(e.cnpj), // CNPJ formatado
       e.municipio, 
       e.uf, 
-      e.inscricao_estadual
+      e.inscricao_estadual,
+      e.inscricao_municipal
     ].some(v => {
       const valor = String(v || '').toLowerCase();
       return valor.includes(termLower) || 
@@ -1952,17 +2010,21 @@ function matchAllCadastro(e) {
       const status = rowStatus(key, tipoCNDValue);
       if (!statusFilterValue) return true;
       
-      if (statusFilterValue === 'ATENCAO') return isAtencao(status);
-      if (statusFilterValue === 'NAO_VERIFICADA') return status === 'NÃO VERIFICADA';
+      if (statusFilterValue === 'PENDENTE') return isAtencao(status);
+      if (statusFilterValue === 'NAO_VERIFICADO') return status === 'NAO_VERIFICADO';
+      if (statusFilterValue === 'NAO_APLICAVEL') return status === 'NAO_APLICAVEL';
       return status === statusFilterValue;
     }
     
     // Apenas filtro de status geral
-    if (statusFilterValue === 'ATENCAO') {
+    if (statusFilterValue === 'PENDENTE') {
       return GROUPS.some(g => isAtencao(rowStatus(key, g)));
     }
-    if (statusFilterValue === 'NAO_VERIFICADA') {
-      return GROUPS.some(g => rowStatus(key, g) === 'NÃO VERIFICADA');
+    if (statusFilterValue === 'NAO_VERIFICADO') {
+      return GROUPS.some(g => rowStatus(key, g) === 'NAO_VERIFICADO');
+    }
+    if (statusFilterValue === 'NAO_APLICAVEL') {
+      return GROUPS.some(g => rowStatus(key, g) === 'NAO_APLICAVEL');
     }
     return GROUPS.some(g => rowStatus(key, g) === statusFilterValue);
   })();
@@ -1970,20 +2032,31 @@ function matchAllCadastro(e) {
   return okEmpresa && okTerm && okUF && okStatus;
 }
 
-// CORREÇÃO: Função computeOverview corrigida
+// CORREÇÃO: Função computeOverview corrigida - NÃO INCLUI N/A NOS KPIs
 function computeOverview() {
   const filtered = state.empresas.filter(matchAllCadastro);
-  const t = { total: filtered.length, regular: 0, irregular: 0, atencao: 0 };
+  const t = { 
+    total: filtered.length, 
+    positiva: 0, 
+    negativa: 0, 
+    pendente: 0, 
+    positivaEfeitoNegativa: 0, 
+    naoVerificado: 0 
+    // NÃO incluir naoAplicavel aqui para não aparecer nos KPIs
+  };
   
   filtered.forEach(e => {
     const key = keyOf(e);
     const statuses = GROUPS.map(g => rowStatus(key, g));
     
-    // Contar quantos CNDs de cada status existem nos filtrados
+    // Contar quantos CNDs de cada status existem nos filtrados (EXCLUINDO N/A)
     statuses.forEach(status => {
-      if (status === 'REGULAR') t.regular++;
-      else if (status === 'IRREGULAR') t.irregular++;
-      else if (isAtencao(status)) t.atencao++;
+      if (status === 'POSITIVA') t.positiva++;
+      else if (status === 'NEGATIVA') t.negativa++;
+      else if (status === 'PENDENTE') t.pendente++;
+      else if (status === 'POSITIVA_EFEITO_NEGATIVA') t.positivaEfeitoNegativa++;
+      else if (status === 'NAO_VERIFICADO') t.naoVerificado++;
+      // NÃO contar NAO_APLICAVEL para não aparecer nos KPIs
     });
   });
   
@@ -1991,7 +2064,16 @@ function computeOverview() {
 }
 
 function statusBadge(s) {
-  return `<span class="badge ${(s === 'REGULAR') ? 'regular' : (s === 'IRREGULAR') ? 'irregular' : (isAtencao(s) ? 'atencao' : 'nao-verificada')}">${uiStatus(s)}</span>`;
+  const statusClasses = {
+    'POSITIVA': 'positiva',
+    'NEGATIVA': 'negativa', 
+    'PENDENTE': 'pendente',
+    'POSITIVA_EFEITO_NEGATIVA': 'positiva-efeito-negativa',
+    'NAO_VERIFICADO': 'nao-verificado',
+    'NAO_APLICAVEL': 'nao-aplicavel'
+  };
+  
+  return `<span class="badge ${statusClasses[s] || 'nao-verificado'}">${uiStatus(s)}</span>`;
 }
 
 function renderKPIs() {
@@ -2000,25 +2082,39 @@ function renderKPIs() {
   
   k.innerHTML = `
     <div class="card total"><h4>Total de Cadastros</h4><div class="v">${t.total}</div></div>
-    <div class="card kpi regular ${quick === 'REGULAR' ? 'active' : ''}" id="kpi-regular"><h4><span class="kpi-dot dot-regular"></span> CNDs REGULAR</h4><div class="v">${t.regular}</div></div>
-    <div class="card kpi irregular ${quick === 'IRREGULAR' ? 'active' : ''}" id="kpi-irregular"><h4><span class="kpi-dot dot-irregular"></span> CNDs IRREGULAR</h4><div class="v">${t.irregular}</div></div>
-    <div class="card kpi atencao ${quick === 'ATENCAO' ? 'active' : ''}" id="kpi-atencao"><h4><span class="kpi-dot dot-atencao"></span> CNDs ATENÇÃO</h4><div class="v">${t.atencao}</div></div>`;
+    <div class="card kpi positiva ${quick === 'POSITIVA' ? 'active' : ''}" id="kpi-positiva"><h4><span class="kpi-dot dot-positiva"></span> CNDs Positiva</h4><div class="v">${t.positiva}</div></div>
+    <div class="card kpi negativa ${quick === 'NEGATIVA' ? 'active' : ''}" id="kpi-negativa"><h4><span class="kpi-dot dot-negativa"></span> CNDs Negativa</h4><div class="v">${t.negativa}</div></div>
+    <div class="card kpi pendente ${quick === 'PENDENTE' ? 'active' : ''}" id="kpi-pendente"><h4><span class="kpi-dot dot-pendente"></span> CNDs Pendente</h4><div class="v">${t.pendente}</div></div>
+    <div class="card kpi positiva-efeito-negativa ${quick === 'POSITIVA_EFEITO_NEGATIVA' ? 'active' : ''}" id="kpi-positiva-efeito-negativa"><h4><span class="kpi-dot dot-positiva-efeito-negativa"></span> CNDs Positiva Efeito Negativa</h4><div class="v">${t.positivaEfeitoNegativa}</div></div>
+    <div class="card kpi nao-verificado ${quick === 'NAO_VERIFICADO' ? 'active' : ''}" id="kpi-nao-verificado"><h4><span class="kpi-dot dot-nao-verificado"></span> CNDs Não Verificado</h4><div class="v">${t.naoVerificado}</div></div>`;
     
-  $('#kpi-regular').addEventListener('click', () => {
-    quick = quick === 'REGULAR' ? null : 'REGULAR';
-    statusFilter.value = quick === 'REGULAR' ? 'REGULAR' : '';
+  $('#kpi-positiva').addEventListener('click', () => {
+    quick = quick === 'POSITIVA' ? null : 'POSITIVA';
+    statusFilter.value = quick === 'POSITIVA' ? 'POSITIVA' : '';
     renderAll();
   });
   
-  $('#kpi-irregular').addEventListener('click', () => {
-    quick = quick === 'IRREGULAR' ? null : 'IRREGULAR';
-    statusFilter.value = quick === 'IRREGULAR' ? 'IRREGULAR' : '';
+  $('#kpi-negativa').addEventListener('click', () => {
+    quick = quick === 'NEGATIVA' ? null : 'NEGATIVA';
+    statusFilter.value = quick === 'NEGATIVA' ? 'NEGATIVA' : '';
     renderAll();
   });
   
-  $('#kpi-atencao').addEventListener('click', () => {
-    quick = quick === 'ATENCAO' ? null : 'ATENCAO';
-    statusFilter.value = quick === 'ATENCAO' ? 'ATENCAO' : '';
+  $('#kpi-pendente').addEventListener('click', () => {
+    quick = quick === 'PENDENTE' ? null : 'PENDENTE';
+    statusFilter.value = quick === 'PENDENTE' ? 'PENDENTE' : '';
+    renderAll();
+  });
+  
+  $('#kpi-positiva-efeito-negativa').addEventListener('click', () => {
+    quick = quick === 'POSITIVA_EFEITO_NEGATIVA' ? null : 'POSITIVA_EFEITO_NEGATIVA';
+    statusFilter.value = quick === 'POSITIVA_EFEITO_NEGATIVA' ? 'POSITIVA_EFEITO_NEGATIVA' : '';
+    renderAll();
+  });
+  
+  $('#kpi-nao-verificado').addEventListener('click', () => {
+    quick = quick === 'NAO_VERIFICADO' ? null : 'NAO_VERIFICADO';
+    statusFilter.value = quick === 'NAO_VERIFICADO' ? 'NAO_VERIFICADO' : '';
     renderAll();
   });
 }
@@ -2034,10 +2130,10 @@ function renderTable() {
   
   const dadosPagina = getDadosPagina();
   
-  tblHead.innerHTML = '<tr><th>Empresa</th><th>CNPJ</th><th>IE</th><th>Federal</th><th>Estadual</th><th>Municipal</th><th>FGTS</th><th style="width:80px">Ações</th></tr>';
+  tblHead.innerHTML = '<tr><th>Empresa</th><th>CNPJ</th><th>IE</th><th>IM</th><th>Federal</th><th>Estadual</th><th>Municipal</th><th>FGTS</th><th style="width:80px">Ações</th></tr>';
   
   if (dadosPagina.length === 0) {
-    tblBody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 30px; color: var(--muted);">Nenhum registro encontrado</td></tr>';
+    tblBody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 30px; color: var(--muted);">Nenhum registro encontrado</td></tr>';
     // Remover paginação se não há dados
     const existingPagination = $('.paginacao');
     if (existingPagination) existingPagination.remove();
@@ -2052,11 +2148,12 @@ function renderTable() {
         <span class="empresa-name">${e.empresa}</span>
         <div class="sub">
           <div class="local-info">${e.municipio}/${e.uf}</div>
-          <div class="ie-info">IE: ${e.inscricao_estadual || '—'}</div>
+          <div class="ie-info">IE: ${e.inscricao_estadual || '—'} | IM: ${e.inscricao_municipal || '—'}</div>
         </div>
       </td>
       <td class="cnpj-cell">${fmtCNPJ(e.cnpj)}</td>
       <td>${e.inscricao_estadual || '—'}</td>
+      <td>${e.inscricao_municipal || '—'}</td>
       <td>${statusBadge(rowStatus(key, 'federal'))}</td>
       <td>${statusBadge(rowStatus(key, 'estadual'))}</td>
       <td>${statusBadge(rowStatus(key, 'municipal'))}</td>
@@ -2093,7 +2190,7 @@ function renderAll() {
 
 // ===== Exportação =====
 function exportCSV() {
-  const rows = [['Empresa', 'CNPJ', 'Município', 'UF', 'IE', 'Federal', 'Estadual', 'Municipal', 'FGTS']];
+  const rows = [['Empresa', 'CNPJ', 'Município', 'UF', 'IE', 'IM', 'Federal', 'Estadual', 'Municipal', 'FGTS']];
   
   state.empresas.forEach(e => {
     const key = keyOf(e);
@@ -2103,6 +2200,7 @@ function exportCSV() {
       e.municipio,
       e.uf,
       e.inscricao_estadual || '',
+      e.inscricao_municipal || '',
       rowStatus(key, 'federal'),
       rowStatus(key, 'estadual'),
       rowStatus(key, 'municipal'),
@@ -2122,7 +2220,7 @@ function exportCSV() {
 }
 
 function exportXLS() {
-  let html = '<table><tr><th>Empresa</th><th>CNPJ</th><th>Município</th><th>UF</th><th>IE</th><th>Federal</th><th>Estadual</th><th>Municipal</th><th>FGTS</th></tr>';
+  let html = '<table><tr><th>Empresa</th><th>CNPJ</th><th>Município</th><th>UF</th><th>IE</th><th>IM</th><th>Federal</th><th>Estadual</th><th>Municipal</th><th>FGTS</th></tr>';
   
   state.empresas.forEach(e => {
     const key = keyOf(e);
@@ -2132,6 +2230,7 @@ function exportXLS() {
       <td>${e.municipio}</td>
       <td>${e.uf}</td>
       <td>${e.inscricao_estadual || ''}</td>
+      <td>${e.inscricao_municipal || ''}</td>
       <td>${rowStatus(key, 'federal')}</td>
       <td>${rowStatus(key, 'estadual')}</td>
       <td>${rowStatus(key, 'municipal')}</td>
@@ -2226,18 +2325,19 @@ function drawBar(ctx, labels, values, colors) {
   });
 }
 
-// CORREÇÃO: Função computeStatusCounts corrigida para separar ATENÇÃO e NÃO VERIFICADA
+// CORREÇÃO: Função computeStatusCounts corrigida para usar os novos status e excluir "Não Verificado" e "N/A"
 function computeStatusCounts() {
-  const counts = { reg: 0, irr: 0, ate: 0, nao: 0 };
+  const counts = { positiva: 0, negativa: 0, pendente: 0, positivaEfeitoNegativa: 0 };
   
   state.empresas.forEach(e => {
     const key = keyOf(e);
     GROUPS.forEach(g => {
       const status = rowStatus(key, g);
-      if (status === 'REGULAR') counts.reg++;
-      else if (status === 'IRREGULAR') counts.irr++;
-      else if (status === 'OBS') counts.ate++; // ATENÇÃO
-      else if (status === 'NÃO VERIFICADA') counts.nao++; // NÃO VERIFICADA
+      if (status === 'POSITIVA') counts.positiva++;
+      else if (status === 'NEGATIVA') counts.negativa++;
+      else if (status === 'PENDENTE') counts.pendente++;
+      else if (status === 'POSITIVA_EFEITO_NEGATIVA') counts.positivaEfeitoNegativa++;
+      // Não contamos "Não Verificado" e "N/A" no dashboard
     });
   });
   
@@ -2259,9 +2359,9 @@ function computeUFCounts() {
 
 function renderCharts() {
   const st = computeStatusCounts();
-  const labels = ['REGULAR', 'IRREGULAR', 'ATENÇÃO', 'NÃO VERIF.'];
-  const values = [st.reg, st.irr, st.ate, st.nao];
-  const colors = ['#059669', '#DC2626', '#FF6B00', '#94A3B8'];
+  const labels = ['Positiva', 'Negativa', 'Pendente', 'Positiva Efeito Negativa'];
+  const values = [st.positiva, st.negativa, st.pendente, st.positivaEfeitoNegativa];
+  const colors = ['#059669', '#DC2626', '#FF6B00', '#9333EA'];
   
   const statusCtx = $('#chartStatus').getContext('2d');
   drawBar(statusCtx, labels, values, colors);
