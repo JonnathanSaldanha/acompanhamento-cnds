@@ -487,8 +487,8 @@ button:hover::before {
 }
 
 .empresa-cell {
-  max-width: 200px;
-  min-width: 160px;
+  max-width: 280px;
+  min-width: 220px;
 }
 
 .empresa-name {
@@ -498,24 +498,25 @@ button:hover::before {
   text-overflow: ellipsis;
   display: block;
   font-size: 13px;
+  margin-bottom: 2px;
 }
 
 .local-info {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+  color: var(--muted);
+  font-size: 11px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 11px;
+  margin-bottom: 1px;
 }
 
 .ie-info {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+  color: var(--muted);
+  font-size: 10px;
   white-space: nowrap;
-  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
 }
 
 /* CORREÇÃO DOS BOTÕES DE AÇÃO - ÍCONES DENTRO DO ESQUADRO */
@@ -834,6 +835,152 @@ hr.sep {
   transform: none !important;
 }
 
+/* Notificações de vencimento - MELHORADAS */
+.vencimento-badge {
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 9px;
+  font-weight: 700;
+  margin-left: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  transition: var(--transition);
+}
+
+.vencimento-critico {
+  background: rgba(220, 38, 38, 0.2);
+  color: #DC2626;
+  border: 1px solid rgba(220, 38, 38, 0.4);
+  animation: pulse 1.5s infinite;
+}
+
+.vencimento-alerta {
+  background: rgba(217, 119, 6, 0.2);
+  color: #D97706;
+  border: 1px solid rgba(217, 119, 6, 0.4);
+}
+
+.vencimento-info {
+  background: rgba(59, 130, 246, 0.2);
+  color: #3B82F6;
+  border: 1px solid rgba(59, 130, 246, 0.4);
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Modal de configurações de vencimento */
+.config-vencimento {
+  background: #FFFBEB;
+  border: 1px solid #FEF3C7;
+  border-radius: var(--radius);
+  padding: 12px;
+  margin: 10px 0;
+}
+
+.config-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 8px 0;
+  gap: 10px;
+}
+
+.config-item label {
+  flex: 1;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.config-item input {
+  width: 80px;
+  text-align: center;
+}
+
+/* Botão de pesquisa */
+.btn-pesquisa {
+  background: linear-gradient(135deg, #059669, #10B981);
+  color: white;
+  border: none;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
+}
+
+.btn-pesquisa:hover {
+  background: linear-gradient(135deg, #047857, #059669);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4);
+}
+
+/* Campo de validade padrão */
+.validade-field {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.validade-select {
+  flex: 1;
+}
+
+.btn-validade {
+  padding: 6px 10px;
+  font-size: 11px;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+}
+
+.btn-validade:hover {
+  background: #E2E8F0;
+  transform: translateY(-1px);
+}
+
+/* Campo de validade personalizada */
+.validade-personalizada {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  margin-left: 4px;
+}
+
+.dias-input {
+  width: 60px;
+  padding: 4px 6px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-size: 11px;
+  text-align: center;
+  transition: var(--transition);
+}
+
+.dias-input:focus {
+  outline: none;
+  border-color: var(--eletro-blue);
+  box-shadow: 0 0 0 2px rgba(0, 51, 160, 0.1);
+}
+
+.btn-validade-personalizado {
+  padding: 4px 8px;
+  font-size: 11px;
+  background: var(--gradient);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.btn-validade-personalizado:hover {
+  background: var(--gradient-light);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 51, 160, 0.2);
+}
+
 /* Animações melhoradas */
 @keyframes fadeIn {
   from { 
@@ -885,6 +1032,15 @@ hr.sep {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
+
+/* Largura das colunas da tabela */
+.table th:nth-child(1) { width: 25%; } /* Empresa */
+.table th:nth-child(2) { width: 15%; } /* CNPJ */
+.table th:nth-child(3) { width: 12%; } /* Federal */
+.table th:nth-child(4) { width: 12%; } /* Estadual */
+.table th:nth-child(5) { width: 12%; } /* Municipal */
+.table th:nth-child(6) { width: 12%; } /* FGTS */
+.table th:nth-child(7) { width: 12%; } /* Ações */
 
 /* Responsive */
 @media (max-width: 1200px) {
@@ -960,6 +1116,17 @@ hr.sep {
     padding: 0;
     justify-content: center;
   }
+  
+  /* Ajustes para validade personalizada em mobile */
+  .validade-field {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .validade-personalizada {
+    margin-left: 0;
+    margin-top: 4px;
+  }
 }
 
 /* Botões com ícones */
@@ -968,27 +1135,6 @@ hr.sep {
   align-items: center;
   gap: 6px;
   transition: var(--transition);
-}
-
-/* Efeito de pulso para elementos importantes */
-.pulse {
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(0, 51, 160, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(0, 51, 160, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(0, 51, 160, 0); }
-}
-
-/* Efeito de brilho para elementos ativos */
-.glow {
-  box-shadow: 0 0 10px rgba(0, 51, 160, 0.3);
-  transition: var(--transition);
-}
-
-.glow:hover {
-  box-shadow: 0 0 15px rgba(0, 51, 160, 0.5);
 }
 
 /* CORREÇÃO: Garantir que nenhum elemento esteja bloqueando interações */
@@ -1012,10 +1158,18 @@ body * {
       <button id="btnNovo" class="btn-primary btn-with-icon">
         <span>+</span> Novo
       </button>
+      <button id="btnPesquisarCND" class="btn-primary btn-pesquisa btn-with-icon">
+        <span>🔍</span> Pesquisar CNDs
+      </button>
+      <button id="btnCndsAVencer" class="btn-ghost btn-with-icon" title="Ver CNDs próximas do vencimento">
+        <span>⚠️</span> CNDs a Vencer
+      </button>
+      <button id="btnConfigVencimento" class="btn-ghost btn-with-icon" title="Configurar notificações">
+        <span>⏰</span> Vencimentos
+      </button>
       <button id="btnExportXLS" class="btn-ghost">Excel</button>
       <button id="btnExportCSV" class="btn-ghost">CSV</button>
       <button id="btnExport" class="btn-ghost">Backup</button>
-      <button id="btnAutoBackup" class="btn-ghost">Auto Backup</button>
       <button id="btnImport" class="btn-ghost">Importar</button>
       <button id="btnRescue" class="btn-ghost">Recuperar</button>
       <button id="btnLimparStorage" class="btn-ghost" style="color: var(--bad)">🧹 Limpar Cache</button>
@@ -1027,10 +1181,12 @@ body * {
       <button id="btnMobileMenu" class="btn-ghost">☰</button>
       <div class="mobile-menu-content" id="mobileMenuContent">
         <button id="btnNovoMobile" class="btn-ghost">+ Novo</button>
+        <button id="btnPesquisarCNDMobile" class="btn-ghost">🔍 Pesquisar CNDs</button>
+        <button id="btnCndsAVencerMobile" class="btn-ghost">⚠️ CNDs a Vencer</button>
+        <button id="btnConfigVencimentoMobile" class="btn-ghost">⏰ Config. Vencimentos</button>
         <button id="btnExportXLSMobile" class="btn-ghost">Excel</button>
         <button id="btnExportCSVMobile" class="btn-ghost">CSV</button>
         <button id="btnExportMobile" class="btn-ghost">Backup</button>
-        <button id="btnAutoBackupMobile" class="btn-ghost">Auto Backup</button>
         <button id="btnImportMobile" class="btn-ghost">Importar</button>
         <button id="btnRescueMobile" class="btn-ghost">Recuperar</button>
         <button id="btnLimparStorageMobile" class="btn-ghost" style="color: var(--bad)">Limpar Cache</button>
@@ -1065,7 +1221,17 @@ body * {
     <section id="view-lista">
       <div class="table-container">
         <table class="table" id="tbl">
-          <thead id="thead"></thead>
+          <thead>
+            <tr>
+              <th>Empresa</th>
+              <th>CNPJ</th>
+              <th>Federal</th>
+              <th>Estadual</th>
+              <th>Municipal</th>
+              <th>FGTS</th>
+              <th style="width:80px">Ações</th>
+            </tr>
+          </thead>
           <tbody></tbody>
         </table>
       </div>
@@ -1178,7 +1344,16 @@ body * {
             <option value="NAO_APLICAVEL">N/A</option>
           </select>
           <label>Validade</label>
-          <input id="federal_validade" type="date">
+          <div class="validade-field">
+            <input id="federal_validade" type="date" class="validade-select">
+            <button class="btn-validade" data-tipo="federal" data-dias="30">30d</button>
+            <button class="btn-validade" data-tipo="federal" data-dias="60">60d</button>
+            <button class="btn-validade" data-tipo="federal" data-dias="90">90d</button>
+            <div class="validade-personalizada">
+              <input type="number" class="dias-input" placeholder="Dias" min="1" max="365" data-tipo="federal">
+              <button class="btn-validade-personalizado" data-tipo="federal">Aplicar</button>
+            </div>
+          </div>
           <div id="federal_update_info" class="expiry-date today" style="display:none">Atualizado hoje</div>
           <label>Link da certidão</label>
           <input id="federal_link" type="url" placeholder="https://…">
@@ -1196,7 +1371,16 @@ body * {
             <option value="NAO_APLICAVEL">N/A</option>
           </select>
           <label>Validade</label>
-          <input id="estadual_validade" type="date">
+          <div class="validade-field">
+            <input id="estadual_validade" type="date" class="validade-select">
+            <button class="btn-validade" data-tipo="estadual" data-dias="30">30d</button>
+            <button class="btn-validade" data-tipo="estadual" data-dias="60">60d</button>
+            <button class="btn-validade" data-tipo="estadual" data-dias="90">90d</button>
+            <div class="validade-personalizada">
+              <input type="number" class="dias-input" placeholder="Dias" min="1" max="365" data-tipo="estadual">
+              <button class="btn-validade-personalizado" data-tipo="estadual">Aplicar</button>
+            </div>
+          </div>
           <div id="estadual_update_info" class="expiry-date today" style="display:none">Atualizado hoje</div>
           <label>Link da certidão</label>
           <input id="estadual_link" type="url" placeholder="https://…">
@@ -1214,7 +1398,16 @@ body * {
             <option value="NAO_APLICAVEL">N/A</option>
           </select>
           <label>Validade</label>
-          <input id="municipal_validade" type="date">
+          <div class="validade-field">
+            <input id="municipal_validade" type="date" class="validade-select">
+            <button class="btn-validade" data-tipo="municipal" data-dias="30">30d</button>
+            <button class="btn-validade" data-tipo="municipal" data-dias="60">60d</button>
+            <button class="btn-validade" data-tipo="municipal" data-dias="90">90d</button>
+            <div class="validade-personalizada">
+              <input type="number" class="dias-input" placeholder="Dias" min="1" max="365" data-tipo="municipal">
+              <button class="btn-validade-personalizado" data-tipo="municipal">Aplicar</button>
+            </div>
+          </div>
           <div id="municipal_update_info" class="expiry-date today" style="display:none">Atualizado hoje</div>
           <label>Link da certidão</label>
           <input id="municipal_link" type="url" placeholder="https://…">
@@ -1232,7 +1425,16 @@ body * {
             <option value="NAO_APLICAVEL">N/A</option>
           </select>
           <label>Validade</label>
-          <input id="fgts_validade" type="date">
+          <div class="validade-field">
+            <input id="fgts_validade" type="date" class="validade-select">
+            <button class="btn-validade" data-tipo="fgts" data-dias="30">30d</button>
+            <button class="btn-validade" data-tipo="fgts" data-dias="60">60d</button>
+            <button class="btn-validade" data-tipo="fgts" data-dias="90">90d</button>
+            <div class="validade-personalizada">
+              <input type="number" class="dias-input" placeholder="Dias" min="1" max="365" data-tipo="fgts">
+              <button class="btn-validade-personalizado" data-tipo="fgts">Aplicar</button>
+            </div>
+          </div>
           <div id="fgts_update_info" class="expiry-date today" style="display:none">Atualizado hoje</div>
           <label>Link da certidão</label>
           <input id="fgts_link" type="url" placeholder="https://…">
@@ -1250,6 +1452,43 @@ body * {
           <button id="btnFechar" class="btn-ghost">Cancelar</button>
           <button id="btnSalvar" class="btn-primary">Salvar</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para configurações de vencimento -->
+  <div class="modal" id="modalVencimento">
+    <div class="box">
+      <h3>⚙️ Configurações de Vencimento</h3>
+      
+      <div class="config-vencimento">
+        <h4 style="margin-bottom: 15px; color: var(--eletro-blue);">Dias para notificação</h4>
+        
+        <div class="config-item">
+          <label>Notificar quando faltar (dias):</label>
+          <input type="number" id="diasNotificacao" min="1" max="365" value="30">
+        </div>
+        
+        <div class="config-item">
+          <label>Alerta crítico (dias):</label>
+          <input type="number" id="diasCritico" min="1" max="30" value="7">
+        </div>
+        
+        <div class="config-item">
+          <label>Alerta médio (dias):</label>
+          <input type="number" id="diasAlerta" min="5" max="60" value="15">
+        </div>
+        
+        <div style="margin-top: 10px; font-size: 12px; color: var(--muted);">
+          ⓘ As notificações aparecerão nos badges das CNDs próximas do vencimento
+        </div>
+      </div>
+
+      <hr class="sep">
+      
+      <div style="display: flex; gap: 8px; justify-content: flex-end">
+        <button id="vencimentoCancel" class="btn-ghost">Cancelar</button>
+        <button id="vencimentoSave" class="btn-primary">Salvar Configurações</button>
       </div>
     </div>
   </div>
@@ -1307,6 +1546,16 @@ const getToday = () => {
   return `${year}-${month}-${day}`;
 };
 
+// Função para calcular data futura
+const getFutureDate = (days) => {
+  const future = new Date();
+  future.setDate(future.getDate() + days);
+  const year = future.getFullYear();
+  const month = String(future.getMonth() + 1).padStart(2, '0');
+  const day = String(future.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 // ===== VALIDAÇÃO REAL DE CNPJ =====
 function validarCNPJ(cnpj) {
   cnpj = cnpj.replace(/[^\d]/g, '');
@@ -1345,6 +1594,318 @@ function validarCNPJ(cnpj) {
   if (resultado !== parseInt(digitos.charAt(1))) return false;
   
   return true;
+}
+
+// ===== SISTEMA DE VALIDADE RÁPIDA =====
+function setupValidadeRapida() {
+  $$('.btn-validade').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const tipo = e.target.dataset.tipo;
+      const dias = parseInt(e.target.dataset.dias);
+      const dataFutura = getFutureDate(dias);
+      $(`#${tipo}_validade`).value = dataFutura;
+      showToast(`Validade definida para ${dias} dias`);
+    });
+  });
+  
+  // Configurar também a validade personalizada
+  setupValidadePersonalizada();
+}
+
+// ===== SISTEMA DE VALIDADE PERSONALIZADA =====
+function setupValidadePersonalizada() {
+  $$('.btn-validade-personalizado').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const tipo = e.target.dataset.tipo;
+      const input = $(`.dias-input[data-tipo="${tipo}"]`);
+      const dias = parseInt(input.value);
+      
+      if (dias && dias >= 1 && dias <= 365) {
+        const dataFutura = getFutureDate(dias);
+        $(`#${tipo}_validade`).value = dataFutura;
+        showToast(`Validade definida para ${dias} dias`);
+        input.value = ''; // Limpar o campo após aplicar
+      } else {
+        alert('Por favor, digite um número válido de dias (1-365)');
+        input.focus();
+      }
+    });
+  });
+  
+  // Permitir Enter no campo de input
+  $$('.dias-input').forEach(input => {
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        const tipo = e.target.dataset.tipo;
+        const btn = $(`.btn-validade-personalizado[data-tipo="${tipo}"]`);
+        btn.click();
+      }
+    });
+  });
+}
+
+// ===== SISTEMA DE NOTIFICAÇÃO DE VENCIMENTOS - CORRIGIDO =====
+function calcularDiasRestantes(dataValidade) {
+  if (!dataValidade) return null;
+  
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0); // Normalizar para meia-noite
+  
+  const vencimento = new Date(dataValidade);
+  vencimento.setHours(0, 0, 0, 0); // Normalizar para meia-noite
+  
+  // Diferença em milissegundos
+  const diffTime = vencimento - hoje;
+  
+  // Converter para dias (usar ceil para considerar dias parciais como dia completo)
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  console.log('Data validade:', dataValidade, 'Hoje:', hoje.toISOString().split('T')[0], 'Dias restantes:', diffDays);
+  return diffDays;
+}
+
+function gerarNotificacaoVencimento(diasRestantes, grupo) {
+  if (diasRestantes === null || diasRestantes === undefined) return null;
+  
+  const config = getConfigVencimento();
+  
+  console.log('Verificando vencimento:', { diasRestantes, config });
+  
+  if (diasRestantes < 0) {
+    return `<span class="vencimento-badge vencimento-critico" title="Vencida há ${Math.abs(diasRestantes)} dias">Vencida</span>`;
+  } else if (diasRestantes === 0) {
+    return `<span class="vencimento-badge vencimento-critico" title="Vence hoje">Hoje</span>`;
+  } else if (diasRestantes <= config.diasCritico) {
+    return `<span class="vencimento-badge vencimento-critico" title="Vence em ${diasRestantes} dias">${diasRestantes}d</span>`;
+  } else if (diasRestantes <= config.diasAlerta) {
+    return `<span class="vencimento-badge vencimento-alerta" title="Vence em ${diasRestantes} dias">${diasRestantes}d</span>`;
+  } else if (diasRestantes <= config.diasNotificacao) {
+    return `<span class="vencimento-badge vencimento-info" title="Vence em ${diasRestantes} dias">${diasRestantes}d</span>`;
+  }
+  
+  return null;
+}
+
+function getConfigVencimento() {
+  const config = load('cnds_vencimento_config') || {
+    diasNotificacao: 30,    // Aumentei para 30 dias
+    diasAlerta: 15,         // Alerta em 15 dias
+    diasCritico: 7          // Crítico em 7 dias
+  };
+  return config;
+}
+
+function statusBadge(s, validade, grupo) {
+  const statusClasses = {
+    'POSITIVA': 'positiva',
+    'NEGATIVA': 'negativa', 
+    'PENDENTE': 'pendente',
+    'POSITIVA_EFEITO_NEGATIVA': 'positiva-efeito-negativa',
+    'NAO_VERIFICADO': 'nao-verificado',
+    'NAO_APLICAVEL': 'nao-aplicavel'
+  };
+  
+  let badge = `<span class="badge ${statusClasses[s] || 'nao-verificado'}">${uiStatus(s)}`;
+  
+  // Adicionar notificação de vencimento para CNDs POSITIVAS e PENDENTES
+  if ((s === 'POSITIVA' || s === 'PENDENTE') && validade) {
+    const diasRestantes = calcularDiasRestantes(validade);
+    const notificacao = gerarNotificacaoVencimento(diasRestantes, grupo);
+    if (notificacao) {
+      badge += notificacao;
+    }
+  }
+  
+  badge += '</span>';
+  return badge;
+}
+
+// ===== BOTÃO PARA VER CNDs A VENCER - CORRIGIDO =====
+function visualizarCndsAVencer() {
+  const config = getConfigVencimento();
+  let cndsAVencer = [];
+  
+  console.log('=== BUSCANDO CNDs A VENCER ===');
+  console.log('Configuração:', config);
+  
+  // Verificar todas as empresas
+  state.empresas.forEach(e => {
+    const key = keyOf(e);
+    
+    // Verificar cada tipo de CND
+    GROUPS.forEach(g => {
+      const cnd = state.cnds[key]?.[g];
+      
+      // Verificar se a CND existe, tem validade e está em status que deve ser monitorado
+      if (cnd && cnd.validade && (cnd.status === 'POSITIVA' || cnd.status === 'PENDENTE')) {
+        const diasRestantes = calcularDiasRestantes(cnd.validade);
+        
+        console.log(`Verificando ${e.empresa} - ${g}:`, {
+          validade: cnd.validade,
+          status: cnd.status,
+          diasRestantes: diasRestantes,
+          config: config
+        });
+        
+        // Verificar se está dentro do período de notificação
+        if (diasRestantes !== null && diasRestantes <= config.diasNotificacao) {
+          cndsAVencer.push({
+            empresa: e.empresa,
+            cnpj: e.cnpj,
+            tipo: g.toUpperCase(),
+            status: cnd.status,
+            validade: cnd.validade,
+            diasRestantes: diasRestantes,
+            municipio: e.municipio,
+            uf: e.uf,
+            link: cnd.link || ''
+          });
+          
+          console.log(`✅ CND a vencer encontrada: ${e.empresa} - ${g} - ${cnd.validade} - ${diasRestantes} dias`);
+        }
+      }
+    });
+  });
+  
+  // Ordenar por dias restantes (mais próximos primeiro)
+  cndsAVencer.sort((a, b) => a.diasRestantes - b.diasRestantes);
+  
+  // Exibir resultados
+  if (cndsAVencer.length === 0) {
+    alert('✅ Nenhuma CND próxima do vencimento encontrada!\n\nVerifique se:\n• As CNDs estão com status "Positiva" ou "Pendente"\n• Possuem data de validade definida\n• A data de validade está dentro do período configurado');
+    return;
+  }
+  
+  let mensagem = `📋 CNDs PRÓXIMAS DO VENCIMENTO (${cndsAVencer.length} encontradas)\n\n`;
+  
+  cndsAVencer.forEach((cnd, index) => {
+    let icone = '🔵';
+    if (cnd.diasRestantes <= config.diasCritico) icone = '🔴';
+    else if (cnd.diasRestantes <= config.diasAlerta) icone = '🟡';
+    
+    mensagem += `${icone} ${cnd.empresa}\n`;
+    mensagem += `   📊 ${cnd.tipo} | ${cnd.status}\n`;
+    mensagem += `   📅 ${cnd.validade} | ${cnd.diasRestantes} dias restantes\n`;
+    mensagem += `   📍 ${cnd.municipio}/${cnd.uf}\n`;
+    
+    if (cnd.link) {
+      mensagem += `   🔗 Possui link\n`;
+    }
+    
+    mensagem += '\n';
+  });
+  
+  mensagem += `\n⚙️ Configuração atual:\n`;
+  mensagem += `   • Notificação: ${config.diasNotificacao} dias\n`;
+  mensagem += `   • Alerta: ${config.diasAlerta} dias\n`;
+  mensagem += `   • Crítico: ${config.diasCritico} dias`;
+  
+  // Criar modal personalizado para melhor visualização
+  const modal = document.createElement('div');
+  modal.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    font-family: system-ui, sans-serif;
+  `;
+  
+  const content = document.createElement('div');
+  content.style.cssText = `
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    max-width: 90%;
+    max-height: 80%;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    line-height: 1.5;
+  `;
+  
+  content.innerHTML = `
+    <h3 style="margin: 0 0 20px 0; color: #0033A0; border-bottom: 2px solid #0033A0; padding-bottom: 10px;">
+      ⚠️ CNDs Próximas do Vencimento (${cndsAVencer.length})
+    </h3>
+    <div style="max-height: 400px; overflow-y: auto; margin-bottom: 20px;">
+      ${cndsAVencer.map(cnd => {
+        let cor = '#3B82F6';
+        if (cnd.diasRestantes <= config.diasCritico) cor = '#DC2626';
+        else if (cnd.diasRestantes <= config.diasAlerta) cor = '#D97706';
+        
+        return `
+          <div style="border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px; margin-bottom: 8px; border-left: 4px solid ${cor};">
+            <div style="font-weight: bold; color: #0F172A;">${cnd.empresa}</div>
+            <div style="color: #64748B; font-size: 13px; margin-top: 4px;">
+              <strong>${cnd.tipo}</strong> | ${cnd.status} | ${cnd.validade} | 
+              <span style="color: ${cor}; font-weight: bold;">${cnd.diasRestantes} dias restantes</span>
+            </div>
+            <div style="color: #64748B; font-size: 12px; margin-top: 2px;">
+              ${cnd.municipio}/${cnd.uf} ${cnd.link ? '| 🔗 Possui link' : ''}
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+    <div style="background: #F8FAFC; padding: 12px; border-radius: 6px; font-size: 13px; color: #64748B;">
+      <strong>Configuração atual:</strong><br>
+      • Notificar quando faltar: ${config.diasNotificacao} dias<br>
+      • Alerta médio: ${config.diasAlerta} dias<br>
+      • Alerta crítico: ${config.diasCritico} dias
+    </div>
+    <button onclick="this.parentElement.parentElement.remove()" 
+            style="margin-top: 20px; padding: 10px 20px; background: #0033A0; color: white; border: none; border-radius: 6px; cursor: pointer; float: right;">
+      Fechar
+    </button>
+    <div style="clear: both;"></div>
+  `;
+  
+  modal.appendChild(content);
+  document.body.appendChild(modal);
+  
+  // Também logar no console para análise
+  console.log('CNDs a vencer encontradas:', cndsAVencer);
+}
+
+function openModalVencimento() {
+  const config = getConfigVencimento();
+  $('#diasNotificacao').value = config.diasNotificacao;
+  $('#diasAlerta').value = config.diasAlerta;
+  $('#diasCritico').value = config.diasCritico;
+  $('#modalVencimento').style.display = 'flex';
+}
+
+function closeModalVencimento() {
+  $('#modalVencimento').style.display = 'none';
+}
+
+function saveConfigVencimento() {
+  const config = {
+    diasNotificacao: parseInt($('#diasNotificacao').value) || 30,
+    diasAlerta: parseInt($('#diasAlerta').value) || 15,
+    diasCritico: parseInt($('#diasCritico').value) || 7
+  };
+  
+  save('cnds_vencimento_config', config);
+  closeModalVencimento();
+  renderAll(); // Re-renderizar para aplicar novas configurações
+  showToast('Configurações de vencimento salvas');
+}
+
+// ===== BOTÃO DE PESQUISA DE CNDs =====
+function abrirPesquisaCND() {
+  // NOVO URL do SharePoint das CNDs - Local específico de Regularidade Fiscal/CND
+  const url = 'https://eletrobras.sharepoint.com/sites/CSC-CONTABILIDADE-FISCAL/Documentos%20Compartilhados/Forms/AllItems.aspx?id=%2Fsites%2FCSC%2DCONTABILIDADE%2DFISCAL%2FDocumentos%20Compartilhados%2F4%20%2D%20Regularidade%20Fiscal%2FCND&viewid=11d78f05%2Dfe84%2D461a%2D9844%2D3d5e7a6967f7';
+  
+  // Abrir o SharePoint em nova aba
+  window.open(url, '_blank');
+  
+  showToast('Abrindo SharePoint das CNDs...');
 }
 
 // ===== SISTEMA DE BACKUP SEGURO OTIMIZADO =====
@@ -1528,7 +2089,6 @@ function save(key, value) {
       // Limpar backups antigos antes de criar novo
       limparBackupsAntigos();
       createSafeBackup();
-      autoSave();
     }
     
     return true;
@@ -1728,7 +2288,6 @@ tabs.forEach(b => {
 });
 
 // ===== UI refs =====
-const tblHead = $('#thead');
 const tblBody = $('#tbl tbody');
 const q = $('#q');
 const empresaFilter = $('#empresaFilter');
@@ -1893,6 +2452,9 @@ function openModalCND(key) {
       updateInfo.style.display = 'none';
     }
   });
+  
+  // Configurar botões de validade rápida
+  setupValidadeRapida();
   
   $('#modalCND').style.display = 'flex';
 }
@@ -2063,19 +2625,6 @@ function computeOverview() {
   return t;
 }
 
-function statusBadge(s) {
-  const statusClasses = {
-    'POSITIVA': 'positiva',
-    'NEGATIVA': 'negativa', 
-    'PENDENTE': 'pendente',
-    'POSITIVA_EFEITO_NEGATIVA': 'positiva-efeito-negativa',
-    'NAO_VERIFICADO': 'nao-verificado',
-    'NAO_APLICAVEL': 'nao-aplicavel'
-  };
-  
-  return `<span class="badge ${statusClasses[s] || 'nao-verificado'}">${uiStatus(s)}</span>`;
-}
-
 function renderKPIs() {
   const t = computeOverview();
   const k = $('#kpis');
@@ -2130,10 +2679,8 @@ function renderTable() {
   
   const dadosPagina = getDadosPagina();
   
-  tblHead.innerHTML = '<tr><th>Empresa</th><th>CNPJ</th><th>IE</th><th>IM</th><th>Federal</th><th>Estadual</th><th>Municipal</th><th>FGTS</th><th style="width:80px">Ações</th></tr>';
-  
   if (dadosPagina.length === 0) {
-    tblBody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 30px; color: var(--muted);">Nenhum registro encontrado</td></tr>';
+    tblBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px; color: var(--muted);">Nenhum registro encontrado</td></tr>';
     // Remover paginação se não há dados
     const existingPagination = $('.paginacao');
     if (existingPagination) existingPagination.remove();
@@ -2152,12 +2699,10 @@ function renderTable() {
         </div>
       </td>
       <td class="cnpj-cell">${fmtCNPJ(e.cnpj)}</td>
-      <td>${e.inscricao_estadual || '—'}</td>
-      <td>${e.inscricao_municipal || '—'}</td>
-      <td>${statusBadge(rowStatus(key, 'federal'))}</td>
-      <td>${statusBadge(rowStatus(key, 'estadual'))}</td>
-      <td>${statusBadge(rowStatus(key, 'municipal'))}</td>
-      <td>${statusBadge(rowStatus(key, 'fgts'))}</td>
+      <td>${statusBadge(rowStatus(key, 'federal'), state.cnds[key]?.federal?.validade, 'federal')}</td>
+      <td>${statusBadge(rowStatus(key, 'estadual'), state.cnds[key]?.estadual?.validade, 'estadual')}</td>
+      <td>${statusBadge(rowStatus(key, 'municipal'), state.cnds[key]?.municipal?.validade, 'municipal')}</td>
+      <td>${statusBadge(rowStatus(key, 'fgts'), state.cnds[key]?.fgts?.validade, 'fgts')}</td>
       <td class="row-actions">
         <button data-key="${key}" class="btnEditar btn-ghost btn-icon" title="Editar CND">✏️</button>
         <button data-key="${key}" class="btnEditEmp btn-ghost btn-icon" title="Editar Cadastro">📝</button>
@@ -2248,42 +2793,6 @@ function exportXLS() {
   a.click();
   URL.revokeObjectURL(url);
   showToast('Excel exportado com sucesso');
-}
-
-// ===== Backup automático =====
-let backupHandle = null;
-
-async function pickBackupFile() {
-  try {
-    if (!window.showSaveFilePicker) {
-      alert('Seu navegador não oferece File System Access API. Use o botão de backup JSON tradicional.');
-      return;
-    }
-    
-    backupHandle = await window.showSaveFilePicker({
-      suggestedName: 'cnds_backup.json',
-      types: [{ description: 'JSON', accept: { 'application/json': ['.json'] } }]
-    });
-    
-    const writable = await backupHandle.createWritable();
-    await writable.write(JSON.stringify(state, null, 2));
-    await writable.close();
-    
-    showToast('Backup automático ativado');
-  } catch(e) {
-    console.warn(e);
-  }
-}
-
-async function autoSave() {
-  try {
-    if (!backupHandle) return;
-    const writable = await backupHandle.createWritable();
-    await writable.write(JSON.stringify(state, null, 2));
-    await writable.close();
-  } catch(e) {
-    console.warn('Falha no backup automático:', e.message);
-  }
 }
 
 // ===== Dashboard =====
@@ -2390,6 +2899,25 @@ function initializeEventListeners() {
     openModalEmpresa(null);
   });
   
+  // Botão de pesquisa CND
+  document.getElementById('btnPesquisarCND').addEventListener('click', abrirPesquisaCND);
+  document.getElementById('btnPesquisarCNDMobile').addEventListener('click', abrirPesquisaCND);
+  
+  // Botão CNDs a Vencer
+  document.getElementById('btnCndsAVencer').addEventListener('click', visualizarCndsAVencer);
+  document.getElementById('btnCndsAVencerMobile').addEventListener('click', visualizarCndsAVencer);
+  
+  // Configurações de vencimento
+  document.getElementById('btnConfigVencimento').addEventListener('click', openModalVencimento);
+  document.getElementById('btnConfigVencimentoMobile').addEventListener('click', openModalVencimento);
+  
+  // Modal de vencimento
+  document.getElementById('modalVencimento').addEventListener('click', (ev) => {
+    if (ev.target === $('#modalVencimento')) closeModalVencimento();
+  });
+  document.getElementById('vencimentoCancel').addEventListener('click', closeModalVencimento);
+  document.getElementById('vencimentoSave').addEventListener('click', saveConfigVencimento);
+  
   document.getElementById('btnExportCSV').addEventListener('click', () => {
     console.log('Botão CSV clicado');
     exportCSV();
@@ -2411,11 +2939,6 @@ function initializeEventListeners() {
     a.click();
     URL.revokeObjectURL(url);
     showToast('Backup exportado com sucesso');
-  });
-  
-  document.getElementById('btnAutoBackup').addEventListener('click', () => {
-    console.log('Botão Auto Backup clicado');
-    pickBackupFile();
   });
   
   document.getElementById('btnImport').addEventListener('click', () => {
@@ -2517,7 +3040,6 @@ function initializeEventListeners() {
   document.getElementById('btnExportXLSMobile').addEventListener('click', exportXLS);
   document.getElementById('btnExportCSVMobile').addEventListener('click', exportCSV);
   document.getElementById('btnExportMobile').addEventListener('click', () => document.getElementById('btnExport').click());
-  document.getElementById('btnAutoBackupMobile').addEventListener('click', pickBackupFile);
   document.getElementById('btnImportMobile').addEventListener('click', () => document.getElementById('importFile').click());
 
   // CORREÇÃO: Botão recuperar mobile com sistema seguro
